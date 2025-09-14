@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiovisualizer - Plant Families Explorer</title>
+    <!-- Use the site's fonts and stylesheet so this page matches the rest of the website -->
+    <link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&family=open+sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="img/logo.svg" rel="icon" type="image/svg+xml">
+    <style>
+        /* Small theme adjustments for the audiovisualizer to match the site */
+        /* Make the tan background green and use a darker green for accents */
+        body { font-family: 'Open Sans', sans-serif; background-color: #cfead7; color: #213926; }
+        /* Center all text inside the audiovisualizer container */
+        #avContainer, #avContainer * { text-align: center; }
+        /* Controls for editable branding and background */
+        #avControls { display:flex; flex-direction:column; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
+        #avControls .control-row { display:flex; gap:0.5rem; align-items:center; justify-content:center; flex-wrap:wrap; }
+        #brandingNameInput { padding:8px 10px; border-radius:6px; border:1px solid rgba(31,75,47,0.15); min-width:220px; }
+        #bgFileInput { display:none; }
+        .btn-small { background:#1f4b2f; color:#f4f1e9; border:none; padding:8px 10px; border-radius:6px; cursor:pointer; }
+        .bg-preview { max-width:140px; max-height:60px; object-fit:cover; border-radius:6px; border:1px solid rgba(31,75,47,0.12); }
+        .tab-btn {
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #f4f1e9;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        /* Darker green accent for active tabs and primary buttons */
+        .tab-btn.active {
+            background-color: #1f4b2f; /* darker green */
+            color: #f4f1e9;
+        }
+        .tab-btn:not(.active):hover { background-color: rgba(31,75,47,0.08); }
+        .file-drop-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 160px;
+            cursor: pointer;
+            text-align: center;
+            color: #1f4b2f; /* theme dark green text */
+            border: 2px dashed rgba(31,75,47,0.18);
+            background: rgba(31,75,47,0.03);
+            border-radius: 8px;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .file-drop-area:hover { background: rgba(31,75,47,0.05); border-color: rgba(31,75,47,0.28); }
+        .hidden { display: none !important; }
+        canvas#visualizerCanvas, video#videoPlayer {
+            background: #000;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 6px 18px rgba(31,75,47,0.12);
+        }
+        #creatorControls, #playerView { padding-top: 0.75rem; }
+        /* Align download link with site .btn style if present */
+        #downloadLink { text-decoration: none; }
+        /* Use existing site button styles when present */
+        #visualizeExportBtn { background-color: #1f4b2f; color: #f4f1e9; border: none; padding: 10px 16px; border-radius: 6px; }
+        #visualizeExportBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+        #progressContainer { align-items: center; gap: 0.75rem; }
+        #progressBar { background: #1f4b2f; }
+        /* Small responsive tweaks */
+        @media (min-width: 768px) {
+            .file-drop-area { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add the site's header/navigation so the page matches the rest of the site -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img alt="Plant Families Explorer Logo" src="img/logo.svg"/>
+                    <span>Plant Families Explorer</span>
+                </a>
+            </div>
+            <nav>
+                <button aria-label="Toggle menu" class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="main-nav">
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
+                    <li><a href="/families.html">Plant Families</a></li>
+                    <li><a href="/identification.html">Field Identification</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a class="active" href="/audiovisualizer.html">Audiovisualizer</a></li>
+                </ul>
+            </nav>
+            <form class="search-bar" onsubmit="event.preventDefault(); performSearch(document.querySelector('.search-bar input').value.trim().toLowerCase());">
+                <input placeholder="Search families..." type="text"/>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </header>
+
+    <div id="avContainer" class="w-full max-w-4xl space-y-6">
+        <!-- Editable controls: branding name and background image -->
+        <div id="avControls">
+            <div class="control-row">
+                <label for="brandingNameInput" style="font-weight:600;">Visualizer Name</label>
+                <input id="brandingNameInput" type="text" placeholder="DJ NoTag" value="DJ NoTag">
+                <button id="clearNameBtn" class="btn-small" type="button">Reset</button>
+            </div>
+            <div class="control-row">
+                <label style="font-weight:600;">Background</label>
+                <button id="chooseBgBtn" class="btn-small" type="button">Choose Image</button>
+                <input id="bgFileInput" type="file" accept="image/*">
+                <button id="resetBgBtn" class="btn-small" type="button">Reset Background</button>
+                <img id="bgPreview" class="bg-preview" alt="bg preview" src="img/background.png">
+            </div>
+        </div>
+
+        <header>
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Audiovisualizer Suite</h1>
+            <p class="text-lg text-gray-400 mt-2">Create audiovisualizers or play your video files.</p>
+        </header>
+
+        <!-- Tab Controls -->
+        <div class="flex justify-center space-x-2 rounded-lg bg-gray-800 p-1">
+            <button id="creatorTabBtn" class="tab-btn active">Creator</button>
+            <button id="playerTabBtn" class="tab-btn">Player</button>
+        </div>
+
+        <main>
+            <!-- Creator View -->
+            <div id="creatorView" class="space-y-6">
+                <canvas id="visualizerCanvas" width="1024" height="576" class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></canvas>
+                <audio id="audioPlayer" controls class="hidden"></audio>
+
+                <div id="creatorControls" class="space-y-4">
+                    <div id="wav-drop-area" class="file-drop-area p-6">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                        <p class="font-semibold text-indigo-400">Drag & drop a .wav file here</p>
+                        <p class="text-xs">or click to select</p>
+                        <p id="wavFileName" class="mt-2 text-sm text-gray-300"></p>
+                    </div>
+                    <input type="file" id="wavFileInput" accept=".wav" class="hidden">
+                </div>
+
+                <div id="actionButtons" class="flex items-center justify-center gap-4 hidden">
+                    <button id="visualizeExportBtn" class="px-6 py-3 text-sm font-semibold text-white uppercase tracking-wider rounded-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">Visualize & Export</button>
+                </div>
+                <div id="progressContainer" class="w-full flex items-center justify-center mt-4 hidden">
+                    <div class="w-2/3 bg-gray-700 rounded-full h-4">
+                        <div id="progressBar" class="bg-indigo-500 h-4 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <span id="progressText" class="ml-4 text-gray-300 text-sm"></span>
+                </div>
+
+                <div class="h-12 flex items-center justify-center">
+                     <p id="status" class="text-gray-400"></p>
+                     <a id="downloadLink" class="px-6 py-3 text-sm font-semibold text-white uppercase tracking-wider rounded-lg shadow-md transition-all duration-300 bg-emerald-600 hover:bg-emerald-700 hidden">Download Video</a>
+                </div>
+            </div>
+
+            <!-- Player View -->
+            <div id="playerView" class="hidden space-y-6">
+                <video id="videoPlayer" controls class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></video>
+                 <div id="video-drop-area" class="file-drop-area p-6">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    <p class="font-semibold text-indigo-400">Drag & drop a video file here</p>
+                    <p class="text-xs">or click to select (.mp4, .webm, .ogg)</p>
+                </div>
+                <input type="file" id="videoFileInput" accept="video/*" class="hidden">
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const creatorTabBtn = document.getElementById('creatorTabBtn');
+        const playerTabBtn = document.getElementById('playerTabBtn');
+        const creatorView = document.getElementById('creatorView');
+        const playerView = document.getElementById('playerView');
+        // New editable controls
+        const brandingNameInput = document.getElementById('brandingNameInput');
+        const clearNameBtn = document.getElementById('clearNameBtn');
+        const chooseBgBtn = document.getElementById('chooseBgBtn');
+        const bgFileInput = document.getElementById('bgFileInput');
+        const resetBgBtn = document.getElementById('resetBgBtn');
+        const bgPreview = document.getElementById('bgPreview');
+
+        // Creator elements
+        const wavFileInput = document.getElementById('wavFileInput');
+        const wavDropArea = document.getElementById('wav-drop-area');
+        const wavFileNameEl = document.getElementById('wavFileName');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const canvas = document.getElementById('visualizerCanvas');
+        const visualizeExportBtn = document.getElementById('visualizeExportBtn');
+        const actionButtons = document.getElementById('actionButtons');
+        const statusEl = document.getElementById('status');
+        const downloadLink = document.getElementById('downloadLink');
+        const canvasCtx = canvas.getContext('2d');
+        // current branding and background state
+        let brandingName = (brandingNameInput && brandingNameInput.value) ? brandingNameInput.value : 'DJ NoTag';
+        let customBgObjectURL = null;
+
+        // Player elements
+        const videoFileInput = document.getElementById('videoFileInput');
+        const videoDropArea = document.getElementById('video-drop-area');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // Progress elements
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // State variables
+        let audioContext, analyser, source, dataArray, bufferLength, animationFrameId;
+        let mediaRecorder, recordedChunks = [];
+        let smoothedDataArray = null;
+        // Increase smoothing so the bars respond more slowly to sudden spikes (less reactive)
+        const SMOOTHING_FACTOR = 0.94; // Higher is smoother (closer to 1 => less reactive)
+        let animationIntervalId = null;
+        let isExporting = false;
+        let exportAnalyser, exportBufferLength, exportDataArray, exportSmoothedDataArray;
+
+        // High-resolution export canvas
+        let exportCanvas, exportCanvasCtx, EXPORT_WIDTH = 1024, EXPORT_HEIGHT = 576, EXPORT_FPS = 30;
+        let exportAnimationFrameId = null, exportIntervalId = null;
+        let exportAudioContextGlobal = null;
+
+        // Background Image
+        const bgImage = new Image();
+        // DO NOT set crossOrigin for local files, it causes CORS issues with canvas export.
+        let isBgImageLoaded = false;
+        bgImage.onload = () => {
+            isBgImageLoaded = true;
+            drawInitialCanvas();
+        };
+        bgImage.onerror = () => {
+            console.error("Could not load the background image from the URL. The visualizer will use a black background instead.");
+            statusEl.textContent = "Warning: Could not load background image.";
+        };
+        // Load local background image (no Liquid/shopify references)
+        bgImage.src = 'background.png';
+
+        // --- Branding / Background Controls ---
+        if (brandingNameInput) {
+            brandingNameInput.addEventListener('input', (e) => {
+                brandingName = e.target.value || 'DJ NoTag';
+                drawInitialCanvas();
+            });
+        }
+        if (clearNameBtn) clearNameBtn.addEventListener('click', () => { brandingNameInput.value = 'DJ NoTag'; brandingName = 'DJ NoTag'; drawInitialCanvas(); });
+
+        if (chooseBgBtn && bgFileInput) {
+            chooseBgBtn.addEventListener('click', () => bgFileInput.click());
+            bgFileInput.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                // revoke previous object URL
+                if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
+                customBgObjectURL = URL.createObjectURL(file);
+                bgImage.src = customBgObjectURL;
+                bgPreview.src = customBgObjectURL;
+            });
+        }
+        if (resetBgBtn) resetBgBtn.addEventListener('click', () => {
+            if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
+            customBgObjectURL = null;
+            bgImage.src = 'background.png';
+            bgPreview.src = 'img/background.png';
+        });
+
+        // --- Tab Switching Logic ---
+        creatorTabBtn.addEventListener('click', () => {
+            creatorTabBtn.classList.add('active');
+            playerTabBtn.classList.remove('active');
+            creatorView.classList.remove('hidden');
+            playerView.classList.add('hidden');
+            videoPlayer.pause();
+        });
+
+        playerTabBtn.addEventListener('click', () => {
+            playerTabBtn.classList.add('active');
+            creatorTabBtn.classList.remove('active');
+            playerView.classList.remove('hidden');
+            creatorView.classList.add('hidden');
+            audioPlayer.pause();
+            if(animationFrameId) cancelAnimationFrame(animationFrameId);
+            visualizeExportBtn.textContent = 'Visualize & Export';
+        });
+
+        // --- Universal Drag and Drop Handling ---
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            window.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // --- Creator Logic ---
+        wavDropArea.addEventListener('click', () => wavFileInput.click());
+        wavFileInput.addEventListener('change', () => handleFileSelect(wavFileInput.files));
+        wavDropArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files), false);
+        
+        visualizeExportBtn.addEventListener('click', startVisualizeExport);
+        
+        function handleFileSelect(files) {
+            const file = files[0];
+            if (!file || !file.type.startsWith('audio/wav')) {
+                statusEl.textContent = 'Please provide a .wav file.';
+                return;
+            };
+
+            const fileURL = URL.createObjectURL(file);
+            audioPlayer.src = fileURL;
+            wavFileNameEl.textContent = file.name;
+            actionButtons.classList.remove('hidden');
+            statusEl.textContent = 'File loaded. Ready to visualize & export.';
+            downloadLink.classList.add('hidden');
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '';
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            drawInitialCanvas();
+        }
+
+        function setupAudioContext() {
+            if (audioContext) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 1024; 
+            // Only create source if not already created
+            if (!source) {
+                source = audioContext.createMediaElementSource(audioPlayer);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+            }
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            smoothedDataArray = new Float32Array(bufferLength);
+        }
+
+        let currentAnalyser = null;
+        let currentProgressAudio = null; // audio element used for progress timing (audioPlayer or exportAudio)
+
+        function setCurrentAnalyser(analyserNode) {
+            currentAnalyser = analyserNode;
+            if (!currentAnalyser) {
+                bufferLength = 0;
+                dataArray = null;
+                smoothedDataArray = null;
+                return;
+            }
+            bufferLength = currentAnalyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            smoothedDataArray = new Float32Array(bufferLength);
+            for (let i = 0; i < bufferLength; i++) smoothedDataArray[i] = 0;
+        }
+
+        function renderFrame() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Background
+            if (isBgImageLoaded) {
+                canvasCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                canvasCtx.fillStyle = '#000000';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // subtle vignette for depth
+            const vignette = canvasCtx.createRadialGradient(centerX, centerY, Math.min(canvas.width, canvas.height)*0.2, centerX, centerY, Math.max(canvas.width, canvas.height));
+            vignette.addColorStop(0, 'rgba(0,0,0,0)');
+            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
+            canvasCtx.fillStyle = vignette;
+            canvasCtx.fillRect(0,0,canvas.width,canvas.height);
+
+            if (!currentAnalyser || !dataArray) {
+                drawBranding();
+                return;
+            }
+
+            currentAnalyser.getByteFrequencyData(dataArray);
+            for (let i = 0; i < bufferLength; i++) {
+                smoothedDataArray[i] = smoothedDataArray[i] * SMOOTHING_FACTOR + dataArray[i] * (1 - SMOOTHING_FACTOR);
+            }
+
+            const baseRadius = Math.max(80, Math.min(140, Math.floor(Math.min(canvas.width, canvas.height) * 0.12)));
+            const barWidth = Math.max(3, Math.floor((canvas.width / 1024) * 6));
+            const numBars = Math.floor(bufferLength * 0.38);
+
+            // make bars shorter overall by reducing usable outward space
+            const maxBarHeight = Math.max(8, Math.floor((centerY - baseRadius - 28) * 0.7));
+
+            // Calculate average bass
+            let bassAvg = 0;
+            for (let i = 0; i < 5 && i < bufferLength; i++) bassAvg += smoothedDataArray[i];
+            bassAvg = bassAvg / Math.min(5, bufferLength);
+
+            // palettes: dark and light for purple and green
+            const darkPurple = [90, 0, 140];
+            const lightPurple = [190, 120, 255];
+            const darkGreen = [0, 100, 60];
+            const lightGreen = [0, 220, 140];
+
+            // glow settings
+            canvasCtx.save();
+            canvasCtx.shadowBlur = 20;
+            canvasCtx.shadowColor = 'rgba(0,0,0,0.35)';
+
+            for (let i = 0; i < numBars; i++) {
+                // Make bars less reactive by normalizing, softly compressing peaks,
+                // and scaling down overall. This reduces jitter and sharp spikes.
+                const raw = smoothedDataArray[i];
+                // ignore tiny noise
+                if (raw < 4) continue;
+                const norm = raw / 255; // 0..1
+                // soft compression to reduce peak responsiveness (exponent > 1)
+                const compressed = Math.pow(norm, 1.25);
+                // scale relative to available space and reduce overall height
+                let barHeight = compressed * maxBarHeight * 0.82;
+                if (barHeight < 2) continue;
+                // cap to available space
+                barHeight = Math.min(barHeight, maxBarHeight);
+
+                const angle = (i / numBars) * Math.PI - (Math.PI / 2);
+                const mirroredAngle = Math.PI - angle;
+
+                // alternate between purple and green per bar
+                const isPurple = (i % 2 === 0);
+                const light = isPurple ? lightPurple : lightGreen;
+                const dark = isPurple ? darkPurple : darkGreen;
+
+                const percent = Math.min(barHeight / maxBarHeight, 1);
+                const r = Math.round(light[0] + (dark[0] - light[0]) * percent);
+                const g = Math.round(light[1] + (dark[1] - light[1]) * percent);
+                const b = Math.round(light[2] + (dark[2] - light[2]) * percent);
+
+                const drawBar = (rotation) => {
+                    canvasCtx.save();
+                    canvasCtx.translate(centerX, centerY);
+                    canvasCtx.rotate(rotation);
+
+                    // gradient from center (subtle light) to tip (darker)
+                    const gradient = canvasCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
+                    gradient.addColorStop(0, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.06)`);
+                    gradient.addColorStop(0.35, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.95)`);
+                    gradient.addColorStop(0.85, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.95)`);
+                    gradient.addColorStop(1, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.0)`);
+                    canvasCtx.fillStyle = gradient;
+
+                    // rounded rectangle with outer cap
+                    const rectHeight = Math.max(2, barHeight - (barWidth / 2));
+                    canvasCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
+                    canvasCtx.beginPath();
+                    canvasCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
+                    canvasCtx.fill();
+
+                    canvasCtx.restore();
+                };
+
+                const rotationOffset = -Math.PI / 2;
+                drawBar(angle + rotationOffset);
+                drawBar(mirroredAngle + rotationOffset);
+            }
+
+            canvasCtx.restore();
+
+            // central pulse (slightly softer)
+            const pulseRadius = Math.min(maxBarHeight * 0.75, bassAvg * 0.18 + baseRadius);
+            canvasCtx.beginPath();
+            const pulseGrad = canvasCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
+            pulseGrad.addColorStop(0, 'rgba(130, 40, 210, 0.45)');
+            pulseGrad.addColorStop(0.6, 'rgba(0, 180, 140, 0.06)');
+            pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            canvasCtx.fillStyle = pulseGrad;
+            canvasCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
+            canvasCtx.fill();
+
+            drawBranding(bassAvg);
+        }
+
+        function startRender() {
+            // Ensure any previous loops are stopped
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (animationIntervalId) clearInterval(animationIntervalId);
+
+            if (document.hidden) {
+                animationIntervalId = setInterval(renderFrame, 1000 / 30);
+            } else {
+                animationFrameId = requestAnimationFrame(function loop() {
+                    renderFrame();
+                    animationFrameId = requestAnimationFrame(loop);
+                });
+            }
+        }
+
+        function stopRender() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (animationIntervalId) {
+                clearInterval(animationIntervalId);
+                animationIntervalId = null;
+            }
+        }
+
+        function drawBranding(bassAvg = 0) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const pulse = Math.max(0, Math.min(bassAvg * 0.08, 18));
+
+            // Main title (DJ NoTag)
+            canvasCtx.save();
+            canvasCtx.fillStyle = 'rgba(255,255,255,0.95)';
+            canvasCtx.font = `700 ${34 + pulse}px Inter`;
+            canvasCtx.textAlign = 'center';
+            canvasCtx.textBaseline = 'middle';
+            canvasCtx.shadowColor = 'rgba(0,0,0,0.6)';
+            canvasCtx.shadowBlur = 10;
+            canvasCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - 6);
+            canvasCtx.shadowBlur = 0;
+
+            // Sponsor text bottom-right
+            canvasCtx.fillStyle = 'rgba(255,255,255,0.65)';
+            canvasCtx.font = '12px Inter';
+            canvasCtx.textAlign = 'right';
+            canvasCtx.textBaseline = 'bottom';
+            canvasCtx.fillText('Sponsored by Rooted Revival US', canvas.width - 12, canvas.height - 12);
+
+            canvasCtx.restore();
+        }
+
+        function drawInitialCanvas() {
+            // Draw a clean initial frame: background (if available), subtle vignette, and branding
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (isBgImageLoaded) {
+                canvasCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                canvasCtx.fillStyle = '#000000';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // subtle vignette for depth (same style as renderFrame)
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const vignette = canvasCtx.createRadialGradient(centerX, centerY, Math.min(canvas.width, canvas.height) * 0.2, centerX, centerY, Math.max(canvas.width, canvas.height));
+            vignette.addColorStop(0, 'rgba(0,0,0,0)');
+            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
+            canvasCtx.fillStyle = vignette;
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // draw the static branding
+            try { drawBranding(0); } catch (e) { /* defensive: if branding not available yet */ }
+        }
+
+        async function startVisualizeExport() {
+            if (isExporting) {
+                // Stop exporting if currently recording
+                isExporting = false;
+                visualizeExportBtn.textContent = 'Visualize & Export';
+                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                return;
+            }
+
+            if (!audioPlayer.src) {
+                statusEl.textContent = 'No audio loaded.';
+                return;
+            }
+
+            // Prepare UI
+            recordedChunks = [];
+            progressContainer.classList.remove('hidden');
+            downloadLink.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+            isExporting = true;
+            visualizeExportBtn.disabled = true;
+            statusEl.textContent = 'Preparing export...';
+
+            // Get audio duration
+            const duration = audioPlayer.duration;
+            if (!isFinite(duration) || duration <= 0) {
+                statusEl.textContent = 'Error: Could not determine audio duration.';
+                visualizeExportBtn.disabled = false;
+                isExporting = false;
+                return;
+            }
+
+            // Pause playback if running
+            if (!audioPlayer.paused) audioPlayer.pause();
+
+            // Create export audio context and analyser using a separate HTMLAudioElement to avoid playback conflicts
+            const exportAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const exportAudio = new Audio(audioPlayer.src);
+            exportAudio.crossOrigin = 'anonymous';
+            const exportSource = exportAudioContext.createMediaElementSource(exportAudio);
+            exportAnalyser = exportAudioContext.createAnalyser();
+            exportAnalyser.fftSize = 1024;
+            exportSource.connect(exportAnalyser);
+            exportSource.connect(exportAudioContext.destination);
+
+            // Prepare canvas stream and combine with export audio
+            // Create a high-res offscreen canvas for export
+            exportCanvas = document.createElement('canvas');
+            exportCanvas.width = EXPORT_WIDTH;
+            exportCanvas.height = EXPORT_HEIGHT;
+            exportCanvasCtx = exportCanvas.getContext('2d');
+
+            // If devicePixelRatio scaling is needed, it is already reflected by EXPORT_* sizes
+            const canvasStream = exportCanvas.captureStream(EXPORT_FPS);
+            const destination = exportAudioContext.createMediaStreamDestination();
+            exportSource.connect(destination);
+            const audioTrack = destination.stream.getAudioTracks()[0];
+            const combinedStream = new MediaStream([canvasStream.getVideoTracks()[0], audioTrack]);
+
+            // Hook exporter rendering loop to draw into exportCanvas at EXPORT_FPS
+            if (exportIntervalId) clearInterval(exportIntervalId);
+            exportIntervalId = setInterval(() => {
+                try { renderExportFrame(); } catch (e) { console.warn('export render error', e); }
+            }, 1000 / EXPORT_FPS);
+             // Feature-detect mime type
+            let mime = 'video/webm; codecs=vp8,opus';
+            if (!MediaRecorder.isTypeSupported(mime)) {
+                if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) mime = 'video/webm; codecs=vp9,opus';
+                else if (MediaRecorder.isTypeSupported('video/webm')) mime = 'video/webm';
+                else mime = '';
+            }
+
+            try {
+                mediaRecorder = mime ? new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 64000000 }) : new MediaRecorder(combinedStream);
+            } catch (err) {
+                console.warn('MediaRecorder init failed, falling back:', err);
+                try { mediaRecorder = new MediaRecorder(combinedStream); } catch (e) { statusEl.textContent = 'Recording not supported in this browser.'; isExporting = false; visualizeExportBtn.disabled = false; return; }
+            }
+
+            mediaRecorder.ondataavailable = (event) => { if (event.data && event.data.size > 0) recordedChunks.push(event.data); };
+            mediaRecorder.onstop = handleRecordingStop;
+            mediaRecorder.start();
+
+            // Prepare analyser arrays for export
+            exportBufferLength = exportAnalyser.frequencyBinCount;
+            exportDataArray = new Uint8Array(exportBufferLength);
+            exportSmoothedDataArray = new Float32Array(exportBufferLength);
+
+            // Use exportAudio for accurate timing/progress
+            currentProgressAudio = exportAudio;
+            setCurrentAnalyser(exportAnalyser);
+
+            // Start rendering
+            startRender();
+
+            // Progress watcher based on exportAudio.currentTime
+            const progressWatcher = setInterval(() => {
+                if (!currentProgressAudio || !isFinite(currentProgressAudio.duration)) return;
+                const progressPercent = Math.min((currentProgressAudio.currentTime / currentProgressAudio.duration) * 100, 100);
+                progressBar.style.width = `${Math.round(progressPercent)}%`;
+                progressText.textContent = `${Math.round(progressPercent)}%`;
+                if (progressPercent >= 100) {
+                    clearInterval(progressWatcher);
+                    statusEl.textContent = 'Finalizing export...';
+                }
+            }, 200);
+
+            exportAudio.onended = () => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                clearInterval(progressWatcher);
+            };
+
+            // Start playback of export audio
+            exportAudio.play().catch(err => {
+                console.warn('exportAudio play failed', err);
+            });
+        }
+
+        function handleRecordingStop() {
+            // Create a Blob from the recorded chunks
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+
+            // Download link
+            downloadLink.href = url;
+            downloadLink.download = 'visualization.webm';
+            downloadLink.classList.remove('hidden');
+
+            progressContainer.classList.add('hidden');
+            visualizeExportBtn.textContent = 'Visualize & Export';
+            isExporting = false;
+            visualizeExportBtn.disabled = false;
+
+            // Cleanup
+            setCurrentAnalyser(null);
+            if (currentProgressAudio) {
+                currentProgressAudio.pause();
+                currentProgressAudio.src = '';
+                currentProgressAudio.load();
+                currentProgressAudio = null;
+            }
+            if (mediaRecorder) {
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                mediaRecorder = null;
+            }
+        }
+
+        // --- Player Logic ---
+        videoDropArea.addEventListener('click', () => videoFileInput.click());
+        videoFileInput.addEventListener('change', () => handleVideoSelect(videoFileInput.files));
+        videoDropArea.addEventListener('drop', (e) => handleVideoSelect(e.dataTransfer.files), false);
+
+        function handleVideoSelect(files) {
+            const file = files[0];
+            if (!file) {
+                statusEl.textContent = 'No file selected.';
+                return;
+            }
+
+            const fileURL = URL.createObjectURL(file);
+            videoPlayer.src = fileURL;
+            statusEl.textContent = `Loaded: ${file.name}`;
+        }
+
+        // --- Init ---
+        drawInitialCanvas();
+
+        function renderExportFrame() {
+            if (!exportCanvasCtx || !exportAnalyser || !exportDataArray) return;
+
+            const cw = exportCanvas.width;
+            const ch = exportCanvas.height;
+            const centerX = cw / 2;
+            const centerY = ch / 2;
+
+            // Background
+            if (isBgImageLoaded) {
+                exportCanvasCtx.drawImage(bgImage, 0, 0, cw, ch);
+            } else {
+                exportCanvasCtx.fillStyle = '#000000';
+                exportCanvasCtx.fillRect(0, 0, cw, ch);
+            }
+
+            // vignette
+            const vignette = exportCanvasCtx.createRadialGradient(centerX, centerY, Math.min(cw, ch)*0.2, centerX, centerY, Math.max(cw, ch));
+            vignette.addColorStop(0, 'rgba(0,0,0,0)');
+            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
+            exportCanvasCtx.fillStyle = vignette;
+            exportCanvasCtx.fillRect(0,0,cw,ch);
+
+            exportAnalyser.getByteFrequencyData(exportDataArray);
+            for (let i = 0; i < exportBufferLength; i++) {
+                exportSmoothedDataArray[i] = exportSmoothedDataArray[i] * SMOOTHING_FACTOR + exportDataArray[i] * (1 - SMOOTHING_FACTOR);
+            }
+
+            const baseRadius = Math.max(120, Math.min(260, Math.floor(Math.min(cw, ch) * 0.08)));
+            const barWidth = Math.max(6, Math.floor((cw / 3840) * 12));
+            const numBars = Math.floor(exportBufferLength * 0.38);
+            const maxBarHeight = Math.max(12, Math.floor((centerY - baseRadius - 40) * 0.7));
+
+            // bass avg
+            let bassAvg = 0;
+            for (let i = 0; i < 5 && i < exportBufferLength; i++) bassAvg += exportSmoothedDataArray[i];
+            bassAvg = bassAvg / Math.min(5, exportBufferLength);
+
+            const darkPurple = [90, 0, 140];
+            const lightPurple = [190, 120, 255];
+            const darkGreen = [0, 100, 60];
+            const lightGreen = [0, 220, 140];
+
+            exportCanvasCtx.save();
+            exportCanvasCtx.shadowBlur = 28;
+            exportCanvasCtx.shadowColor = 'rgba(0,0,0,0.35)';
+
+            for (let i = 0; i < numBars; i++) {
+                const raw = exportSmoothedDataArray[i];
+                if (raw < 4) continue;
+                const norm = raw / 255;
+                const compressed = Math.pow(norm, 1.25);
+                let barHeight = compressed * maxBarHeight * 0.82;
+                if (barHeight < 2) continue;
+                barHeight = Math.min(barHeight, maxBarHeight);
+
+                const angle = (i / numBars) * Math.PI - (Math.PI / 2);
+                const mirroredAngle = Math.PI - angle;
+                const isPurple = (i % 2 === 0);
+                const light = isPurple ? lightPurple : lightGreen;
+                const dark = isPurple ? darkPurple : darkGreen;
+                const percent = Math.min(barHeight / maxBarHeight, 1);
+
+                const drawBar = (rotation) => {
+                    exportCanvasCtx.save();
+                    exportCanvasCtx.translate(centerX, centerY);
+                    exportCanvasCtx.rotate(rotation);
+
+                    const gradient = exportCanvasCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
+                    gradient.addColorStop(0, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.06)`);
+                    gradient.addColorStop(0.35, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.95)`);
+                    gradient.addColorStop(0.85, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.95)`);
+                    gradient.addColorStop(1, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.0)`);
+                    exportCanvasCtx.fillStyle = gradient;
+
+                    const rectHeight = Math.max(2, barHeight - (barWidth / 2));
+                    exportCanvasCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
+                    exportCanvasCtx.beginPath();
+                    exportCanvasCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
+                    exportCanvasCtx.fill();
+                    exportCanvasCtx.restore();
+                };
+
+                const rotationOffset = -Math.PI / 2;
+                drawBar(angle + rotationOffset);
+                drawBar(mirroredAngle + rotationOffset);
+            }
+
+            exportCanvasCtx.restore();
+
+            // central pulse
+            const pulseRadius = Math.min(maxBarHeight * 0.75, bassAvg * 0.18 + baseRadius);
+            exportCanvasCtx.beginPath();
+            const pulseGrad = exportCanvasCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
+            pulseGrad.addColorStop(0, 'rgba(130, 40, 210, 0.45)');
+            pulseGrad.addColorStop(0.6, 'rgba(0, 180, 140, 0.06)');
+            pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            exportCanvasCtx.fillStyle = pulseGrad;
+            exportCanvasCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
+            exportCanvasCtx.fill();
+
+            // branding scaled for export
+            try { 
+                exportCanvasCtx.save();
+                exportCanvasCtx.fillStyle = 'rgba(255,255,255,0.95)';
+                exportCanvasCtx.font = `700 ${Math.floor(48 + Math.min(24, bassAvg * 0.08))}px Inter`;
+                exportCanvasCtx.textAlign = 'center';
+                exportCanvasCtx.textBaseline = 'middle';
+                exportCanvasCtx.shadowColor = 'rgba(0,0,0,0.6)';
+                exportCanvasCtx.shadowBlur = 14;
+                exportCanvasCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - 10);
+                exportCanvasCtx.shadowBlur = 0;
+                exportCanvasCtx.fillStyle = 'rgba(255,255,255,0.65)';
+                exportCanvasCtx.font = '20px Inter';
+                exportCanvasCtx.textAlign = 'right';
+                exportCanvasCtx.textBaseline = 'bottom';
+                exportCanvasCtx.fillText('Sponsored by Rooted Revival US', cw - 18, ch - 18);
+                exportCanvasCtx.restore();
+            } catch (e) { /* ignore */ }
+        }
+
+        // --- Background and Branding Controls ---
+        chooseBgBtn.addEventListener('click', () => bgFileInput.click());
+        bgFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('image/')) {
+                statusEl.textContent = 'Please select a valid image file.';
+                return;
+            }
+            const fileURL = URL.createObjectURL(file);
+            bgImage.src = fileURL;
+            bgPreview.src = fileURL;
+            statusEl.textContent = 'Background image loaded.';
+        });
+
+        resetBgBtn.addEventListener('click', () => {
+            bgImage.src = 'background.png';
+            bgPreview.src = 'img/background.png';
+            statusEl.textContent = 'Background image reset to default.';
+        });
+
+        clearNameBtn.addEventListener('click', () => {
+            brandingNameInput.value = 'DJ NoTag';
+            statusEl.textContent = 'Branding name reset to default.';
+        });
+    </script>
+</body>
+</html>
+
+
