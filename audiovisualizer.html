@@ -47,65 +47,11 @@
     .bg-preview{width:84px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(31,75,47,0.08)}
   </style>
 </head>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Home - Plant Families Explorer</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&amp;family=open+sans:wght@400;600&amp;family=playfair+display:ital@0;1&amp;display=swap" rel="stylesheet"/>
-<link href="css/styles.css" rel="stylesheet"/>
-<link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
-</head>
 <body>
-<header>
-<div class="container">
-<div class="logo">
-<a href="index.html">
-<img alt="Plant Families Explorer Logo" src="img/logo.svg"/>
-<span>Plant Families Explorer</span>
-</a>
-</div>
-<nav>
-<button aria-label="Toggle menu" class="mobile-menu-toggle">
-<span></span>
-<span></span>
-<span></span>
-</button>
-<ul class="main-nav">
-<li><a class="active" href="/index.html">Home</a></li>
-<li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
-<li><a href="/families.html">Plant Families</a></li>
-<li><a href="/identification.html">Field Identification</a></li>
-<li><a href="/about.html">About</a></li>
-<li><a href="/audiovisualizer.html">Audiovisualizer</a></li>
-</ul>
-</nav>
-<form class="search-bar" onsubmit="event.preventDefault(); performSearch(document.querySelector('.search-bar input').value.trim().toLowerCase());">
-<input placeholder="Search families..." type="text"/>
-<button type="submit">Search</button>
-</form>
-</div>
-
-<ul class="main-nav mobile-menu" style="display: none;">
-<li><a href="index.html">Home</a></li>
-<li><a href="phylogenetic-tree.html">Phylogenetic Tree</a></li>
-<li><a href="families.html">Plant Families</a></li>
-<li><a class="active" href="identification.html">Field Identification</a></li>
-<li><a href="about.html">About</a></li>
-<li>
-<div class="search-bar" style="display: flex; margin: 1rem auto; width: 90%;">
-<input placeholder="Search plant families..." type="text"/>
-<button aria-label="Search" type="submit">
-<svg height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path><path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z" fill="currentColor"></path></svg>
-</button>
-</div>
-</li>
-</ul>
-</header>
-<body>
+  <div class="container">
+    <header class="site">
     </header>
+
     <div class="layout">
       <main class="card">
         <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
