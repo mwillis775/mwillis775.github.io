@@ -1,823 +1,920 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audiovisualizer - Plant Families Explorer</title>
-    <link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&family=open+sans:wght@400;600&display=swap" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
-    <link href="img/logo.svg" rel="icon" type="image/svg+xml">
-    <style>
-        /* Small theme adjustments for the audiovisualizer to match the site */
-        /* Make the tan background green and use a darker green for accents */
-        body { font-family: 'Open Sans', sans-serif; background-color: #cfead7; color: #213926; }
-        /* Center all text inside the audiovisualizer container */
-        #avContainer, #avContainer * { text-align: center; }
-        /* Controls for editable branding and background */
-        #avControls { display:flex; flex-direction:column; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
-        #avControls .control-row { display:flex; gap:0.5rem; align-items:center; justify-content:center; flex-wrap:wrap; }
-        #brandingNameInput { padding:8px 10px; border-radius:6px; border:1px solid rgba(31,75,47,0.15); min-width:220px; }
-        #bgFileInput { display:none; }
-        .btn-small { background:#1f4b2f; color:#f4f1e9; border:none; padding:8px 10px; border-radius:6px; cursor:pointer; }
-        .bg-preview { max-width:140px; max-height:60px; object-fit:cover; border-radius:6px; border:1px solid rgba(31,75,47,0.12); }
-        .tab-btn {
-            padding: 8px 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #f4f1e9;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        /* Darker green accent for active tabs and primary buttons */
-        .tab-btn.active {
-            background-color: #1f4b2f; /* darker green */
-            color: #f4f1e9;
-        }
-        .tab-btn:not(.active):hover { background-color: rgba(31,75,47,0.08); }
-        .file-drop-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 160px;
-            cursor: pointer;
-            text-align: center;
-            color: #1f4b2f; /* theme dark green text */
-            border: 2px dashed rgba(31,75,47,0.18);
-            background: rgba(31,75,47,0.03);
-            border-radius: 8px;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
-        }
-        .file-drop-area:hover { background: rgba(31,75,47,0.05); border-color: rgba(31,75,47,0.28); }
-        .hidden { display: none !important; }
-        canvas#visualizerCanvas, video#videoPlayer {
-            background: #000;
-            border-radius: 8px;
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            box-shadow: 0 6px 18px rgba(31,75,47,0.12);
-        }
-        #creatorControls, #playerView { padding-top: 0.75rem; }
-        /* Align download link with site .btn style if present */
-        #downloadLink { text-decoration: none; }
-        /* Use existing site button styles when present */
-        #visualizeExportBtn { background-color: #1f4b2f; color: #f4f1e9; border: none; padding: 10px 16px; border-radius: 6px; }
-        #visualizeExportBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-        #progressContainer { align-items: center; gap: 0.75rem; }
-        #progressBar { background: #1f4b2f; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Audiovisualizer — Plant Families Explorer</title>
 
-        /* --- NEW STYLES FOR VISUALIZER SETTINGS --- */
-        #visualizerSettings {
-            background: rgba(31, 75, 47, 0.04);
-            border: 1px solid rgba(31, 75, 47, 0.1);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1.5rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-        .settings-header {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1f4b2f;
-            margin-bottom: 0.5rem;
-            text-align: left;
-            width: 100%;
-        }
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.25rem;
-        }
-        .control-group label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #213926;
-            text-align: left;
-        }
-        .control-group input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
-        .control-group input[type="color"] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 50px;
-            height: 30px;
-            background-color: transparent;
-            border: 1px solid rgba(31,75,47,0.15);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .control-group input[type="color"]::-webkit-color-swatch {
-            border-radius: 3px;
-            border: none;
-        }
-        .color-picker-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
 
-        /* Small responsive tweaks */
-        @media (min-width: 768px) {
-            .file-drop-area { height: 200px; }
-        }
-    </style>
+  <style>
+    :root{
+      --bg:#cfead7;
+      --ink:#213926;
+      --accent:#1f4b2f;
+      --muted: rgba(33,57,38,0.65);
+      --card-bg: rgba(255,255,255,0.75);
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    body{background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; padding:20px; box-sizing:border-box;}
+    .container{max-width:1180px;margin:0 auto;}
+    header.site{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+    header.site .logo{display:flex;gap:10px;align-items:center}
+    header.site h1{margin:0;font-family:Montserrat, Inter;font-weight:700;font-size:20px}
+    .layout{display:grid;grid-template-columns: 1fr 360px; gap:18px;}
+    @media (max-width:950px){ .layout{grid-template-columns:1fr;} .right-col{order:2} }
+    .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(31,75,47,0.08);overflow:hidden;}
+    canvas{width:100%;height:auto;border-radius:10px;background:#000;display:block;}
+    .file-drop-area{border:2px dashed rgba(31,75,47,0.18);background:rgba(31,75,47,0.03);padding:14px;border-radius:10px;text-align:center;cursor:pointer;}
+    .controls{display:flex;flex-direction:column;gap:10px;}
+    .control-row{display:flex;gap:8px;align-items:center;}
+    label{font-weight:600;font-size:13px;color:var(--muted);min-width:100px}
+    input[type="range"]{width:100%}
+    input[type="text"], select{padding:8px;border-radius:8px;border:1px solid rgba(33,57,38,0.12);min-width:0}
+    button{background:var(--accent);color:#f4f1e9;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+    button.secondary{background:transparent;color:var(--accent);border:1px solid rgba(31,75,47,0.12)}
+    .small{padding:6px 8px;font-size:13px}
+    .muted{color:#406147;font-size:13px}
+    .row{display:flex;gap:8px;align-items:center}
+    .preset-list{display:flex;gap:6px;flex-wrap:wrap}
+    .preset-pill{padding:6px 10px;border-radius:999px;background:rgba(31,75,47,0.08);cursor:pointer;font-size:13px}
+    .status{font-size:13px;color:#33523d}
+    .hidden{display:none}
+    .title{font-family:Montserrat;font-weight:700;font-size:18px;margin-bottom:6px}
+    .sub{font-size:13px;color:#475d4f;margin-bottom:8px}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+    .color-row{display:flex;gap:8px;align-items:center}
+    .bg-preview{width:84px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(31,75,47,0.08)}
+  </style>
+</head>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home - Plant Families Explorer</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&amp;family=open+sans:wght@400;600&amp;family=playfair+display:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<link href="css/styles.css" rel="stylesheet"/>
+<link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="index.html">
-                    <img alt="Plant Families Explorer Logo" src="img/logo.svg"/>
-                    <span>Plant Families Explorer</span>
-                </a>
-            </div>
-            <nav>
-                <button aria-label="Toggle menu" class="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul class="main-nav">
-                    <li><a href="/index.html">Home</a></li>
-                    <li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
-                    <li><a href="/families.html">Plant Families</a></li>
-                    <li><a href="/identification.html">Field Identification</a></li>
-                    <li><a href="/about.html">About</a></li>
-                    <li><a class="active" href="/audiovisualizer.html">Audiovisualizer</a></li>
-                </ul>
-            </nav>
-            <form class="search-bar" onsubmit="event.preventDefault(); performSearch(document.querySelector('.search-bar input').value.trim().toLowerCase());">
-                <input placeholder="Search families..." type="text"/>
-                <button type="submit">Search</button>
-            </form>
+<header>
+<div class="container">
+<div class="logo">
+<a href="index.html">
+<img alt="Plant Families Explorer Logo" src="img/logo.svg"/>
+<span>Plant Families Explorer</span>
+</a>
+</div>
+<nav>
+<button aria-label="Toggle menu" class="mobile-menu-toggle">
+<span></span>
+<span></span>
+<span></span>
+</button>
+<ul class="main-nav">
+<li><a class="active" href="/index.html">Home</a></li>
+<li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
+<li><a href="/families.html">Plant Families</a></li>
+<li><a href="/identification.html">Field Identification</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/audiovisualizer.html">Audiovisualizer</a></li>
+</ul>
+</nav>
+<form class="search-bar" onsubmit="event.preventDefault(); performSearch(document.querySelector('.search-bar input').value.trim().toLowerCase());">
+<input placeholder="Search families..." type="text"/>
+<button type="submit">Search</button>
+</form>
+</div>
+
+<ul class="main-nav mobile-menu" style="display: none;">
+<li><a href="index.html">Home</a></li>
+<li><a href="phylogenetic-tree.html">Phylogenetic Tree</a></li>
+<li><a href="families.html">Plant Families</a></li>
+<li><a class="active" href="identification.html">Field Identification</a></li>
+<li><a href="about.html">About</a></li>
+<li>
+<div class="search-bar" style="display: flex; margin: 1rem auto; width: 90%;">
+<input placeholder="Search plant families..." type="text"/>
+<button aria-label="Search" type="submit">
+<svg height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path><path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z" fill="currentColor"></path></svg>
+</button>
+</div>
+</li>
+</ul>
+</header>
+<body>
+  <div class="container">
+    <header class="site">
+      <div class="logo">
+        <img src="img/logo.svg" alt="logo" style="width:42px;height:42px" />
+        <div>
+          <h1>Plant Families Explorer — Audiovisualizer</h1>
+          <div class="muted">Customize visuals live and export high-quality video</div>
         </div>
+      </div>
     </header>
 
-    <div id="avContainer" class="w-full max-w-4xl space-y-6">
-        <div id="avControls">
-            <div class="control-row">
-                <label for="brandingNameInput" style="font-weight:600;">Visualizer Name</label>
-                <input id="brandingNameInput" type="text" placeholder="DJ NoTag" value="DJ NoTag">
-                <button id="clearNameBtn" class="btn-small" type="button">Reset</button>
-            </div>
-            <div class="control-row">
-                <label style="font-weight:600;">Background</label>
-                <button id="chooseBgBtn" class="btn-small" type="button">Choose Image</button>
-                <input id="bgFileInput" type="file" accept="image/*">
-                <button id="resetBgBtn" class="btn-small" type="button">Reset Background</button>
-                <img id="bgPreview" class="bg-preview" alt="bg preview" src="img/background.png">
-            </div>
+    <div class="layout">
+      <main class="card">
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+          <div>
+            <div class="title">Audiovisualizer Studio</div>
+            <div class="sub">Drag a .wav/.mp3 below, tweak settings, then export.</div>
+          </div>
+          <div class="row">
+            <button id="startBtn" class="small">Start</button>
+            <button id="stopBtn" class="small secondary" style="display:none">Stop</button>
+            <button id="exportBtn" class="small">Export</button>
+            <a id="downloadLink" class="small" style="display:none;margin-left:8px;background:transparent;color:var(--accent);text-decoration:none;border:none">Download</a>
+          </div>
         </div>
 
-        <header>
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Audiovisualizer Suite</h1>
-            <p class="text-lg text-gray-400 mt-2">Create audiovisualizers or play your video files.</p>
-        </header>
-
-        <div class="flex justify-center space-x-2 rounded-lg bg-gray-800 p-1">
-            <button id="creatorTabBtn" class="tab-btn active">Creator</button>
-            <button id="playerTabBtn" class="tab-btn">Player</button>
+        <div style="margin-top:12px">
+          <canvas id="visualizerCanvas" width="1024" height="576"></canvas>
         </div>
 
-        <main>
-            <div id="creatorView" class="space-y-6">
-                <canvas id="visualizerCanvas" width="1024" height="576" class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></canvas>
-                <audio id="audioPlayer" controls class="hidden"></audio>
-
-                <div id="creatorControls" class="space-y-4">
-                    <div id="visualizerSettings">
-                        <div class="settings-header">Visualizer Settings</div>
-                        <div class="settings-grid">
-                            <div class="control-group">
-                                <label for="reactivitySlider">Reactivity (Higher = Smoother)</label>
-                                <input type="range" id="reactivitySlider" min="80" max="99" value="94">
-                            </div>
-                            <div class="control-group">
-                                <label for="barCountSlider">Bar Count</label>
-                                <input type="range" id="barCountSlider" min="10" max="70" value="38">
-                            </div>
-                            <div class="control-group">
-                                <label for="barWidthSlider">Bar Width</label>
-                                <input type="range" id="barWidthSlider" min="1" max="15" value="6">
-                            </div>
-                             <div class="control-group">
-                                <label for="radiusSlider">Inner Radius</label>
-                                <input type="range" id="radiusSlider" min="10" max="200" value="100">
-                            </div>
-                        </div>
-
-                        <div class="settings-header" style="margin-top: 1rem;">Colors</div>
-                        <div class="settings-grid">
-                            <div class="control-group">
-                                <label>Bar Color 1 (Purple)</label>
-                                <div class="color-picker-group">
-                                    <input type="color" id="color1Start" value="#BE78FF">
-                                    <span>→</span>
-                                    <input type="color" id="color1End" value="#5A008C">
-                                </div>
-                            </div>
-                             <div class="control-group">
-                                <label>Bar Color 2 (Green)</label>
-                                <div class="color-picker-group">
-                                    <input type="color" id="color2Start" value="#00DC8C">
-                                    <span>→</span>
-                                    <input type="color" id="color2End" value="#00643C">
-                                </div>
-                            </div>
-                             <div class="control-group">
-                                <label>Center Pulse</label>
-                                <div class="color-picker-group">
-                                    <input type="color" id="pulseInner" value="#8228D2">
-                                    <span>→</span>
-                                    <input type="color" id="pulseOuter" value="#00B48C">
-                                </div>
-                            </div>
-                             <div class="control-group" style="align-items: center; justify-content: center;">
-                                 <button id="resetVisualsBtn" class="btn-small" type="button" style="margin-top: 1rem;">Reset Visuals</button>
-                             </div>
-                        </div>
-                    </div>
-
-
-                    <div id="wav-drop-area" class="file-drop-area p-6">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                        <p class="font-semibold text-indigo-400">Drag & drop a .wav or .mp3 file here</p>
-                        <p class="text-xs">or click to select</p>
-                        <p id="wavFileName" class="mt-2 text-sm text-gray-300"></p>
-                    </div>
-                    <input type="file" id="wavFileInput" accept=".wav,.mp3" class="hidden">
-                </div>
-
-                <div id="actionButtons" class="flex items-center justify-center gap-4 hidden">
-                    <button id="visualizeExportBtn" class="px-6 py-3 text-sm font-semibold text-white uppercase tracking-wider rounded-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">Visualize & Export</button>
-                </div>
-                <div id="progressContainer" class="w-full flex items-center justify-center mt-4 hidden">
-                    <div class="w-2/3 bg-gray-700 rounded-full h-4">
-                        <div id="progressBar" class="bg-indigo-500 h-4 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <span id="progressText" class="ml-4 text-gray-300 text-sm"></span>
-                </div>
-
-                <div class="h-12 flex items-center justify-center">
-                     <p id="status" class="text-gray-400"></p>
-                     <a id="downloadLink" class="px-6 py-3 text-sm font-semibold text-white uppercase tracking-wider rounded-lg shadow-md transition-all duration-300 bg-emerald-600 hover:bg-emerald-700 hidden">Download Video</a>
-                </div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 220px;gap:12px">
+          <div>
+            <div id="wav-drop-area" class="file-drop-area">
+              <div style="font-weight:700">Drop audio (.wav/.mp3) or click to choose</div>
+              <div id="wavFileName" class="muted" style="margin-top:6px"></div>
             </div>
+            <input id="wavFileInput" type="file" accept="audio/*" class="hidden" />
+          </div>
 
-            <div id="playerView" class="hidden space-y-6">
-                <video id="videoPlayer" controls class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></video>
-                 <div id="video-drop-area" class="file-drop-area p-6">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                    <p class="font-semibold text-indigo-400">Drag & drop a video file here</p>
-                    <p class="text-xs">or click to select (.mp4, .webm, .ogg)</p>
-                </div>
-                <input type="file" id="videoFileInput" accept="video/*" class="hidden">
+          <div>
+            <div class="card" style="padding:10px">
+              <div style="font-weight:700;margin-bottom:6px">Player</div>
+              <audio id="audioPlayer" controls style="width:100%"></audio>
+              <div style="margin-top:8px" class="muted">Use the player to preview audio during editing.</div>
             </div>
-        </main>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="status" id="status">Ready.</div>
+          <div style="flex:1"></div>
+          <div id="progressWrap" style="min-width:160px;display:none;align-items:center">
+            <div style="background:#e6efe5;border-radius:999px;height:10px;overflow:hidden;width:200px">
+              <div id="progressBar" style="height:10px;width:0%;background:var(--accent)"></div>
+            </div>
+            <div style="margin-left:8px" id="progressText" class="muted">0%</div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="right-col">
+        <div class="card controls">
+          <div class="title">Visualizer Settings</div>
+          <div class="sub">Live controls — changes update instantly.</div>
+
+          <div class="control-row">
+            <label for="brandingName">Name</label>
+            <input id="brandingName" type="text" value="DJ NoTag" />
+          </div>
+
+          <div class="control-row">
+            <label for="reactivity">Reactivity</label>
+            <input id="reactivity" type="range" min="0" max="1" step="0.01" value="0.6" />
+          </div>
+
+          <div class="control-row">
+            <label for="baseRadius">Base Size</label>
+            <input id="baseRadius" type="range" min="40" max="320" step="1" value="120" />
+          </div>
+
+          <div class="control-row">
+            <label for="barWidth">Bar Width</label>
+            <input id="barWidth" type="range" min="2" max="30" step="1" value="6" />
+          </div>
+
+          <div class="control-row">
+            <label for="barCount">Bar Count</label>
+            <input id="barCount" type="range" min="8" max="512" step="1" value="128" />
+          </div>
+
+          <div class="control-row">
+            <label>Bar Colors</label>
+            <div class="color-row">
+              <input id="colorA" type="color" value="#c36cf0" />
+              <input id="colorB" type="color" value="#00e08a" />
+            </div>
+          </div>
+          
+          <div class="control-row">
+            <label for="textColor">Text Color</label>
+            <input id="textColor" type="color" value="#ffffff" />
+          </div>
+
+          <div class="control-row">
+            <label>Glow</label>
+            <input id="glow" type="checkbox" checked />
+          </div>
+
+          <div class="control-row">
+            <label>Background</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button id="chooseBgBtn" class="small secondary">Choose</button>
+              <input id="bgFileInput" type="file" accept="image/*" class="hidden" />
+              <img id="bgPreview" class="bg-preview" src="background.png" alt="background preview" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
+            <button id="savePreset" class="small">Save Preset</button>
+            <button id="loadPreset" class="small secondary">Load Preset</button>
+            <select id="presetSelect" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(31,75,47,0.08)">
+              <option value="">— choose preset —</option>
+            </select>
+          </div>
+
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="resetAll" class="small secondary">Reset</button>
+            <button id="randomize" class="small">Randomize</button>
+          </div>
+
+          <div style="margin-top:10px;font-size:12px;color:#334d3a">
+            Pro tip: Increase <strong>Reactivity</strong> for snappier bars. Increase <strong>Base Size</strong> to pull bars outward.
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <script>
-        // DOM Elements
-        const creatorTabBtn = document.getElementById('creatorTabBtn');
-        const playerTabBtn = document.getElementById('playerTabBtn');
-        const creatorView = document.getElementById('creatorView');
-        const playerView = document.getElementById('playerView');
-        // New editable controls
-        const brandingNameInput = document.getElementById('brandingNameInput');
-        const clearNameBtn = document.getElementById('clearNameBtn');
-        const chooseBgBtn = document.getElementById('chooseBgBtn');
-        const bgFileInput = document.getElementById('bgFileInput');
-        const resetBgBtn = document.getElementById('resetBgBtn');
-        const bgPreview = document.getElementById('bgPreview');
+    <footer>
+      Built for Rooted Revival — audiovisual experiments. Exported videos use WebM (VP8/Opus) when available.
+    </footer>
+  </div>
 
-        // Creator elements
-        const wavFileInput = document.getElementById('wavFileInput');
-        const wavDropArea = document.getElementById('wav-drop-area');
-        const wavFileNameEl = document.getElementById('wavFileName');
-        const audioPlayer = document.getElementById('audioPlayer');
-        const canvas = document.getElementById('visualizerCanvas');
-        const visualizeExportBtn = document.getElementById('visualizeExportBtn');
-        const actionButtons = document.getElementById('actionButtons');
-        const statusEl = document.getElementById('status');
-        const downloadLink = document.getElementById('downloadLink');
-        const canvasCtx = canvas.getContext('2d');
-        // current branding and background state
-        let brandingName = (brandingNameInput && brandingNameInput.value) ? brandingNameInput.value : 'DJ NoTag';
-        let customBgObjectURL = null;
+  <script>
+  /***************************************************************
+   * Audiovisualizer v1.1
+   * Full-page implementation with live graphical controls,
+   * background upload, presets, and export.
+   * MODS: Visible export, separate text color, fixed BG path.
+   ***************************************************************/
 
-        // Player elements
-        const videoFileInput = document.getElementById('videoFileInput');
-        const videoDropArea = document.getElementById('video-drop-area');
-        const videoPlayer = document.getElementById('videoPlayer');
+  // DOM
+  const canvas = document.getElementById('visualizerCanvas');
+  const ctx = canvas.getContext('2d');
+  const audioPlayer = document.getElementById('audioPlayer');
+  const wavDropArea = document.getElementById('wav-drop-area');
+  const wavFileInput = document.getElementById('wavFileInput');
+  const wavFileName = document.getElementById('wavFileName');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const downloadLink = document.getElementById('downloadLink');
+  const statusEl = document.getElementById('status');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
 
-        // Progress elements
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
+  // Controls
+  const brandingNameEl = document.getElementById('brandingName');
+  const reactivityEl = document.getElementById('reactivity');
+  const baseRadiusEl = document.getElementById('baseRadius');
+  const barWidthEl = document.getElementById('barWidth');
+  const barCountEl = document.getElementById('barCount');
+  const colorAEl = document.getElementById('colorA');
+  const colorBEl = document.getElementById('colorB');
+  const textColorEl = document.getElementById('textColor');
+  const glowEl = document.getElementById('glow');
+  const chooseBgBtn = document.getElementById('chooseBgBtn');
+  const bgFileInput = document.getElementById('bgFileInput');
+  const bgPreview = document.getElementById('bgPreview');
+  const savePresetBtn = document.getElementById('savePreset');
+  const loadPresetBtn = document.getElementById('loadPreset');
+  const presetSelect = document.getElementById('presetSelect');
+  const resetAllBtn = document.getElementById('resetAll');
+  const randomizeBtn = document.getElementById('randomize');
 
-        // --- NEW: Visualizer settings elements ---
-        const vizSettingsControls = {
-            reactivity: document.getElementById('reactivitySlider'),
-            barCount: document.getElementById('barCountSlider'),
-            barWidth: document.getElementById('barWidthSlider'),
-            radius: document.getElementById('radiusSlider'),
-            color1Start: document.getElementById('color1Start'),
-            color1End: document.getElementById('color1End'),
-            color2Start: document.getElementById('color2Start'),
-            color2End: document.getElementById('color2End'),
-            pulseInner: document.getElementById('pulseInner'),
-            pulseOuter: document.getElementById('pulseOuter'),
-            resetBtn: document.getElementById('resetVisualsBtn'),
+  // Canvas size helper (match CSS size but use internal resolution)
+  function resizeCanvas() {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const styleW = canvas.clientWidth;
+    const styleH = Math.max(200, canvas.clientWidth * 9/16); // keep 16:9-ish
+    canvas.width = Math.floor(styleW * ratio);
+    canvas.height = Math.floor(styleH * ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+  }
+  window.addEventListener('resize', () => { resizeCanvas(); drawInitial(); });
+  resizeCanvas();
+
+  // Background image handling
+  const bgImage = new Image();
+  let customBgURL = null;
+  let bgLoaded = false;
+  bgImage.onload = () => { bgLoaded = true; drawInitial(); };
+  bgImage.onerror = () => { bgLoaded = false; console.warn('bg load failed'); };
+
+  // Default background (local file expected in same folder)
+  bgImage.src = 'background.png';
+
+  chooseBgBtn.addEventListener('click', () => bgFileInput.click());
+  bgFileInput.addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    if(customBgURL) URL.revokeObjectURL(customBgURL);
+    customBgURL = URL.createObjectURL(f);
+    bgImage.src = customBgURL;
+    bgPreview.src = customBgURL;
+    status('Background loaded');
+  });
+
+  // Audio input handlers
+  wavDropArea.addEventListener('click', () => wavFileInput.click());
+  wavFileInput.addEventListener('change', (e) => handleAudioFiles(e.target.files));
+  wavDropArea.addEventListener('dragover', e => { e.preventDefault(); wavDropArea.style.opacity = 0.9; });
+  wavDropArea.addEventListener('dragleave', e => { e.preventDefault(); wavDropArea.style.opacity = 1; });
+  wavDropArea.addEventListener('drop', (e) => { e.preventDefault(); wavDropArea.style.opacity = 1; handleAudioFiles(e.dataTransfer.files); });
+
+  function handleAudioFiles(files) {
+    const f = files[0];
+    if(!f) return;
+    const url = URL.createObjectURL(f);
+    audioPlayer.src = url;
+    wavFileName.textContent = f.name;
+    status('Audio loaded — ready');
+    // autoplay preview off by default
+  }
+
+  // Audio context + analyser
+  let audioCtx = null;
+  let analyser = null;
+  let sourceNode = null;
+  let dataArray = null;
+  let bufferLength = 0;
+  let smoothingArray = null;
+
+  function ensureAudioContext() {
+    if(audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    smoothingArray = new Float32Array(bufferLength);
+  }
+
+  // Visual config (keeps UI and drawing code in sync)
+  const config = {
+    reactivity: parseFloat(reactivityEl.value), // 0..1 (higher => more reactive)
+    baseRadius: parseInt(baseRadiusEl.value,10),
+    barWidth: parseInt(barWidthEl.value,10),
+    barCount: parseInt(barCountEl.value,10),
+    colorA: colorAEl.value,
+    colorB: colorBEl.value,
+    textColor: textColorEl.value,
+    glow: glowEl.checked,
+    branding: brandingNameEl.value
+  };
+
+  // Map reactivity to smoothing factor used in exponential smoothing
+  function smoothingFromReactivity(r) {
+    // r = 0 => very smooth (less reactive) ; r = 1 => instant (very reactive)
+    // smoothing near 1 => less reactive. We'll map r -> smoothing in range [0.02 .. 0.96]
+    return 0.96 - (r * 0.94); // r=0 -> 0.96 (very smooth), r=1 -> 0.02 (fast)
+  }
+
+  // Bind control inputs -> config
+  function bindControls() {
+    reactivityEl.addEventListener('input', () => { config.reactivity = parseFloat(reactivityEl.value); });
+    baseRadiusEl.addEventListener('input', () => { config.baseRadius = parseInt(baseRadiusEl.value,10); });
+    barWidthEl.addEventListener('input', () => { config.barWidth = parseInt(barWidthEl.value,10); });
+    barCountEl.addEventListener('input', () => { config.barCount = parseInt(barCountEl.value,10); });
+    colorAEl.addEventListener('input', () => { config.colorA = colorAEl.value; });
+    colorBEl.addEventListener('input', () => { config.colorB = colorBEl.value; });
+    textColorEl.addEventListener('input', () => { config.textColor = textColorEl.value; });
+    glowEl.addEventListener('change', () => { config.glow = glowEl.checked; });
+    brandingNameEl.addEventListener('input', () => { config.branding = brandingNameEl.value || 'DJ NoTag'; drawInitial(); });
+
+    // Presets
+    savePresetBtn.addEventListener('click', savePreset);
+    loadPresetBtn.addEventListener('click', loadSelectedPreset);
+    presetSelect.addEventListener('change', () => { /* nothing immediate */ });
+    resetAllBtn.addEventListener('click', resetToDefaults);
+    randomizeBtn.addEventListener('click', randomizeConfig);
+  }
+  bindControls();
+
+  // Presets via localStorage
+  function presetKeyList(){ return JSON.parse(localStorage.getItem('av_presets:list') || '[]'); }
+  function savePreset(){
+    const name = prompt('Preset name:');
+    if(!name) return;
+    const item = {
+      name,
+      timestamp:Date.now(),
+      config: {
+        reactivity: config.reactivity,
+        baseRadius: config.baseRadius,
+        barWidth: config.barWidth,
+        barCount: config.barCount,
+        colorA: config.colorA,
+        colorB: config.colorB,
+        textColor: config.textColor,
+        glow: config.glow,
+        branding: config.branding
+      }
+    };
+    const list = presetKeyList();
+    list.push(item);
+    localStorage.setItem('av_presets:list', JSON.stringify(list));
+    rebuildPresetSelect();
+    status('Preset saved: ' + name);
+  }
+  function rebuildPresetSelect(){
+    const list = presetKeyList();
+    presetSelect.innerHTML = '<option value="">— choose preset —</option>';
+    list.slice().reverse().forEach((p, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx; // index in reversed list
+      opt.textContent = `${p.name} (${new Date(p.timestamp).toLocaleString()})`;
+      presetSelect.appendChild(opt);
+    });
+  }
+  function loadSelectedPreset(){
+    const idxStr = presetSelect.value;
+    if(!idxStr){ alert('Pick a preset first'); return; }
+    const list = presetKeyList();
+    const inverted = list.slice().reverse();
+    const p = inverted[parseInt(idxStr,10)];
+    if(!p) { alert('Preset not found'); return; }
+    // Apply
+    config.reactivity = p.config.reactivity; reactivityEl.value = config.reactivity;
+    config.baseRadius = p.config.baseRadius; baseRadiusEl.value = config.baseRadius;
+    config.barWidth = p.config.barWidth; barWidthEl.value = config.barWidth;
+    config.barCount = p.config.barCount; barCountEl.value = config.barCount;
+    config.colorA = p.config.colorA; colorAEl.value = config.colorA;
+    config.colorB = p.config.colorB; colorBEl.value = config.colorB;
+    config.textColor = p.config.textColor || '#ffffff'; textColorEl.value = config.textColor;
+    config.glow = p.config.glow; glowEl.checked = config.glow;
+    config.branding = p.config.branding; brandingNameEl.value = config.branding;
+    drawInitial();
+    status('Preset loaded: ' + p.name);
+  }
+  rebuildPresetSelect();
+
+  function resetToDefaults(){
+    reactivityEl.value = 0.6; config.reactivity = 0.6;
+    baseRadiusEl.value = 120; config.baseRadius = 120;
+    barWidthEl.value = 6; config.barWidth = 6;
+    barCountEl.value = 128; config.barCount = 128;
+    colorAEl.value = '#c36cf0'; config.colorA = '#c36cf0';
+    colorBEl.value = '#00e08a'; config.colorB = '#00e08a';
+    textColorEl.value = '#ffffff'; config.textColor = '#ffffff';
+    glowEl.checked = true; config.glow = true;
+    brandingNameEl.value = 'DJ NoTag'; config.branding = 'DJ NoTag';
+    bgImage.src = 'background.png'; bgPreview.src = 'background.png';
+    status('Reset to defaults');
+    drawInitial();
+  }
+
+  function randomizeConfig(){
+    config.reactivity = +(Math.random()*0.95).toFixed(2); reactivityEl.value = config.reactivity;
+    config.baseRadius = Math.floor(60 + Math.random()*200); baseRadiusEl.value = config.baseRadius;
+    config.barWidth = Math.floor(2 + Math.random()*24); barWidthEl.value = config.barWidth;
+    config.barCount = Math.floor(32 + Math.random()*320); barCountEl.value = config.barCount;
+    const randColor = ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+    config.colorA = randColor(); colorAEl.value = config.colorA;
+    config.colorB = randColor(); colorBEl.value = config.colorB;
+    config.textColor = randColor(); textColorEl.value = config.textColor;
+    config.glow = Math.random() > 0.4; glowEl.checked = config.glow;
+    drawInitial();
+    status('Randomized');
+  }
+
+  // Rendering loop
+  let rafId = null;
+  let playingAnalyser = null;
+
+  function drawInitial() {
+    // single frame with background + brand
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const cw = canvas.width / (window.devicePixelRatio || 1);
+    const ch = canvas.height / (window.devicePixelRatio || 1);
+
+    // background
+    if(bgLoaded) {
+      try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
+    } else {
+      ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch);
+    }
+
+    // vignette
+    const cx = cw/2, cy = ch/2;
+    const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0,0,cw,ch);
+
+    // Branding
+    ctx.save();
+    ctx.fillStyle = config.textColor;
+    ctx.font = `700 ${24}px Montserrat, Inter`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowBlur = 16; ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 6);
+    ctx.restore();
+
+    // small sponsor
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '12px Inter';
+    ctx.textAlign = 'right';
+    ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
+  }
+
+  // Utility: convert hex to rgb array
+  function hexToRgb(hex) {
+    const h = hex.replace('#','');
+    const num = parseInt(h,16);
+    const r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
+    return [r,g,b];
+  }
+
+  function renderFrame() {
+    if(!playingAnalyser) { drawInitial(); return; }
+
+    const cw = canvas.width / (window.devicePixelRatio || 1);
+    const ch = canvas.height / (window.devicePixelRatio || 1);
+    const cx = cw/2, cy = ch/2;
+
+    // background
+    if(bgLoaded) {
+      try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
+    } else { ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
+
+    // vignette
+    const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0,0,cw,ch);
+
+    // get data
+    playingAnalyser.getByteFrequencyData(dataArray);
+    const smoothing = smoothingFromReactivity(config.reactivity);
+
+    // smooth array
+    for(let i=0;i<dataArray.length;i++){
+      smoothingArray[i] = smoothingArray[i] * smoothing + dataArray[i] * (1 - smoothing);
+    }
+
+    // drawing bars in radial mirrored layout
+    const numBars = Math.max(8, Math.min(config.barCount, dataArray.length));
+    const baseRadius = Math.max(20, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
+    const bw = Math.max(1, Math.min(config.barWidth, 80));
+    const maxBarHeight = Math.max(10, (Math.min(cw,ch)/2 - baseRadius - 20));
+
+    // prepare colors
+    const aRGB = hexToRgb(config.colorA);
+    const bRGB = hexToRgb(config.colorB);
+
+    if(config.glow) {
+      ctx.shadowBlur = 24;
+      ctx.shadowColor = 'rgba(0,0,0,0.45)';
+    } else {
+      ctx.shadowBlur = 0;
+    }
+    ctx.save();
+
+    for(let i=0;i<numBars;i++){
+      const raw = smoothingArray[i];
+      if(raw < 4) continue;
+      const norm = raw / 255;
+      const compressed = Math.pow(norm, 1.2);
+      let barH = compressed * maxBarHeight;
+      barH = Math.min(barH, maxBarHeight);
+      if(barH < 1) continue;
+
+      const angle = (i / numBars) * Math.PI - (Math.PI/2);
+      const mirroredAngle = Math.PI - angle;
+      const isA = (i % 2 === 0);
+
+      const light = isA ? aRGB : bRGB;
+      const dark  = isA ? bRGB : aRGB;
+      const pct = Math.min(barH / maxBarHeight, 1);
+
+      // color interpolation
+      const r = Math.round(light[0] + (dark[0]-light[0]) * pct);
+      const g = Math.round(light[1] + (dark[1]-light[1]) * pct);
+      const b = Math.round(light[2] + (dark[2]-light[2]) * pct);
+
+      const drawBarAt = (rot) => {
+        ctx.save();
+        ctx.translate(cx,cy);
+        ctx.rotate(rot);
+        // gradient along bar
+        const grad = ctx.createLinearGradient(0, baseRadius, 0, baseRadius + barH);
+        grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.1)`);
+        grad.addColorStop(0.4, `rgba(${light[0]},${light[1]},${light[2]},0.95)`);
+        grad.addColorStop(0.85, `rgba(${r},${g},${b},0.95)`);
+        grad.addColorStop(1, `rgba(${r},${g},${b},0.0)`);
+        ctx.fillStyle = grad;
+        const rectH = Math.max(2, barH - (bw/2));
+        ctx.fillRect(-bw/2, baseRadius, bw, rectH);
+        ctx.beginPath();
+        ctx.arc(0, baseRadius + rectH, bw/2, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      };
+
+      const offset = -Math.PI/2;
+      drawBarAt(angle + offset);
+      drawBarAt(mirroredAngle + offset);
+    }
+
+    ctx.restore();
+
+    // central pulse
+    let bassAvg = 0;
+    for(let i=0;i<5 && i<dataArray.length;i++) bassAvg += smoothingArray[i] || 0;
+    bassAvg = bassAvg / Math.min(5, dataArray.length);
+    const pulseRadius = Math.min(maxBarHeight*0.6, baseRadius + bassAvg * 0.07);
+
+    const pulseGrad = ctx.createRadialGradient(cx,cy,8,cx,cy,pulseRadius);
+    pulseGrad.addColorStop(0, 'rgba(200,100,255,0.45)');
+    pulseGrad.addColorStop(0.6, 'rgba(0,220,170,0.06)');
+    pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = pulseGrad;
+    ctx.beginPath();
+    ctx.arc(cx,cy,pulseRadius,0,Math.PI*2);
+    ctx.fill();
+
+    // branding
+    ctx.save();
+    ctx.fillStyle = config.textColor;
+    ctx.font = `700 ${28 + Math.min(24, bassAvg*0.1)}px Montserrat, Inter`;
+    ctx.textAlign = 'center';
+    ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
+    ctx.restore();
+
+    // sponsor small text
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '12px Inter';
+    ctx.textAlign = 'right';
+    ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
+
+    // loop
+    rafId = requestAnimationFrame(renderFrame);
+  }
+
+  function startVisualization() {
+    if(!audioPlayer.src) { status('Load an audio file first'); return; }
+    ensureAudioContext();
+
+    // if already started and not connected, connect
+    if(sourceNode) {
+      try { sourceNode.disconnect(); } catch(e){}
+    }
+    sourceNode = audioCtx.createMediaElementSource(audioPlayer);
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    playingAnalyser = analyser;
+    // ensure arrays sized correctly if fftSize changed
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    smoothingArray = new Float32Array(bufferLength);
+
+    // resume audio context on user gesture if needed
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+
+    // start player if not playing
+    if(audioPlayer.paused) {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play().catch(()=>{ /* ignore play failures */ });
+    }
+    // UI
+    startBtn.style.display = 'none';
+    stopBtn.style.display = 'inline-block';
+    status('Playing — visualizer active');
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(renderFrame);
+  }
+
+  function stopVisualization() {
+    if(rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    if(sourceNode) {
+      try { sourceNode.disconnect(); } catch(e){}
+    }
+    playingAnalyser = null;
+    startBtn.style.display = 'inline-block';
+    stopBtn.style.display = 'none';
+    status('Stopped');
+    drawInitial();
+  }
+
+  startBtn.addEventListener('click', startVisualization);
+  stopBtn.addEventListener('click', () => {
+    // pause the audio but don't clear file
+    if(!audioPlayer.paused) audioPlayer.pause();
+    stopVisualization();
+  });
+
+  // Export (captureStream + MediaRecorder)
+  exportBtn.addEventListener('click', async () => {
+    if(!audioPlayer.src) { status('Load audio to export'); return; }
+    stopVisualization(); // Stop the live preview
+    
+    const FPS = 30;
+
+    // create an analyser in a separate audio context to avoid playback conflicts
+    const exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const exportAudio = new Audio(audioPlayer.src);
+    exportAudio.crossOrigin = 'anonymous';
+    const exportSource = exportAudioCtx.createMediaElementSource(exportAudio);
+    const exportAnalyser = exportAudioCtx.createAnalyser();
+    exportAnalyser.fftSize = 2048;
+    exportSource.connect(exportAnalyser);
+    exportSource.connect(exportAudioCtx.destination);
+
+    const exportData = new Uint8Array(exportAnalyser.frequencyBinCount);
+    const exportSmooth = new Float32Array(exportAnalyser.frequencyBinCount);
+    for(let i=0;i<exportSmooth.length;i++) exportSmooth[i]=0;
+
+    status('Preparing export...');
+    progressWrap.style.display = 'flex';
+    progressBar.style.width = '0%';
+    progressText.textContent = '0%';
+
+    // Use captureStream to record canvas, then mix with audio track
+    const canvasStream = canvas.captureStream(FPS);
+    const audioDest = exportAudioCtx.createMediaStreamDestination();
+    exportSource.connect(audioDest);
+    const audioTrack = audioDest.stream.getAudioTracks()[0];
+    const combined = new MediaStream([canvasStream.getVideoTracks()[0], audioTrack]);
+
+    // choose mime
+    let mime = 'video/webm; codecs=vp8,opus';
+    if(!MediaRecorder.isTypeSupported(mime)) {
+      if(MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) mime = 'video/webm; codecs=vp9,opus';
+      else if(MediaRecorder.isTypeSupported('video/webm')) mime = 'video/webm';
+      else mime = '';
+    }
+    let recorder;
+    try { recorder = mime ? new MediaRecorder(combined, { mimeType: mime, videoBitsPerSecond: 2500000 }) : new MediaRecorder(combined); }
+    catch(e){ status('Recording not supported in this browser'); console.warn(e); progressWrap.style.display='none'; return; }
+
+    const chunks = [];
+    recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.download = 'audiovisualizer.webm';
+      downloadLink.style.display = 'inline-block';
+      status('Export ready — click download');
+      progressWrap.style.display = 'none';
+      drawInitial(); // Reset canvas to initial state
+    };
+
+    // draw loop for export canvas
+    let exportRafId = null;
+    function renderExportFrame() {
+      // update progress
+      if(exportAudio.duration && !isNaN(exportAudio.duration)) {
+        const pct = Math.min(100, (exportAudio.currentTime / exportAudio.duration)*100);
+        progressBar.style.width = pct + '%';
+        progressText.textContent = Math.round(pct) + '%';
+      }
+
+      // This is a direct copy of renderFrame, but using the export audio data source
+      const cw = canvas.width / (window.devicePixelRatio || 1);
+      const ch = canvas.height / (window.devicePixelRatio || 1);
+      const cx = cw/2, cy = ch/2;
+
+      // background
+      if(bgLoaded) {
+        try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
+      } else { ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
+
+      // vignette
+      const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.22)');
+      ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
+
+      // get data from export source
+      exportAnalyser.getByteFrequencyData(exportData);
+      const smoothing = smoothingFromReactivity(config.reactivity);
+      for(let i=0;i<exportData.length;i++) exportSmooth[i] = exportSmooth[i] * smoothing + exportData[i] * (1 - smoothing);
+      
+      // drawing bars
+      const numBars = Math.max(8, Math.min(config.barCount, exportData.length));
+      const baseRadius = Math.max(20, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
+      const bw = Math.max(1, Math.min(config.barWidth, 80));
+      const maxBarHeight = Math.max(10, (Math.min(cw,ch)/2 - baseRadius - 20));
+      const aRGB = hexToRgb(config.colorA); const bRGB = hexToRgb(config.colorB);
+      if(config.glow) { ctx.shadowBlur = 24; ctx.shadowColor = 'rgba(0,0,0,0.45)'; } else { ctx.shadowBlur = 0; }
+      ctx.save();
+      for(let i=0;i<numBars;i++){
+        const raw = exportSmooth[i]; if(raw < 4) continue;
+        const norm = raw/255; const compressed = Math.pow(norm, 1.2); let barH = compressed * maxBarHeight; barH = Math.min(barH, maxBarHeight); if(barH < 1) continue;
+        const angle = (i / numBars) * Math.PI - (Math.PI/2); const mirroredAngle = Math.PI - angle;
+        const isA = i % 2 === 0;
+        const light = isA ? aRGB : bRGB; const dark  = isA ? bRGB : aRGB;
+        const pct = Math.min(barH / maxBarHeight, 1);
+        const r = Math.round(light[0] + (dark[0]-light[0]) * pct); const g = Math.round(light[1] + (dark[1]-light[1]) * pct); const b = Math.round(light[2] + (dark[2]-light[2]) * pct);
+        const drawBarAt = (rot) => {
+          ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
+          const grad = ctx.createLinearGradient(0, baseRadius, 0, baseRadius + barH);
+          grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.1)`);
+          grad.addColorStop(0.4, `rgba(${light[0]},${light[1]},${light[2]},0.95)`);
+          grad.addColorStop(0.85, `rgba(${r},${g},${b},0.95)`);
+          grad.addColorStop(1, `rgba(${r},${g},${b},0.0)`);
+          ctx.fillStyle = grad;
+          const rectH = Math.max(2, barH - (bw/2));
+          ctx.fillRect(-bw/2, baseRadius, bw, rectH);
+          ctx.beginPath(); ctx.arc(0, baseRadius + rectH, bw/2, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
         };
+        const offset = -Math.PI/2;
+        drawBarAt(angle + offset); drawBarAt(mirroredAngle + offset);
+      }
+      ctx.restore();
 
-        // --- NEW: Visualizer settings state object ---
-        const defaultVizSettings = {
-            smoothing: 0.94,
-            barCountPercent: 0.38,
-            barWidth: 6,
-            baseRadius: 100,
-            color1Start: '#BE78FF',
-            color1End: '#5A008C',
-            color2Start: '#00DC8C',
-            color2End: '#00643C',
-            pulseInner: '#8228D2',
-            pulseOuter: '#00B48C',
-        };
+      // central pulse
+      let bassAvg = 0; for(let i=0;i<5 && i<exportSmooth.length;i++) bassAvg += exportSmooth[i] || 0;
+      bassAvg = bassAvg / Math.min(5, exportSmooth.length);
+      const pulseRadius = Math.min(maxBarHeight*0.6, baseRadius + bassAvg * 0.07);
+      const pulseGrad = ctx.createRadialGradient(cx,cy,8,cx,cy,pulseRadius);
+      pulseGrad.addColorStop(0, 'rgba(200,100,255,0.45)');
+      pulseGrad.addColorStop(0.6, 'rgba(0,220,170,0.06)');
+      pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx,cy,pulseRadius,0,Math.PI*2); ctx.fill();
 
-        let vizSettings = { ...defaultVizSettings };
-        
-        // Helper to convert hex color to an [r, g, b] array
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
-        }
+      // branding
+      ctx.save();
+      ctx.fillStyle = config.textColor;
+      ctx.font = `700 ${28 + Math.min(24, bassAvg*0.1)}px Montserrat, Inter`;
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.6)';
+      ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
+      ctx.restore();
 
+      // sponsor small text
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.font = '12px Inter';
+      ctx.textAlign = 'right';
+      ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
+      
+      // request next frame
+      exportRafId = requestAnimationFrame(renderExportFrame);
+    }
 
-        // State variables
-        let audioContext, analyser, source, dataArray, bufferLength, animationFrameId;
-        let mediaRecorder, recordedChunks = [];
-        let smoothedDataArray = null;
-        let animationIntervalId = null;
-        let isExporting = false;
-        let exportAnalyser, exportBufferLength, exportDataArray, exportSmoothedDataArray;
+    // start recording
+    recorder.start();
+    exportAudio.play().catch(()=>{ /* ignore */ });
+    exportRafId = requestAnimationFrame(renderExportFrame);
 
-        // High-resolution export canvas
-        let exportCanvas, exportCanvasCtx, EXPORT_WIDTH = 1024, EXPORT_HEIGHT = 576, EXPORT_FPS = 30;
-        let exportAnimationFrameId = null, exportIntervalId = null;
-        let exportAudioContextGlobal = null;
+    // stop when audio ends
+    exportAudio.addEventListener('ended', () => {
+      if(exportRafId) cancelAnimationFrame(exportRafId);
+      try { recorder.stop(); } catch(e){ console.warn(e); }
+      exportAudioCtx.close().catch(()=>{});
+    });
 
-        // Background Image
-        const bgImage = new Image();
-        let isBgImageLoaded = false;
-        bgImage.onload = () => {
-            isBgImageLoaded = true;
-            drawInitialCanvas();
-        };
-        bgImage.onerror = () => {
-            console.error("Could not load the background image. Using a black background.");
-            statusEl.textContent = "Warning: Could not load background image.";
-        };
-        bgImage.src = 'img/background.png';
+    status('Recording export...');
+  });
 
-        // --- Branding / Background Controls ---
-        if (brandingNameInput) {
-            brandingNameInput.addEventListener('input', (e) => {
-                brandingName = e.target.value || 'DJ NoTag';
-                drawInitialCanvas();
-            });
-        }
-        if (clearNameBtn) clearNameBtn.addEventListener('click', () => { brandingNameInput.value = 'DJ NoTag'; brandingName = 'DJ NoTag'; drawInitialCanvas(); });
+  // helpers
+  function status(s){
+    statusEl.textContent = s;
+  }
 
-        if (chooseBgBtn && bgFileInput) {
-            chooseBgBtn.addEventListener('click', () => bgFileInput.click());
-            bgFileInput.addEventListener('change', (e) => {
-                const file = e.target.files && e.target.files[0];
-                if (!file) return;
-                if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
-                customBgObjectURL = URL.createObjectURL(file);
-                bgImage.src = customBgObjectURL;
-                bgPreview.src = customBgObjectURL;
-            });
-        }
-        if (resetBgBtn) resetBgBtn.addEventListener('click', () => {
-            if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
-            customBgObjectURL = null;
-            bgImage.src = 'img/background.png';
-            bgPreview.src = 'img/background.png';
-        });
+  // initial draw
+  drawInitial();
 
-        // --- NEW: Visualizer Settings Logic ---
-        function updateVizSettings() {
-            vizSettings.smoothing = vizSettingsControls.reactivity.value / 100;
-            vizSettings.barCountPercent = vizSettingsControls.barCount.value / 100;
-            vizSettings.barWidth = parseInt(vizSettingsControls.barWidth.value, 10);
-            vizSettings.baseRadius = parseInt(vizSettingsControls.radius.value, 10);
-            vizSettings.color1Start = vizSettingsControls.color1Start.value;
-            vizSettings.color1End = vizSettingsControls.color1End.value;
-            vizSettings.color2Start = vizSettingsControls.color2Start.value;
-            vizSettings.color2End = vizSettingsControls.color2End.value;
-            vizSettings.pulseInner = vizSettingsControls.pulseInner.value;
-            vizSettings.pulseOuter = vizSettingsControls.pulseOuter.value;
+  // load saved presets on start
+  rebuildPresetSelect();
 
-            // Redraw the canvas to show changes immediately
-            if (!isExporting && (!audioPlayer.src || audioPlayer.paused)) {
-                 drawInitialCanvas();
-            }
-        }
-        
-        function resetVizSettings() {
-            vizSettings = { ...defaultVizSettings };
-            vizSettingsControls.reactivity.value = defaultVizSettings.smoothing * 100;
-            vizSettingsControls.barCount.value = defaultVizSettings.barCountPercent * 100;
-            vizSettingsControls.barWidth.value = defaultVizSettings.barWidth;
-            vizSettingsControls.radius.value = defaultVizSettings.baseRadius;
-            vizSettingsControls.color1Start.value = defaultVizSettings.color1Start;
-            vizSettingsControls.color1End.value = defaultVizSettings.color1End;
-            vizSettingsControls.color2Start.value = defaultVizSettings.color2Start;
-            vizSettingsControls.color2End.value = defaultVizSettings.color2End;
-            vizSettingsControls.pulseInner.value = defaultVizSettings.pulseInner;
-            vizSettingsControls.pulseOuter.value = defaultVizSettings.pulseOuter;
-            updateVizSettings();
-        }
+  // ensure canvas redraw when controls change
+  const uiInputs = [reactivityEl, baseRadiusEl, barWidthEl, barCountEl, colorAEl, colorBEl, glowEl, textColorEl];
+  uiInputs.forEach(el => el.addEventListener('input', () => {
+    // update config from controls immediately
+    config.reactivity = parseFloat(reactivityEl.value);
+    config.baseRadius = parseInt(baseRadiusEl.value,10);
+    config.barWidth = parseInt(barWidthEl.value,10);
+    config.barCount = parseInt(barCountEl.value,10);
+    config.colorA = colorAEl.value;
+    config.colorB = colorBEl.value;
+    config.textColor = textColorEl.value;
+    config.glow = glowEl.checked;
+    // Don't redraw if playing, it will be handled by the render loop
+    if(!playingAnalyser) {
+        drawInitial();
+    }
+  }));
 
-        Object.values(vizSettingsControls).forEach(control => {
-            if (control.id !== 'resetVisualsBtn') {
-                control.addEventListener('input', updateVizSettings);
-            }
-        });
-        vizSettingsControls.resetBtn.addEventListener('click', resetVizSettings);
+  // make initial statuses
+  status('Ready');
 
-        // --- Tab Switching Logic ---
-        creatorTabBtn.addEventListener('click', () => {
-            creatorTabBtn.classList.add('active');
-            playerTabBtn.classList.remove('active');
-            creatorView.classList.remove('hidden');
-            playerView.classList.add('hidden');
-            videoPlayer.pause();
-        });
-
-        playerTabBtn.addEventListener('click', () => {
-            playerTabBtn.classList.add('active');
-            creatorTabBtn.classList.remove('active');
-            playerView.classList.remove('hidden');
-            creatorView.classList.add('hidden');
-            audioPlayer.pause();
-            if(animationFrameId) cancelAnimationFrame(animationFrameId);
-            visualizeExportBtn.textContent = 'Visualize & Export';
-        });
-
-        // --- Universal Drag and Drop Handling ---
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            window.addEventListener(eventName, preventDefaults, false);
-        });
-
-        // --- Creator Logic ---
-        wavDropArea.addEventListener('click', () => wavFileInput.click());
-        wavFileInput.addEventListener('change', () => handleFileSelect(wavFileInput.files));
-        wavDropArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files), false);
-        
-        visualizeExportBtn.addEventListener('click', startVisualizeExport);
-        
-        function handleFileSelect(files) {
-            const file = files[0];
-            // MODIFIED: Added check for 'audio/mpeg' for MP3 files
-            if (!file || (!file.type.startsWith('audio/wav') && !file.type.startsWith('audio/mpeg'))) {
-                statusEl.textContent = 'Please provide a .wav or .mp3 file.';
-                return;
-            };
-
-            const fileURL = URL.createObjectURL(file);
-            audioPlayer.src = fileURL;
-            wavFileNameEl.textContent = file.name;
-            actionButtons.classList.remove('hidden');
-            statusEl.textContent = 'File loaded. Ready to visualize & export.';
-            downloadLink.classList.add('hidden');
-            progressContainer.classList.add('hidden');
-            progressBar.style.width = '0%';
-            progressText.textContent = '';
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            drawInitialCanvas();
-        }
-
-        function setupAudioContext() {
-            if (audioContext) return;
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 1024; 
-            if (!source) {
-                source = audioContext.createMediaElementSource(audioPlayer);
-                source.connect(analyser);
-                analyser.connect(audioContext.destination);
-            }
-            bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-            smoothedDataArray = new Float32Array(bufferLength);
-        }
-        
-        let currentAnalyser = null;
-
-        function renderFrame(forExport = false) {
-            const currentCtx = forExport ? exportCanvasCtx : canvasCtx;
-            const currentCanvas = forExport ? exportCanvas : canvas;
-            
-            const localAnalyser = forExport ? exportAnalyser : analyser;
-            let localDataArray = forExport ? exportDataArray : dataArray;
-            let localSmoothedDataArray = forExport ? exportSmoothedDataArray : smoothedDataArray;
-            const localBufferLength = forExport ? exportBufferLength : bufferLength;
-
-            const centerX = currentCanvas.width / 2;
-            const centerY = currentCanvas.height / 2;
-
-            if (isBgImageLoaded) {
-                currentCtx.drawImage(bgImage, 0, 0, currentCanvas.width, currentCanvas.height);
-            } else {
-                currentCtx.fillStyle = '#000000';
-                currentCtx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
-            }
-
-            const vignette = currentCtx.createRadialGradient(centerX, centerY, Math.min(currentCanvas.width, currentCanvas.height)*0.2, centerX, centerY, Math.max(currentCanvas.width, currentCanvas.height));
-            vignette.addColorStop(0, 'rgba(0,0,0,0)');
-            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
-            currentCtx.fillStyle = vignette;
-            currentCtx.fillRect(0,0,currentCanvas.width,currentCanvas.height);
-
-            if (!localAnalyser || !localDataArray) {
-                drawBranding(0, forExport);
-                return;
-            }
-
-            localAnalyser.getByteFrequencyData(localDataArray);
-            for (let i = 0; i < localBufferLength; i++) {
-                localSmoothedDataArray[i] = localSmoothedDataArray[i] * vizSettings.smoothing + localDataArray[i] * (1 - vizSettings.smoothing);
-            }
-
-            const baseRadius = vizSettings.baseRadius * (forExport ? (EXPORT_WIDTH / 1024) : 1);
-            const barWidth = vizSettings.barWidth * (forExport ? (EXPORT_WIDTH / 1024) : 1);
-            const numBars = Math.floor(localBufferLength * vizSettings.barCountPercent);
-            
-            const maxBarHeight = Math.max(8, Math.floor((centerY - baseRadius - 28) * 0.7));
-
-            let bassAvg = 0;
-            for (let i = 0; i < 5 && i < localBufferLength; i++) bassAvg += localSmoothedDataArray[i];
-            bassAvg = bassAvg / Math.min(5, localBufferLength);
-
-            const color1StartRgb = hexToRgb(vizSettings.color1Start);
-            const color1EndRgb = hexToRgb(vizSettings.color1End);
-            const color2StartRgb = hexToRgb(vizSettings.color2Start);
-            const color2EndRgb = hexToRgb(vizSettings.color2End);
-            
-            currentCtx.save();
-            currentCtx.shadowBlur = forExport ? 28 : 20;
-            currentCtx.shadowColor = 'rgba(0,0,0,0.35)';
-
-            for (let i = 0; i < numBars; i++) {
-                const raw = localSmoothedDataArray[i];
-                if (raw < 4) continue;
-                const norm = raw / 255;
-                const compressed = Math.pow(norm, 1.25);
-                let barHeight = compressed * maxBarHeight * 0.82;
-                if (barHeight < 2) continue;
-                barHeight = Math.min(barHeight, maxBarHeight);
-
-                const angle = (i / numBars) * Math.PI - (Math.PI / 2);
-                const mirroredAngle = Math.PI - angle;
-
-                const isColor1 = (i % 2 === 0);
-                const startColor = isColor1 ? color1StartRgb : color2StartRgb;
-                const endColor = isColor1 ? color1EndRgb : color2EndRgb;
-
-                const drawBar = (rotation) => {
-                    currentCtx.save();
-                    currentCtx.translate(centerX, centerY);
-                    currentCtx.rotate(rotation);
-
-                    const gradient = currentCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
-                    gradient.addColorStop(0.35, `rgba(${startColor.join(',')}, 0.95)`);
-                    gradient.addColorStop(0.85, `rgba(${endColor.join(',')}, 0.95)`);
-                    currentCtx.fillStyle = gradient;
-                    
-                    const rectHeight = Math.max(2, barHeight - (barWidth / 2));
-                    currentCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
-                    currentCtx.beginPath();
-                    currentCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
-                    currentCtx.fill();
-
-                    currentCtx.restore();
-                };
-
-                const rotationOffset = -Math.PI / 2;
-                drawBar(angle + rotationOffset);
-                drawBar(mirroredAngle + rotationOffset);
-            }
-
-            currentCtx.restore();
-
-            const pulseRadius = Math.min(maxBarHeight * 0.75, bassAvg * 0.18 + baseRadius);
-            currentCtx.beginPath();
-            const pulseGrad = currentCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
-            pulseGrad.addColorStop(0, `${vizSettings.pulseInner}73`); // ~0.45 alpha
-            pulseGrad.addColorStop(0.6, `${vizSettings.pulseOuter}0F`); // ~0.06 alpha
-            pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            currentCtx.fillStyle = pulseGrad;
-            currentCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
-            currentCtx.fill();
-
-            drawBranding(bassAvg, forExport);
-        }
-
-        function startRender() {
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-             
-            animationFrameId = requestAnimationFrame(function loop() {
-                renderFrame();
-                animationFrameId = requestAnimationFrame(loop);
-            });
-        }
-        
-        function drawBranding(bassAvg = 0, forExport = false) {
-            const currentCtx = forExport ? exportCanvasCtx : canvasCtx;
-            const currentCanvas = forExport ? exportCanvas : canvas;
-            const scale = forExport ? EXPORT_WIDTH / 1024 : 1;
-
-            const centerX = currentCanvas.width / 2;
-            const centerY = currentCanvas.height / 2;
-            const pulse = Math.max(0, Math.min(bassAvg * 0.08, 18 * scale));
-
-            currentCtx.save();
-            currentCtx.fillStyle = 'rgba(255,255,255,0.95)';
-            currentCtx.font = `700 ${Math.floor((34 * scale) + pulse)}px Inter`;
-            currentCtx.textAlign = 'center';
-            currentCtx.textBaseline = 'middle';
-            currentCtx.shadowColor = 'rgba(0,0,0,0.6)';
-            currentCtx.shadowBlur = 10 * scale;
-            currentCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - (6 * scale));
-            currentCtx.shadowBlur = 0;
-
-            currentCtx.fillStyle = 'rgba(255,255,255,0.65)';
-            currentCtx.font = `${12 * scale}px Inter`;
-            currentCtx.textAlign = 'right';
-            currentCtx.textBaseline = 'bottom';
-            currentCtx.fillText('Sponsored by Rooted Revival US', currentCanvas.width - (12 * scale), currentCanvas.height - (12 * scale));
-
-            currentCtx.restore();
-        }
-
-        function drawInitialCanvas() {
-            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-            if (isBgImageLoaded) {
-                canvasCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-            } else {
-                canvasCtx.fillStyle = '#000000';
-                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const vignette = canvasCtx.createRadialGradient(centerX, centerY, Math.min(canvas.width, canvas.height) * 0.2, centerX, centerY, Math.max(canvas.width, canvas.height));
-            vignette.addColorStop(0, 'rgba(0,0,0,0)');
-            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
-            canvasCtx.fillStyle = vignette;
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            drawBranding(0);
-        }
-
-        async function startVisualizeExport() {
-            if (isExporting) return;
-            if (!audioPlayer.src) {
-                statusEl.textContent = 'No audio loaded.';
-                return;
-            }
-
-            recordedChunks = [];
-            progressContainer.classList.remove('hidden');
-            downloadLink.classList.add('hidden');
-            progressBar.style.width = '0%';
-            progressText.textContent = '0%';
-            isExporting = true;
-            visualizeExportBtn.disabled = true;
-            statusEl.textContent = 'Preparing export...';
-
-            if (!audioPlayer.paused) audioPlayer.pause();
-
-            const exportAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const exportAudio = new Audio(audioPlayer.src);
-            exportAudio.crossOrigin = 'anonymous';
-            const exportSource = exportAudioContext.createMediaElementSource(exportAudio);
-            exportAnalyser = exportAudioContext.createAnalyser();
-            exportAnalyser.fftSize = 1024;
-            exportSource.connect(exportAnalyser);
-            exportSource.connect(exportAudioContext.destination);
-
-            exportCanvas = document.createElement('canvas');
-            exportCanvas.width = EXPORT_WIDTH;
-            exportCanvas.height = EXPORT_HEIGHT;
-            exportCanvasCtx = exportCanvas.getContext('2d');
-
-            const canvasStream = exportCanvas.captureStream(EXPORT_FPS);
-            const destination = exportAudioContext.createMediaStreamDestination();
-            exportSource.connect(destination);
-            const audioTrack = destination.stream.getAudioTracks()[0];
-            const combinedStream = new MediaStream([canvasStream.getVideoTracks()[0], audioTrack]);
-
-            if (exportIntervalId) clearInterval(exportIntervalId);
-            exportIntervalId = setInterval(() => renderFrame(true), 1000 / EXPORT_FPS);
-            
-            let mime = 'video/webm; codecs=vp8,opus';
-            if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
-            
-            mediaRecorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 8000000 });
-            mediaRecorder.ondataavailable = (event) => { if (event.data.size > 0) recordedChunks.push(event.data); };
-            mediaRecorder.onstop = handleRecordingStop;
-            mediaRecorder.start();
-
-            exportBufferLength = exportAnalyser.frequencyBinCount;
-            exportDataArray = new Uint8Array(exportBufferLength);
-            exportSmoothedDataArray = new Float32Array(exportBufferLength).fill(0);
-
-            const progressWatcher = setInterval(() => {
-                const duration = exportAudio.duration;
-                if (!isFinite(duration) || duration <= 0) return;
-                const progressPercent = Math.min((exportAudio.currentTime / duration) * 100, 100);
-                progressBar.style.width = `${Math.round(progressPercent)}%`;
-                progressText.textContent = `${Math.round(progressPercent)}%`;
-            }, 200);
-
-            exportAudio.onended = () => {
-                if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
-                clearInterval(exportIntervalId);
-                clearInterval(progressWatcher);
-                statusEl.textContent = 'Finalizing...';
-            };
-            
-            await exportAudio.play();
-        }
-
-        function handleRecordingStop() {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            downloadLink.href = url;
-            downloadLink.download = 'visualization.webm';
-            downloadLink.classList.remove('hidden');
-
-            statusEl.textContent = 'Export complete!';
-            progressContainer.classList.add('hidden');
-            isExporting = false;
-            visualizeExportBtn.disabled = false;
-            
-            if (mediaRecorder) {
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                mediaRecorder = null;
-            }
-        }
-
-        // --- Player Logic ---
-        videoDropArea.addEventListener('click', () => videoFileInput.click());
-        videoFileInput.addEventListener('change', () => handleVideoSelect(videoFileInput.files));
-        videoDropArea.addEventListener('drop', (e) => handleVideoSelect(e.dataTransfer.files), false);
-
-        function handleVideoSelect(files) {
-            const file = files[0];
-            if (!file) return;
-            const fileURL = URL.createObjectURL(file);
-            videoPlayer.src = fileURL;
-        }
-
-        // --- Init ---
-        drawInitialCanvas();
-        updateVizSettings(); // Set initial settings from HTML values
-
-        // Re-setup live visualizer if audio is played directly
-        audioPlayer.onplay = () => {
-            setupAudioContext();
-            startRender();
-        };
-
-        audioPlayer.onpause = () => {
-             if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        };
-    </script>
+  </script>
 </body>
 </html>
