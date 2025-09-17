@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audiovisualizer - Plant Families Explorer</title>
-    <!-- Use the site's fonts and stylesheet so this page matches the rest of the website -->
     <link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&family=open+sans:wght@400;600&display=swap" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
     <link href="img/logo.svg" rel="icon" type="image/svg+xml">
@@ -71,6 +70,68 @@
         #visualizeExportBtn:disabled { opacity: 0.6; cursor: not-allowed; }
         #progressContainer { align-items: center; gap: 0.75rem; }
         #progressBar { background: #1f4b2f; }
+
+        /* --- NEW STYLES FOR VISUALIZER SETTINGS --- */
+        #visualizerSettings {
+            background: rgba(31, 75, 47, 0.04);
+            border: 1px solid rgba(31, 75, 47, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .settings-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1f4b2f;
+            margin-bottom: 0.5rem;
+            text-align: left;
+            width: 100%;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
+        .control-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #213926;
+            text-align: left;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+        .control-group input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 50px;
+            height: 30px;
+            background-color: transparent;
+            border: 1px solid rgba(31,75,47,0.15);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .control-group input[type="color"]::-webkit-color-swatch {
+            border-radius: 3px;
+            border: none;
+        }
+        .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         /* Small responsive tweaks */
         @media (min-width: 768px) {
             .file-drop-area { height: 200px; }
@@ -78,7 +139,6 @@
     </style>
 </head>
 <body>
-    <!-- Add the site's header/navigation so the page matches the rest of the site -->
     <header>
         <div class="container">
             <div class="logo">
@@ -110,7 +170,6 @@
     </header>
 
     <div id="avContainer" class="w-full max-w-4xl space-y-6">
-        <!-- Editable controls: branding name and background image -->
         <div id="avControls">
             <div class="control-row">
                 <label for="brandingNameInput" style="font-weight:600;">Visualizer Name</label>
@@ -131,19 +190,71 @@
             <p class="text-lg text-gray-400 mt-2">Create audiovisualizers or play your video files.</p>
         </header>
 
-        <!-- Tab Controls -->
         <div class="flex justify-center space-x-2 rounded-lg bg-gray-800 p-1">
             <button id="creatorTabBtn" class="tab-btn active">Creator</button>
             <button id="playerTabBtn" class="tab-btn">Player</button>
         </div>
 
         <main>
-            <!-- Creator View -->
             <div id="creatorView" class="space-y-6">
                 <canvas id="visualizerCanvas" width="1024" height="576" class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></canvas>
                 <audio id="audioPlayer" controls class="hidden"></audio>
 
                 <div id="creatorControls" class="space-y-4">
+                    <div id="visualizerSettings">
+                        <div class="settings-header">Visualizer Settings</div>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <label for="reactivitySlider">Reactivity (Higher = Smoother)</label>
+                                <input type="range" id="reactivitySlider" min="80" max="99" value="94">
+                            </div>
+                            <div class="control-group">
+                                <label for="barCountSlider">Bar Count</label>
+                                <input type="range" id="barCountSlider" min="10" max="70" value="38">
+                            </div>
+                            <div class="control-group">
+                                <label for="barWidthSlider">Bar Width</label>
+                                <input type="range" id="barWidthSlider" min="1" max="15" value="6">
+                            </div>
+                             <div class="control-group">
+                                <label for="radiusSlider">Inner Radius</label>
+                                <input type="range" id="radiusSlider" min="10" max="200" value="100">
+                            </div>
+                        </div>
+
+                        <div class="settings-header" style="margin-top: 1rem;">Colors</div>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <label>Bar Color 1 (Purple)</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="color1Start" value="#BE78FF">
+                                    <span>→</span>
+                                    <input type="color" id="color1End" value="#5A008C">
+                                </div>
+                            </div>
+                             <div class="control-group">
+                                <label>Bar Color 2 (Green)</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="color2Start" value="#00DC8C">
+                                    <span>→</span>
+                                    <input type="color" id="color2End" value="#00643C">
+                                </div>
+                            </div>
+                             <div class="control-group">
+                                <label>Center Pulse</label>
+                                <div class="color-picker-group">
+                                    <input type="color" id="pulseInner" value="#8228D2">
+                                    <span>→</span>
+                                    <input type="color" id="pulseOuter" value="#00B48C">
+                                </div>
+                            </div>
+                             <div class="control-group" style="align-items: center; justify-content: center;">
+                                 <button id="resetVisualsBtn" class="btn-small" type="button" style="margin-top: 1rem;">Reset Visuals</button>
+                             </div>
+                        </div>
+                    </div>
+
+
                     <div id="wav-drop-area" class="file-drop-area p-6">
                          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                         <p class="font-semibold text-indigo-400">Drag & drop a .wav file here</p>
@@ -169,7 +280,6 @@
                 </div>
             </div>
 
-            <!-- Player View -->
             <div id="playerView" class="hidden space-y-6">
                 <video id="videoPlayer" controls class="w-full h-auto aspect-video bg-black rounded-lg shadow-lg"></video>
                  <div id="video-drop-area" class="file-drop-area p-6">
@@ -221,12 +331,48 @@
         const progressBar = document.getElementById('progressBar');
         const progressText = document.getElementById('progressText');
 
+        // --- NEW: Visualizer settings elements ---
+        const vizSettingsControls = {
+            reactivity: document.getElementById('reactivitySlider'),
+            barCount: document.getElementById('barCountSlider'),
+            barWidth: document.getElementById('barWidthSlider'),
+            radius: document.getElementById('radiusSlider'),
+            color1Start: document.getElementById('color1Start'),
+            color1End: document.getElementById('color1End'),
+            color2Start: document.getElementById('color2Start'),
+            color2End: document.getElementById('color2End'),
+            pulseInner: document.getElementById('pulseInner'),
+            pulseOuter: document.getElementById('pulseOuter'),
+            resetBtn: document.getElementById('resetVisualsBtn'),
+        };
+
+        // --- NEW: Visualizer settings state object ---
+        const defaultVizSettings = {
+            smoothing: 0.94,
+            barCountPercent: 0.38,
+            barWidth: 6,
+            baseRadius: 100,
+            color1Start: '#BE78FF',
+            color1End: '#5A008C',
+            color2Start: '#00DC8C',
+            color2End: '#00643C',
+            pulseInner: '#8228D2',
+            pulseOuter: '#00B48C',
+        };
+
+        let vizSettings = { ...defaultVizSettings };
+        
+        // Helper to convert hex color to an [r, g, b] array
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
+        }
+
+
         // State variables
         let audioContext, analyser, source, dataArray, bufferLength, animationFrameId;
         let mediaRecorder, recordedChunks = [];
         let smoothedDataArray = null;
-        // Increase smoothing so the bars respond more slowly to sudden spikes (less reactive)
-        const SMOOTHING_FACTOR = 0.94; // Higher is smoother (closer to 1 => less reactive)
         let animationIntervalId = null;
         let isExporting = false;
         let exportAnalyser, exportBufferLength, exportDataArray, exportSmoothedDataArray;
@@ -238,18 +384,16 @@
 
         // Background Image
         const bgImage = new Image();
-        // DO NOT set crossOrigin for local files, it causes CORS issues with canvas export.
         let isBgImageLoaded = false;
         bgImage.onload = () => {
             isBgImageLoaded = true;
             drawInitialCanvas();
         };
         bgImage.onerror = () => {
-            console.error("Could not load the background image from the URL. The visualizer will use a black background instead.");
+            console.error("Could not load the background image. Using a black background.");
             statusEl.textContent = "Warning: Could not load background image.";
         };
-        // Load local background image (no Liquid/shopify references)
-        bgImage.src = 'background.png';
+        bgImage.src = 'img/background.png';
 
         // --- Branding / Background Controls ---
         if (brandingNameInput) {
@@ -265,7 +409,6 @@
             bgFileInput.addEventListener('change', (e) => {
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
-                // revoke previous object URL
                 if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
                 customBgObjectURL = URL.createObjectURL(file);
                 bgImage.src = customBgObjectURL;
@@ -275,9 +418,50 @@
         if (resetBgBtn) resetBgBtn.addEventListener('click', () => {
             if (customBgObjectURL) URL.revokeObjectURL(customBgObjectURL);
             customBgObjectURL = null;
-            bgImage.src = 'background.png';
+            bgImage.src = 'img/background.png';
             bgPreview.src = 'img/background.png';
         });
+
+        // --- NEW: Visualizer Settings Logic ---
+        function updateVizSettings() {
+            vizSettings.smoothing = vizSettingsControls.reactivity.value / 100;
+            vizSettings.barCountPercent = vizSettingsControls.barCount.value / 100;
+            vizSettings.barWidth = parseInt(vizSettingsControls.barWidth.value, 10);
+            vizSettings.baseRadius = parseInt(vizSettingsControls.radius.value, 10);
+            vizSettings.color1Start = vizSettingsControls.color1Start.value;
+            vizSettings.color1End = vizSettingsControls.color1End.value;
+            vizSettings.color2Start = vizSettingsControls.color2Start.value;
+            vizSettings.color2End = vizSettingsControls.color2End.value;
+            vizSettings.pulseInner = vizSettingsControls.pulseInner.value;
+            vizSettings.pulseOuter = vizSettingsControls.pulseOuter.value;
+
+            // Redraw the canvas to show changes immediately
+            if (!isExporting && (!audioPlayer.src || audioPlayer.paused)) {
+                 drawInitialCanvas();
+            }
+        }
+        
+        function resetVizSettings() {
+            vizSettings = { ...defaultVizSettings };
+            vizSettingsControls.reactivity.value = defaultVizSettings.smoothing * 100;
+            vizSettingsControls.barCount.value = defaultVizSettings.barCountPercent * 100;
+            vizSettingsControls.barWidth.value = defaultVizSettings.barWidth;
+            vizSettingsControls.radius.value = defaultVizSettings.baseRadius;
+            vizSettingsControls.color1Start.value = defaultVizSettings.color1Start;
+            vizSettingsControls.color1End.value = defaultVizSettings.color1End;
+            vizSettingsControls.color2Start.value = defaultVizSettings.color2Start;
+            vizSettingsControls.color2End.value = defaultVizSettings.color2End;
+            vizSettingsControls.pulseInner.value = defaultVizSettings.pulseInner;
+            vizSettingsControls.pulseOuter.value = defaultVizSettings.pulseOuter;
+            updateVizSettings();
+        }
+
+        Object.values(vizSettingsControls).forEach(control => {
+            if (control.id !== 'resetVisualsBtn') {
+                control.addEventListener('input', updateVizSettings);
+            }
+        });
+        vizSettingsControls.resetBtn.addEventListener('click', resetVizSettings);
 
         // --- Tab Switching Logic ---
         creatorTabBtn.addEventListener('click', () => {
@@ -317,8 +501,8 @@
         
         function handleFileSelect(files) {
             const file = files[0];
-            if (!file || !file.type.startsWith('audio/wav')) {
-                statusEl.textContent = 'Please provide a .wav file.';
+            if (!file || (!file.type.startsWith('audio/wav') && !file.type.startsWith('audio/mpeg'))) {
+                statusEl.textContent = 'Please provide a .wav or .mp3 file.';
                 return;
             };
 
@@ -340,7 +524,6 @@
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 1024; 
-            // Only create source if not already created
             if (!source) {
                 source = audioContext.createMediaElementSource(audioPlayer);
                 source.connect(analyser);
@@ -350,125 +533,96 @@
             dataArray = new Uint8Array(bufferLength);
             smoothedDataArray = new Float32Array(bufferLength);
         }
-
+        
         let currentAnalyser = null;
-        let currentProgressAudio = null; // audio element used for progress timing (audioPlayer or exportAudio)
 
-        function setCurrentAnalyser(analyserNode) {
-            currentAnalyser = analyserNode;
-            if (!currentAnalyser) {
-                bufferLength = 0;
-                dataArray = null;
-                smoothedDataArray = null;
-                return;
-            }
-            bufferLength = currentAnalyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-            smoothedDataArray = new Float32Array(bufferLength);
-            for (let i = 0; i < bufferLength; i++) smoothedDataArray[i] = 0;
-        }
+        function renderFrame(forExport = false) {
+            const currentCtx = forExport ? exportCanvasCtx : canvasCtx;
+            const currentCanvas = forExport ? exportCanvas : canvas;
+            
+            const localAnalyser = forExport ? exportAnalyser : analyser;
+            let localDataArray = forExport ? exportDataArray : dataArray;
+            let localSmoothedDataArray = forExport ? exportSmoothedDataArray : smoothedDataArray;
+            const localBufferLength = forExport ? exportBufferLength : bufferLength;
 
-        function renderFrame() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
+            const centerX = currentCanvas.width / 2;
+            const centerY = currentCanvas.height / 2;
 
-            // Background
             if (isBgImageLoaded) {
-                canvasCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+                currentCtx.drawImage(bgImage, 0, 0, currentCanvas.width, currentCanvas.height);
             } else {
-                canvasCtx.fillStyle = '#000000';
-                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                currentCtx.fillStyle = '#000000';
+                currentCtx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
             }
 
-            // subtle vignette for depth
-            const vignette = canvasCtx.createRadialGradient(centerX, centerY, Math.min(canvas.width, canvas.height)*0.2, centerX, centerY, Math.max(canvas.width, canvas.height));
+            const vignette = currentCtx.createRadialGradient(centerX, centerY, Math.min(currentCanvas.width, currentCanvas.height)*0.2, centerX, centerY, Math.max(currentCanvas.width, currentCanvas.height));
             vignette.addColorStop(0, 'rgba(0,0,0,0)');
             vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
-            canvasCtx.fillStyle = vignette;
-            canvasCtx.fillRect(0,0,canvas.width,canvas.height);
+            currentCtx.fillStyle = vignette;
+            currentCtx.fillRect(0,0,currentCanvas.width,currentCanvas.height);
 
-            if (!currentAnalyser || !dataArray) {
-                drawBranding();
+            if (!localAnalyser || !localDataArray) {
+                drawBranding(0, forExport);
                 return;
             }
 
-            currentAnalyser.getByteFrequencyData(dataArray);
-            for (let i = 0; i < bufferLength; i++) {
-                smoothedDataArray[i] = smoothedDataArray[i] * SMOOTHING_FACTOR + dataArray[i] * (1 - SMOOTHING_FACTOR);
+            localAnalyser.getByteFrequencyData(localDataArray);
+            for (let i = 0; i < localBufferLength; i++) {
+                localSmoothedDataArray[i] = localSmoothedDataArray[i] * vizSettings.smoothing + localDataArray[i] * (1 - vizSettings.smoothing);
             }
 
-            const baseRadius = Math.max(80, Math.min(140, Math.floor(Math.min(canvas.width, canvas.height) * 0.12)));
-            const barWidth = Math.max(3, Math.floor((canvas.width / 1024) * 6));
-            const numBars = Math.floor(bufferLength * 0.38);
-
-            // make bars shorter overall by reducing usable outward space
+            const baseRadius = vizSettings.baseRadius * (forExport ? (EXPORT_WIDTH / 1024) : 1);
+            const barWidth = vizSettings.barWidth * (forExport ? (EXPORT_WIDTH / 1024) : 1);
+            const numBars = Math.floor(localBufferLength * vizSettings.barCountPercent);
+            
             const maxBarHeight = Math.max(8, Math.floor((centerY - baseRadius - 28) * 0.7));
 
-            // Calculate average bass
             let bassAvg = 0;
-            for (let i = 0; i < 5 && i < bufferLength; i++) bassAvg += smoothedDataArray[i];
-            bassAvg = bassAvg / Math.min(5, bufferLength);
+            for (let i = 0; i < 5 && i < localBufferLength; i++) bassAvg += localSmoothedDataArray[i];
+            bassAvg = bassAvg / Math.min(5, localBufferLength);
 
-            // palettes: dark and light for purple and green
-            const darkPurple = [90, 0, 140];
-            const lightPurple = [190, 120, 255];
-            const darkGreen = [0, 100, 60];
-            const lightGreen = [0, 220, 140];
-
-            // glow settings
-            canvasCtx.save();
-            canvasCtx.shadowBlur = 20;
-            canvasCtx.shadowColor = 'rgba(0,0,0,0.35)';
+            const color1StartRgb = hexToRgb(vizSettings.color1Start);
+            const color1EndRgb = hexToRgb(vizSettings.color1End);
+            const color2StartRgb = hexToRgb(vizSettings.color2Start);
+            const color2EndRgb = hexToRgb(vizSettings.color2End);
+            
+            currentCtx.save();
+            currentCtx.shadowBlur = forExport ? 28 : 20;
+            currentCtx.shadowColor = 'rgba(0,0,0,0.35)';
 
             for (let i = 0; i < numBars; i++) {
-                // Make bars less reactive by normalizing, softly compressing peaks,
-                // and scaling down overall. This reduces jitter and sharp spikes.
-                const raw = smoothedDataArray[i];
-                // ignore tiny noise
+                const raw = localSmoothedDataArray[i];
                 if (raw < 4) continue;
-                const norm = raw / 255; // 0..1
-                // soft compression to reduce peak responsiveness (exponent > 1)
+                const norm = raw / 255;
                 const compressed = Math.pow(norm, 1.25);
-                // scale relative to available space and reduce overall height
                 let barHeight = compressed * maxBarHeight * 0.82;
                 if (barHeight < 2) continue;
-                // cap to available space
                 barHeight = Math.min(barHeight, maxBarHeight);
 
                 const angle = (i / numBars) * Math.PI - (Math.PI / 2);
                 const mirroredAngle = Math.PI - angle;
 
-                // alternate between purple and green per bar
-                const isPurple = (i % 2 === 0);
-                const light = isPurple ? lightPurple : lightGreen;
-                const dark = isPurple ? darkPurple : darkGreen;
-
-                const percent = Math.min(barHeight / maxBarHeight, 1);
-                const r = Math.round(light[0] + (dark[0] - light[0]) * percent);
-                const g = Math.round(light[1] + (dark[1] - light[1]) * percent);
-                const b = Math.round(light[2] + (dark[2] - light[2]) * percent);
+                const isColor1 = (i % 2 === 0);
+                const startColor = isColor1 ? color1StartRgb : color2StartRgb;
+                const endColor = isColor1 ? color1EndRgb : color2EndRgb;
 
                 const drawBar = (rotation) => {
-                    canvasCtx.save();
-                    canvasCtx.translate(centerX, centerY);
-                    canvasCtx.rotate(rotation);
+                    currentCtx.save();
+                    currentCtx.translate(centerX, centerY);
+                    currentCtx.rotate(rotation);
 
-                    // gradient from center (subtle light) to tip (darker)
-                    const gradient = canvasCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
-                    gradient.addColorStop(0, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.06)`);
-                    gradient.addColorStop(0.35, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.95)`);
-                    gradient.addColorStop(0.85, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.95)`);
-                    gradient.addColorStop(1, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.0)`);
-                    canvasCtx.fillStyle = gradient;
-
-                    // rounded rectangle with outer cap
+                    const gradient = currentCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
+                    gradient.addColorStop(0.35, `rgba(${startColor.join(',')}, 0.95)`);
+                    gradient.addColorStop(0.85, `rgba(${endColor.join(',')}, 0.95)`);
+                    currentCtx.fillStyle = gradient;
+                    
                     const rectHeight = Math.max(2, barHeight - (barWidth / 2));
-                    canvasCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
-                    canvasCtx.beginPath();
-                    canvasCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
-                    canvasCtx.fill();
+                    currentCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
+                    currentCtx.beginPath();
+                    currentCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
+                    currentCtx.fill();
 
-                    canvasCtx.restore();
+                    currentCtx.restore();
                 };
 
                 const rotationOffset = -Math.PI / 2;
@@ -476,76 +630,59 @@
                 drawBar(mirroredAngle + rotationOffset);
             }
 
-            canvasCtx.restore();
+            currentCtx.restore();
 
-            // central pulse (slightly softer)
             const pulseRadius = Math.min(maxBarHeight * 0.75, bassAvg * 0.18 + baseRadius);
-            canvasCtx.beginPath();
-            const pulseGrad = canvasCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
-            pulseGrad.addColorStop(0, 'rgba(130, 40, 210, 0.45)');
-            pulseGrad.addColorStop(0.6, 'rgba(0, 180, 140, 0.06)');
+            currentCtx.beginPath();
+            const pulseGrad = currentCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
+            pulseGrad.addColorStop(0, `${vizSettings.pulseInner}73`); // ~0.45 alpha
+            pulseGrad.addColorStop(0.6, `${vizSettings.pulseOuter}0F`); // ~0.06 alpha
             pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            canvasCtx.fillStyle = pulseGrad;
-            canvasCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
-            canvasCtx.fill();
+            currentCtx.fillStyle = pulseGrad;
+            currentCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
+            currentCtx.fill();
 
-            drawBranding(bassAvg);
+            drawBranding(bassAvg, forExport);
         }
 
         function startRender() {
-            // Ensure any previous loops are stopped
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            if (animationIntervalId) clearInterval(animationIntervalId);
-
-            if (document.hidden) {
-                animationIntervalId = setInterval(renderFrame, 1000 / 30);
-            } else {
-                animationFrameId = requestAnimationFrame(function loop() {
-                    renderFrame();
-                    animationFrameId = requestAnimationFrame(loop);
-                });
-            }
+             
+            animationFrameId = requestAnimationFrame(function loop() {
+                renderFrame();
+                animationFrameId = requestAnimationFrame(loop);
+            });
         }
+        
+        function drawBranding(bassAvg = 0, forExport = false) {
+            const currentCtx = forExport ? exportCanvasCtx : canvasCtx;
+            const currentCanvas = forExport ? exportCanvas : canvas;
+            const scale = forExport ? EXPORT_WIDTH / 1024 : 1;
 
-        function stopRender() {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-                animationFrameId = null;
-            }
-            if (animationIntervalId) {
-                clearInterval(animationIntervalId);
-                animationIntervalId = null;
-            }
-        }
+            const centerX = currentCanvas.width / 2;
+            const centerY = currentCanvas.height / 2;
+            const pulse = Math.max(0, Math.min(bassAvg * 0.08, 18 * scale));
 
-        function drawBranding(bassAvg = 0) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const pulse = Math.max(0, Math.min(bassAvg * 0.08, 18));
+            currentCtx.save();
+            currentCtx.fillStyle = 'rgba(255,255,255,0.95)';
+            currentCtx.font = `700 ${Math.floor((34 * scale) + pulse)}px Inter`;
+            currentCtx.textAlign = 'center';
+            currentCtx.textBaseline = 'middle';
+            currentCtx.shadowColor = 'rgba(0,0,0,0.6)';
+            currentCtx.shadowBlur = 10 * scale;
+            currentCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - (6 * scale));
+            currentCtx.shadowBlur = 0;
 
-            // Main title (DJ NoTag)
-            canvasCtx.save();
-            canvasCtx.fillStyle = 'rgba(255,255,255,0.95)';
-            canvasCtx.font = `700 ${34 + pulse}px Inter`;
-            canvasCtx.textAlign = 'center';
-            canvasCtx.textBaseline = 'middle';
-            canvasCtx.shadowColor = 'rgba(0,0,0,0.6)';
-            canvasCtx.shadowBlur = 10;
-            canvasCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - 6);
-            canvasCtx.shadowBlur = 0;
+            currentCtx.fillStyle = 'rgba(255,255,255,0.65)';
+            currentCtx.font = `${12 * scale}px Inter`;
+            currentCtx.textAlign = 'right';
+            currentCtx.textBaseline = 'bottom';
+            currentCtx.fillText('Sponsored by Rooted Revival US', currentCanvas.width - (12 * scale), currentCanvas.height - (12 * scale));
 
-            // Sponsor text bottom-right
-            canvasCtx.fillStyle = 'rgba(255,255,255,0.65)';
-            canvasCtx.font = '12px Inter';
-            canvasCtx.textAlign = 'right';
-            canvasCtx.textBaseline = 'bottom';
-            canvasCtx.fillText('Sponsored by Rooted Revival US', canvas.width - 12, canvas.height - 12);
-
-            canvasCtx.restore();
+            currentCtx.restore();
         }
 
         function drawInitialCanvas() {
-            // Draw a clean initial frame: background (if available), subtle vignette, and branding
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (isBgImageLoaded) {
@@ -554,8 +691,7 @@
                 canvasCtx.fillStyle = '#000000';
                 canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
             }
-
-            // subtle vignette for depth (same style as renderFrame)
+            
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const vignette = canvasCtx.createRadialGradient(centerX, centerY, Math.min(canvas.width, canvas.height) * 0.2, centerX, centerY, Math.max(canvas.width, canvas.height));
@@ -563,26 +699,17 @@
             vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
             canvasCtx.fillStyle = vignette;
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // draw the static branding
-            try { drawBranding(0); } catch (e) { /* defensive: if branding not available yet */ }
+            
+            drawBranding(0);
         }
 
         async function startVisualizeExport() {
-            if (isExporting) {
-                // Stop exporting if currently recording
-                isExporting = false;
-                visualizeExportBtn.textContent = 'Visualize & Export';
-                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
-                return;
-            }
-
+            if (isExporting) return;
             if (!audioPlayer.src) {
                 statusEl.textContent = 'No audio loaded.';
                 return;
             }
 
-            // Prepare UI
             recordedChunks = [];
             progressContainer.classList.remove('hidden');
             downloadLink.classList.add('hidden');
@@ -592,19 +719,8 @@
             visualizeExportBtn.disabled = true;
             statusEl.textContent = 'Preparing export...';
 
-            // Get audio duration
-            const duration = audioPlayer.duration;
-            if (!isFinite(duration) || duration <= 0) {
-                statusEl.textContent = 'Error: Could not determine audio duration.';
-                visualizeExportBtn.disabled = false;
-                isExporting = false;
-                return;
-            }
-
-            // Pause playback if running
             if (!audioPlayer.paused) audioPlayer.pause();
 
-            // Create export audio context and analyser using a separate HTMLAudioElement to avoid playback conflicts
             const exportAudioContext = new (window.AudioContext || window.webkitAudioContext)();
             const exportAudio = new Audio(audioPlayer.src);
             exportAudio.crossOrigin = 'anonymous';
@@ -614,102 +730,62 @@
             exportSource.connect(exportAnalyser);
             exportSource.connect(exportAudioContext.destination);
 
-            // Prepare canvas stream and combine with export audio
-            // Create a high-res offscreen canvas for export
             exportCanvas = document.createElement('canvas');
             exportCanvas.width = EXPORT_WIDTH;
             exportCanvas.height = EXPORT_HEIGHT;
             exportCanvasCtx = exportCanvas.getContext('2d');
 
-            // If devicePixelRatio scaling is needed, it is already reflected by EXPORT_* sizes
             const canvasStream = exportCanvas.captureStream(EXPORT_FPS);
             const destination = exportAudioContext.createMediaStreamDestination();
             exportSource.connect(destination);
             const audioTrack = destination.stream.getAudioTracks()[0];
             const combinedStream = new MediaStream([canvasStream.getVideoTracks()[0], audioTrack]);
 
-            // Hook exporter rendering loop to draw into exportCanvas at EXPORT_FPS
             if (exportIntervalId) clearInterval(exportIntervalId);
-            exportIntervalId = setInterval(() => {
-                try { renderExportFrame(); } catch (e) { console.warn('export render error', e); }
-            }, 1000 / EXPORT_FPS);
-             // Feature-detect mime type
+            exportIntervalId = setInterval(() => renderFrame(true), 1000 / EXPORT_FPS);
+            
             let mime = 'video/webm; codecs=vp8,opus';
-            if (!MediaRecorder.isTypeSupported(mime)) {
-                if (MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) mime = 'video/webm; codecs=vp9,opus';
-                else if (MediaRecorder.isTypeSupported('video/webm')) mime = 'video/webm';
-                else mime = '';
-            }
-
-            try {
-                mediaRecorder = mime ? new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 64000000 }) : new MediaRecorder(combinedStream);
-            } catch (err) {
-                console.warn('MediaRecorder init failed, falling back:', err);
-                try { mediaRecorder = new MediaRecorder(combinedStream); } catch (e) { statusEl.textContent = 'Recording not supported in this browser.'; isExporting = false; visualizeExportBtn.disabled = false; return; }
-            }
-
-            mediaRecorder.ondataavailable = (event) => { if (event.data && event.data.size > 0) recordedChunks.push(event.data); };
+            if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
+            
+            mediaRecorder = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 8000000 });
+            mediaRecorder.ondataavailable = (event) => { if (event.data.size > 0) recordedChunks.push(event.data); };
             mediaRecorder.onstop = handleRecordingStop;
             mediaRecorder.start();
 
-            // Prepare analyser arrays for export
             exportBufferLength = exportAnalyser.frequencyBinCount;
             exportDataArray = new Uint8Array(exportBufferLength);
-            exportSmoothedDataArray = new Float32Array(exportBufferLength);
+            exportSmoothedDataArray = new Float32Array(exportBufferLength).fill(0);
 
-            // Use exportAudio for accurate timing/progress
-            currentProgressAudio = exportAudio;
-            setCurrentAnalyser(exportAnalyser);
-
-            // Start rendering
-            startRender();
-
-            // Progress watcher based on exportAudio.currentTime
             const progressWatcher = setInterval(() => {
-                if (!currentProgressAudio || !isFinite(currentProgressAudio.duration)) return;
-                const progressPercent = Math.min((currentProgressAudio.currentTime / currentProgressAudio.duration) * 100, 100);
+                const duration = exportAudio.duration;
+                if (!isFinite(duration) || duration <= 0) return;
+                const progressPercent = Math.min((exportAudio.currentTime / duration) * 100, 100);
                 progressBar.style.width = `${Math.round(progressPercent)}%`;
                 progressText.textContent = `${Math.round(progressPercent)}%`;
-                if (progressPercent >= 100) {
-                    clearInterval(progressWatcher);
-                    statusEl.textContent = 'Finalizing export...';
-                }
             }, 200);
 
             exportAudio.onended = () => {
-                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
+                clearInterval(exportIntervalId);
                 clearInterval(progressWatcher);
+                statusEl.textContent = 'Finalizing...';
             };
-
-            // Start playback of export audio
-            exportAudio.play().catch(err => {
-                console.warn('exportAudio play failed', err);
-            });
+            
+            await exportAudio.play();
         }
 
         function handleRecordingStop() {
-            // Create a Blob from the recorded chunks
             const blob = new Blob(recordedChunks, { type: 'video/webm' });
             const url = URL.createObjectURL(blob);
-
-            // Download link
             downloadLink.href = url;
             downloadLink.download = 'visualization.webm';
             downloadLink.classList.remove('hidden');
 
+            statusEl.textContent = 'Export complete!';
             progressContainer.classList.add('hidden');
-            visualizeExportBtn.textContent = 'Visualize & Export';
             isExporting = false;
             visualizeExportBtn.disabled = false;
-
-            // Cleanup
-            setCurrentAnalyser(null);
-            if (currentProgressAudio) {
-                currentProgressAudio.pause();
-                currentProgressAudio.src = '';
-                currentProgressAudio.load();
-                currentProgressAudio = null;
-            }
+            
             if (mediaRecorder) {
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 mediaRecorder = null;
@@ -723,166 +799,24 @@
 
         function handleVideoSelect(files) {
             const file = files[0];
-            if (!file) {
-                statusEl.textContent = 'No file selected.';
-                return;
-            }
-
+            if (!file) return;
             const fileURL = URL.createObjectURL(file);
             videoPlayer.src = fileURL;
-            statusEl.textContent = `Loaded: ${file.name}`;
         }
 
         // --- Init ---
         drawInitialCanvas();
+        updateVizSettings(); // Set initial settings from HTML values
 
-        function renderExportFrame() {
-            if (!exportCanvasCtx || !exportAnalyser || !exportDataArray) return;
+        // Re-setup live visualizer if audio is played directly
+        audioPlayer.onplay = () => {
+            setupAudioContext();
+            startRender();
+        };
 
-            const cw = exportCanvas.width;
-            const ch = exportCanvas.height;
-            const centerX = cw / 2;
-            const centerY = ch / 2;
-
-            // Background
-            if (isBgImageLoaded) {
-                exportCanvasCtx.drawImage(bgImage, 0, 0, cw, ch);
-            } else {
-                exportCanvasCtx.fillStyle = '#000000';
-                exportCanvasCtx.fillRect(0, 0, cw, ch);
-            }
-
-            // vignette
-            const vignette = exportCanvasCtx.createRadialGradient(centerX, centerY, Math.min(cw, ch)*0.2, centerX, centerY, Math.max(cw, ch));
-            vignette.addColorStop(0, 'rgba(0,0,0,0)');
-            vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
-            exportCanvasCtx.fillStyle = vignette;
-            exportCanvasCtx.fillRect(0,0,cw,ch);
-
-            exportAnalyser.getByteFrequencyData(exportDataArray);
-            for (let i = 0; i < exportBufferLength; i++) {
-                exportSmoothedDataArray[i] = exportSmoothedDataArray[i] * SMOOTHING_FACTOR + exportDataArray[i] * (1 - SMOOTHING_FACTOR);
-            }
-
-            const baseRadius = Math.max(120, Math.min(260, Math.floor(Math.min(cw, ch) * 0.08)));
-            const barWidth = Math.max(6, Math.floor((cw / 3840) * 12));
-            const numBars = Math.floor(exportBufferLength * 0.38);
-            const maxBarHeight = Math.max(12, Math.floor((centerY - baseRadius - 40) * 0.7));
-
-            // bass avg
-            let bassAvg = 0;
-            for (let i = 0; i < 5 && i < exportBufferLength; i++) bassAvg += exportSmoothedDataArray[i];
-            bassAvg = bassAvg / Math.min(5, exportBufferLength);
-
-            const darkPurple = [90, 0, 140];
-            const lightPurple = [190, 120, 255];
-            const darkGreen = [0, 100, 60];
-            const lightGreen = [0, 220, 140];
-
-            exportCanvasCtx.save();
-            exportCanvasCtx.shadowBlur = 28;
-            exportCanvasCtx.shadowColor = 'rgba(0,0,0,0.35)';
-
-            for (let i = 0; i < numBars; i++) {
-                const raw = exportSmoothedDataArray[i];
-                if (raw < 4) continue;
-                const norm = raw / 255;
-                const compressed = Math.pow(norm, 1.25);
-                let barHeight = compressed * maxBarHeight * 0.82;
-                if (barHeight < 2) continue;
-                barHeight = Math.min(barHeight, maxBarHeight);
-
-                const angle = (i / numBars) * Math.PI - (Math.PI / 2);
-                const mirroredAngle = Math.PI - angle;
-                const isPurple = (i % 2 === 0);
-                const light = isPurple ? lightPurple : lightGreen;
-                const dark = isPurple ? darkPurple : darkGreen;
-                const percent = Math.min(barHeight / maxBarHeight, 1);
-
-                const drawBar = (rotation) => {
-                    exportCanvasCtx.save();
-                    exportCanvasCtx.translate(centerX, centerY);
-                    exportCanvasCtx.rotate(rotation);
-
-                    const gradient = exportCanvasCtx.createLinearGradient(0, baseRadius, 0, baseRadius + barHeight);
-                    gradient.addColorStop(0, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.06)`);
-                    gradient.addColorStop(0.35, `rgba(${light[0]}, ${light[1]}, ${light[2]}, 0.95)`);
-                    gradient.addColorStop(0.85, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.95)`);
-                    gradient.addColorStop(1, `rgba(${dark[0]}, ${dark[1]}, ${dark[2]}, 0.0)`);
-                    exportCanvasCtx.fillStyle = gradient;
-
-                    const rectHeight = Math.max(2, barHeight - (barWidth / 2));
-                    exportCanvasCtx.fillRect(-barWidth / 2, baseRadius, barWidth, rectHeight);
-                    exportCanvasCtx.beginPath();
-                    exportCanvasCtx.arc(0, baseRadius + rectHeight, barWidth / 2, 0, Math.PI * 2);
-                    exportCanvasCtx.fill();
-                    exportCanvasCtx.restore();
-                };
-
-                const rotationOffset = -Math.PI / 2;
-                drawBar(angle + rotationOffset);
-                drawBar(mirroredAngle + rotationOffset);
-            }
-
-            exportCanvasCtx.restore();
-
-            // central pulse
-            const pulseRadius = Math.min(maxBarHeight * 0.75, bassAvg * 0.18 + baseRadius);
-            exportCanvasCtx.beginPath();
-            const pulseGrad = exportCanvasCtx.createRadialGradient(centerX, centerY, 8, centerX, centerY, pulseRadius);
-            pulseGrad.addColorStop(0, 'rgba(130, 40, 210, 0.45)');
-            pulseGrad.addColorStop(0.6, 'rgba(0, 180, 140, 0.06)');
-            pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            exportCanvasCtx.fillStyle = pulseGrad;
-            exportCanvasCtx.arc(centerX, centerY, pulseRadius, 0, 2 * Math.PI);
-            exportCanvasCtx.fill();
-
-            // branding scaled for export
-            try { 
-                exportCanvasCtx.save();
-                exportCanvasCtx.fillStyle = 'rgba(255,255,255,0.95)';
-                exportCanvasCtx.font = `700 ${Math.floor(48 + Math.min(24, bassAvg * 0.08))}px Inter`;
-                exportCanvasCtx.textAlign = 'center';
-                exportCanvasCtx.textBaseline = 'middle';
-                exportCanvasCtx.shadowColor = 'rgba(0,0,0,0.6)';
-                exportCanvasCtx.shadowBlur = 14;
-                exportCanvasCtx.fillText(brandingName || 'DJ NoTag', centerX, centerY - 10);
-                exportCanvasCtx.shadowBlur = 0;
-                exportCanvasCtx.fillStyle = 'rgba(255,255,255,0.65)';
-                exportCanvasCtx.font = '20px Inter';
-                exportCanvasCtx.textAlign = 'right';
-                exportCanvasCtx.textBaseline = 'bottom';
-                exportCanvasCtx.fillText('Sponsored by Rooted Revival US', cw - 18, ch - 18);
-                exportCanvasCtx.restore();
-            } catch (e) { /* ignore */ }
-        }
-
-        // --- Background and Branding Controls ---
-        chooseBgBtn.addEventListener('click', () => bgFileInput.click());
-        bgFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file || !file.type.startsWith('image/')) {
-                statusEl.textContent = 'Please select a valid image file.';
-                return;
-            }
-            const fileURL = URL.createObjectURL(file);
-            bgImage.src = fileURL;
-            bgPreview.src = fileURL;
-            statusEl.textContent = 'Background image loaded.';
-        });
-
-        resetBgBtn.addEventListener('click', () => {
-            bgImage.src = 'background.png';
-            bgPreview.src = 'img/background.png';
-            statusEl.textContent = 'Background image reset to default.';
-        });
-
-        clearNameBtn.addEventListener('click', () => {
-            brandingNameInput.value = 'DJ NoTag';
-            statusEl.textContent = 'Branding name reset to default.';
-        });
+        audioPlayer.onpause = () => {
+             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        };
     </script>
 </body>
 </html>
-
-
