@@ -19,10 +19,28 @@
     body{background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; padding:20px; box-sizing:border-box;}
     .container{max-width:1180px;margin:0 auto;}
     header.site{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
-    header.site .logo{display:flex;gap:10px;align-items:center}
+    header.site .logo{display:flex;gap:10px;align-items:center; flex-shrink: 0;}
     header.site h1{margin:0;font-family:Montserrat, Inter;font-weight:700;font-size:20px}
+    /* Navigation Styles */
+    header.site nav { margin-left: auto; }
+    header.site nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 28px;
+    }
+    header.site nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s ease;
+    }
+    header.site nav a:hover { color: var(--accent); }
     .layout{display:grid;grid-template-columns: 1fr 360px; gap:18px;}
     @media (max-width:950px){ .layout{grid-template-columns:1fr;} .right-col{order:2} }
+    @media (max-width:700px){ header.site nav { display:none; } } /* Hide nav on small screens */
     .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(31,75,47,0.08);overflow:hidden;}
     canvas{width:100%;height:auto;border-radius:10px;background:#000;display:block;}
     .file-drop-area{border:2px dashed rgba(31,75,47,0.18);background:rgba(31,75,47,0.03);padding:14px;border-radius:10px;text-align:center;cursor:pointer;}
@@ -50,6 +68,23 @@
 <body>
   <div class="container">
     <header class="site">
+      <div class="logo">
+        <img src="img/logo.svg" alt="logo" style="width:42px;height:42px" />
+        <div>
+          <h1>Plant Families Explorer — Audiovisualizer</h1>
+          <div class="title">Customize visuals live and export high-quality video</div>
+        </div>
+      </div>
+      <nav>
+        <ul class="main-nav">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
+        <li><a href="/families.html">Plant Families</a></li>
+        <li><a href="/identification.html">Field Identification</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a class="active" href="/audiovisualizer.html">Audiovisualizer</a></li>
+        </ul>
+      </nav>
     </header>
 
     <div class="layout">
@@ -185,10 +220,10 @@
 
   <script>
   /***************************************************************
-   * Audiovisualizer v1.1
+   * Audiovisualizer v1.2
    * Full-page implementation with live graphical controls,
    * background upload, presets, and export.
-   * MODS: Visible export, separate text color, fixed BG path.
+   * MODS: Visible export, separate text color, fixed BG path, nav.
    ***************************************************************/
 
   // DOM
