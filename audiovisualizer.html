@@ -9,70 +9,80 @@
 
   <style>
     :root{
-      --bg:#cfead7;
-      --ink:#213926;
-      --accent:#1f4b2f;
-      --muted: rgba(33,57,38,0.65);
-      --card-bg: rgba(255,255,255,0.75);
+      --bg-1: #0f1720; /* deep */
+      --bg-2: #112726; /* teal */
+      --card: rgba(255,255,255,0.06);
+      --glass: rgba(255,255,255,0.04);
+      --accent: #7c5cff;
+      --accent-2: #00f0a7;
+      --muted: rgba(255,255,255,0.65);
+      --glass-border: rgba(255,255,255,0.06);
+      --card-radius: 14px;
     }
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-    body{background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; padding:20px; box-sizing:border-box;}
+
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--muted);background:linear-gradient(160deg,var(--bg-1) 0%,var(--bg-2) 100%);}
+    body{padding:28px;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
     .container{max-width:1180px;margin:0 auto;}
-    header.site{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
-    header.site .logo{display:flex;gap:10px;align-items:center; flex-shrink: 0;}
-    header.site h1{margin:0;font-family:Montserrat, Inter;font-weight:700;font-size:20px}
-    /* Navigation Styles */
-    header.site nav { margin-left: auto; }
-    header.site nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      gap: 28px;
-    }
-    header.site nav a {
-      text-decoration: none;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 15px;
-      transition: color 0.2s ease;
-    }
-    header.site nav a:hover { color: var(--accent); }
-    .layout{display:grid;grid-template-columns: 1fr 360px; gap:18px;}
-    @media (max-width:950px){ .layout{grid-template-columns:1fr;} .right-col{order:2} }
-    @media (max-width:700px){ header.site nav { display:none; } } /* Hide nav on small screens */
-    .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(31,75,47,0.08);overflow:hidden;}
-    canvas{width:100%;height:auto;border-radius:10px;background:#000;display:block;}
-    .file-drop-area{border:2px dashed rgba(31,75,47,0.18);background:rgba(31,75,47,0.03);padding:14px;border-radius:10px;text-align:center;cursor:pointer;}
-    .controls{display:flex;flex-direction:column;gap:10px;}
-    .control-row{display:flex;gap:8px;align-items:center;}
-    label{font-weight:600;font-size:13px;color:var(--muted);min-width:100px}
-    input[type="range"]{width:100%}
-    input[type="text"], select{padding:8px;border-radius:8px;border:1px solid rgba(33,57,38,0.12);min-width:0}
-    button{background:var(--accent);color:#f4f1e9;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
-    button.secondary{background:transparent;color:var(--accent);border:1px solid rgba(31,75,47,0.12)}
+
+    header.site{display:flex;align-items:center;gap:16px;margin-bottom:18px;color:rgba(255,255,255,0.92);}
+    header.site .logo{display:flex;gap:12px;align-items:center;flex-shrink:0}
+    header.site h1{margin:0;font-family:Montserrat, Inter;font-weight:700;font-size:18px}
+    header.site .title-small{font-size:13px;color:rgba(255,255,255,0.8);opacity:0.9}
+
+    /* nav */
+    header.site nav{margin-left:auto}
+    header.site nav ul{display:flex;gap:18px;list-style:none;padding:0;margin:0}
+    header.site nav a{color:rgba(255,255,255,0.75);text-decoration:none;font-weight:600}
+    header.site nav a.active{color:var(--accent)}
+
+    /* layout */
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.right-col{order:2}}
+
+    /* glass card */
+    .card{background:var(--card);backdrop-filter: blur(8px) saturate(120%);-webkit-backdrop-filter: blur(8px) saturate(120%);padding:14px;border-radius:var(--card-radius);border:1px solid var(--glass-border);box-shadow:0 10px 40px rgba(2,6,23,0.6);color:var(--muted)}
+
+    /* canvas */
+    .stage-wrap{position:relative;border-radius:12px;overflow:hidden}
+    canvas{display:block;width:100%;height:auto;background:transparent}
+
+    /* controls */
+    .controls{display:flex;flex-direction:column;gap:12px}
+    .control-row{display:flex;gap:10px;align-items:center}
+    label{font-weight:600;font-size:13px;color:rgba(255,255,255,0.85);min-width:110px}
+    input[type=range]{width:100%}
+    input[type=text], select{padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:var(--muted)}
+    button{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#0b0b0b;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
     .small{padding:6px 8px;font-size:13px}
-    .muted{color:#406147;font-size:13px}
-    .row{display:flex;gap:8px;align-items:center}
-    .preset-list{display:flex;gap:6px;flex-wrap:wrap}
-    .preset-pill{padding:6px 10px;border-radius:999px;background:rgba(31,75,47,0.08);cursor:pointer;font-size:13px}
-    .status{font-size:13px;color:#33523d}
-    .hidden{display:none}
-    .title{font-family:Montserrat;font-weight:700;font-size:18px;margin-bottom:6px}
-    .sub{font-size:13px;color:#475d4f;margin-bottom:8px}
-    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
-    .color-row{display:flex;gap:8px;align-items:center}
-    .bg-preview{width:84px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(31,75,47,0.08)}
+
+    .file-drop-area{border-radius:12px;padding:14px;border:1px dashed rgba(255,255,255,0.06);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer;text-align:center}
+    .file-drop-area:hover{transform:translateY(-2px);transition:transform 0.18s ease}
+
+    .status{font-size:13px;color:rgba(255,255,255,0.8)}
+    .muted{color:rgba(255,255,255,0.7);font-size:13px}
+    .title{font-family:Montserrat;font-weight:700;font-size:16px;color:rgba(255,255,255,0.95);margin-bottom:6px}
+    .sub{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:8px}
+
+    .bg-preview{width:84px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.04)}
+
+    footer{margin-top:18px;text-align:center;color:rgba(255,255,255,0.55);font-size:13px}
+
+    /* subtle helper for labels and values */
+    .value-inline{font-weight:700;color:var(--accent);margin-left:8px}
+
+    /* tiny FPS badge */
+    .fps-badge{position:absolute;right:12px;top:12px;background:rgba(0,0,0,0.35);backdrop-filter: blur(6px);padding:6px 8px;border-radius:8px;color:var(--muted);font-weight:700;font-size:12px}
   </style>
 </head>
 <body>
   <div class="container">
     <header class="site">
       <div class="logo">
-        <img src="img/logo.svg" alt="logo" style="width:42px;height:42px" />
+        <img src="img/logo.svg" alt="logo" style="width:40px;height:40px" />
         <div>
           <h1>Plant Families Explorer — Audiovisualizer</h1>
-          <div class="title">Customize visuals live and export high-quality video</div>
+          <div class="title-small">Studio — live visuals & high-quality exports</div>
         </div>
       </div>
       <nav>
@@ -92,9 +102,9 @@
         <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
           <div>
             <div class="title">Audiovisualizer Studio</div>
-            <div class="sub">Drag a .wav/.mp3 below, tweak settings, then export.</div>
+            <div class="sub">Drag an audio file below, tweak modern visual effects, then export.</div>
           </div>
-          <div class="row">
+          <div style="display:flex;gap:8px;align-items:center">
             <button id="startBtn" class="small">Start</button>
             <button id="stopBtn" class="small secondary" style="display:none">Stop</button>
             <button id="exportBtn" class="small">Export</button>
@@ -102,14 +112,15 @@
           </div>
         </div>
 
-        <div style="margin-top:12px">
+        <div style="margin-top:12px" class="stage-wrap card" id="stageWrap">
+          <div class="fps-badge" id="fpsBadge">-- FPS</div>
           <canvas id="visualizerCanvas" width="1024" height="576"></canvas>
         </div>
 
         <div style="margin-top:12px;display:grid;grid-template-columns:1fr 220px;gap:12px">
           <div>
             <div id="wav-drop-area" class="file-drop-area">
-              <div style="font-weight:700">Drop audio (.wav/.mp3) or click to choose</div>
+              <div style="font-weight:700;color:rgba(255,255,255,0.9)">Drop audio (.wav/.mp3) or click to choose</div>
               <div id="wavFileName" class="muted" style="margin-top:6px"></div>
             </div>
             <input id="wavFileInput" type="file" accept="audio/*" class="hidden" />
@@ -128,8 +139,8 @@
           <div class="status" id="status">Ready.</div>
           <div style="flex:1"></div>
           <div id="progressWrap" style="min-width:160px;display:none;align-items:center">
-            <div style="background:#e6efe5;border-radius:999px;height:10px;overflow:hidden;width:200px">
-              <div id="progressBar" style="height:10px;width:0%;background:var(--accent)"></div>
+            <div style="background:rgba(255,255,255,0.06);border-radius:999px;height:10px;overflow:hidden;width:200px">
+              <div id="progressBar" style="height:10px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2))"></div>
             </div>
             <div style="margin-left:8px" id="progressText" class="muted">0%</div>
           </div>
@@ -147,33 +158,33 @@
           </div>
 
           <div class="control-row">
-            <label for="reactivity">Reactivity</label>
+            <label for="reactivity">Reactivity <span id="reactivityVal" class="value-inline">0.6</span></label>
             <input id="reactivity" type="range" min="0" max="1" step="0.01" value="0.6" />
           </div>
 
           <div class="control-row">
-            <label for="baseRadius">Base Size</label>
+            <label for="baseRadius">Base Size <span id="baseVal" class="value-inline">120</span></label>
             <input id="baseRadius" type="range" min="40" max="320" step="1" value="120" />
           </div>
 
           <div class="control-row">
-            <label for="barWidth">Bar Width</label>
-            <input id="barWidth" type="range" min="2" max="30" step="1" value="6" />
-          </div>
-
-          <div class="control-row">
-            <label for="barCount">Bar Count</label>
+            <label for="barCount">Bar Count <span id="barCountVal" class="value-inline">128</span></label>
             <input id="barCount" type="range" min="8" max="512" step="1" value="128" />
           </div>
 
           <div class="control-row">
-            <label>Bar Colors</label>
-            <div class="color-row">
-              <input id="colorA" type="color" value="#c36cf0" />
-              <input id="colorB" type="color" value="#00e08a" />
+            <label for="barWidth">Bar Width</label>
+            <input id="barWidth" type="range" min="2" max="40" step="1" value="6" />
+          </div>
+
+          <div class="control-row">
+            <label>Colors</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="colorA" type="color" value="#7c5cff" />
+              <input id="colorB" type="color" value="#00f0a7" />
             </div>
           </div>
-          
+
           <div class="control-row">
             <label for="textColor">Text Color</label>
             <input id="textColor" type="color" value="#ffffff" />
@@ -182,6 +193,16 @@
           <div class="control-row">
             <label>Glow</label>
             <input id="glow" type="checkbox" checked />
+          </div>
+
+          <div class="control-row">
+            <label>Particles</label>
+            <input id="particleDensity" type="range" min="0" max="200" step="1" value="60" />
+          </div>
+
+          <div class="control-row">
+            <label>Rings</label>
+            <input id="ringCount" type="range" min="0" max="6" step="1" value="2" />
           </div>
 
           <div class="control-row">
@@ -196,7 +217,7 @@
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
             <button id="savePreset" class="small">Save Preset</button>
             <button id="loadPreset" class="small secondary">Load Preset</button>
-            <select id="presetSelect" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(31,75,47,0.08)">
+            <select id="presetSelect" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)">
               <option value="">— choose preset —</option>
             </select>
           </div>
@@ -206,24 +227,23 @@
             <button id="randomize" class="small">Randomize</button>
           </div>
 
-          <div style="margin-top:10px;font-size:12px;color:#334d3a">
-            Pro tip: Increase <strong>Reactivity</strong> for snappier bars. Increase <strong>Base Size</strong> to pull bars outward.
+          <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.7)">
+            Tip: Increase <strong>Particles</strong> and <strong>Rings</strong> for cinematic visuals. Toggle <strong>Glow</strong> to control bloom.
           </div>
         </div>
       </aside>
     </div>
 
     <footer>
-      Built for Rooted Revival — audiovisual experiments. Exported videos use WebM (VP8/Opus) when available.
+      Built for Rooted Revival — audiovisual experiments. Exports use WebM (VP8/Opus) when available.
     </footer>
   </div>
 
   <script>
   /***************************************************************
-   * Audiovisualizer v1.2
-   * Full-page implementation with live graphical controls,
-   * background upload, presets, and export.
-   * MODS: Visible export, separate text color, fixed BG path, nav.
+   * Audiovisualizer v2.0 — modernized
+   * - glass UI, particles, rings, parallax, smoother bars
+   * - keeps presets/export/player from v1
    ***************************************************************/
 
   // DOM
@@ -241,6 +261,7 @@
   const progressWrap = document.getElementById('progressWrap');
   const progressBar = document.getElementById('progressBar');
   const progressText = document.getElementById('progressText');
+  const fpsBadge = document.getElementById('fpsBadge');
 
   // Controls
   const brandingNameEl = document.getElementById('brandingName');
@@ -260,12 +281,17 @@
   const presetSelect = document.getElementById('presetSelect');
   const resetAllBtn = document.getElementById('resetAll');
   const randomizeBtn = document.getElementById('randomize');
+  const particleDensityEl = document.getElementById('particleDensity');
+  const ringCountEl = document.getElementById('ringCount');
+  const reactivityVal = document.getElementById('reactivityVal');
+  const baseVal = document.getElementById('baseVal');
+  const barCountVal = document.getElementById('barCountVal');
 
-  // Canvas size helper (match CSS size but use internal resolution)
+  // Canvas size helper
   function resizeCanvas() {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     const styleW = canvas.clientWidth;
-    const styleH = Math.max(200, canvas.clientWidth * 9/16); // keep 16:9-ish
+    const styleH = Math.max(220, canvas.clientWidth * 9/16);
     canvas.width = Math.floor(styleW * ratio);
     canvas.height = Math.floor(styleH * ratio);
     ctx.setTransform(ratio,0,0,ratio,0,0);
@@ -273,65 +299,38 @@
   window.addEventListener('resize', () => { resizeCanvas(); drawInitial(); });
   resizeCanvas();
 
-  // Background image handling
+  // background image
   const bgImage = new Image();
-  let customBgURL = null;
-  let bgLoaded = false;
+  let customBgURL = null; let bgLoaded = false;
   bgImage.onload = () => { bgLoaded = true; drawInitial(); };
-  bgImage.onerror = () => { bgLoaded = false; console.warn('bg load failed'); };
-
-  // Default background (local file expected in same folder)
+  bgImage.onerror = () => { bgLoaded = false; };
   bgImage.src = 'background.png';
 
   chooseBgBtn.addEventListener('click', () => bgFileInput.click());
   bgFileInput.addEventListener('change', (e) => {
-    const f = e.target.files && e.target.files[0];
-    if(!f) return;
+    const f = e.target.files && e.target.files[0]; if(!f) return;
     if(customBgURL) URL.revokeObjectURL(customBgURL);
-    customBgURL = URL.createObjectURL(f);
-    bgImage.src = customBgURL;
-    bgPreview.src = customBgURL;
-    status('Background loaded');
+    customBgURL = URL.createObjectURL(f); bgImage.src = customBgURL; bgPreview.src = customBgURL; status('Background loaded');
   });
 
-  // Audio input handlers
+  // audio input
   wavDropArea.addEventListener('click', () => wavFileInput.click());
   wavFileInput.addEventListener('change', (e) => handleAudioFiles(e.target.files));
   wavDropArea.addEventListener('dragover', e => { e.preventDefault(); wavDropArea.style.opacity = 0.9; });
   wavDropArea.addEventListener('dragleave', e => { e.preventDefault(); wavDropArea.style.opacity = 1; });
   wavDropArea.addEventListener('drop', (e) => { e.preventDefault(); wavDropArea.style.opacity = 1; handleAudioFiles(e.dataTransfer.files); });
 
-  function handleAudioFiles(files) {
-    const f = files[0];
-    if(!f) return;
-    const url = URL.createObjectURL(f);
-    audioPlayer.src = url;
-    wavFileName.textContent = f.name;
-    status('Audio loaded — ready');
-    // autoplay preview off by default
-  }
+  function handleAudioFiles(files) { const f = files[0]; if(!f) return; const url = URL.createObjectURL(f); audioPlayer.src = url; wavFileName.textContent = f.name; status('Audio loaded — ready'); }
 
   // Audio context + analyser
-  let audioCtx = null;
-  let analyser = null;
-  let sourceNode = null;
-  let dataArray = null;
-  let bufferLength = 0;
-  let smoothingArray = null;
-
+  let audioCtx = null; let analyser = null; let sourceNode = null; let dataArray = null; let bufferLength = 0; let smoothingArray = null;
   function ensureAudioContext() {
-    if(audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    smoothingArray = new Float32Array(bufferLength);
+    if(audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048; bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength); smoothingArray = new Float32Array(bufferLength);
   }
 
-  // Visual config (keeps UI and drawing code in sync)
+  // config
   const config = {
-    reactivity: parseFloat(reactivityEl.value), // 0..1 (higher => more reactive)
+    reactivity: parseFloat(reactivityEl.value),
     baseRadius: parseInt(baseRadiusEl.value,10),
     barWidth: parseInt(barWidthEl.value,10),
     barCount: parseInt(barCountEl.value,10),
@@ -339,553 +338,283 @@
     colorB: colorBEl.value,
     textColor: textColorEl.value,
     glow: glowEl.checked,
-    branding: brandingNameEl.value
+    branding: brandingNameEl.value,
+    particles: parseInt(particleDensityEl.value,10),
+    rings: parseInt(ringCountEl.value,10)
   };
 
-  // Map reactivity to smoothing factor used in exponential smoothing
-  function smoothingFromReactivity(r) {
-    // r = 0 => very smooth (less reactive) ; r = 1 => instant (very reactive)
-    // smoothing near 1 => less reactive. We'll map r -> smoothing in range [0.02 .. 0.96]
-    return 0.96 - (r * 0.94); // r=0 -> 0.96 (very smooth), r=1 -> 0.02 (fast)
-  }
+  function smoothingFromReactivity(r) { return 0.96 - (r * 0.94); }
 
-  // Bind control inputs -> config
-  function bindControls() {
-    reactivityEl.addEventListener('input', () => { config.reactivity = parseFloat(reactivityEl.value); });
-    baseRadiusEl.addEventListener('input', () => { config.baseRadius = parseInt(baseRadiusEl.value,10); });
+  // bind controls
+  function bindControls(){
+    reactivityEl.addEventListener('input', () => { config.reactivity = parseFloat(reactivityEl.value); reactivityVal.textContent = reactivityEl.value; });
+    baseRadiusEl.addEventListener('input', () => { config.baseRadius = parseInt(baseRadiusEl.value,10); baseVal.textContent = baseRadiusEl.value; });
     barWidthEl.addEventListener('input', () => { config.barWidth = parseInt(barWidthEl.value,10); });
-    barCountEl.addEventListener('input', () => { config.barCount = parseInt(barCountEl.value,10); });
+    barCountEl.addEventListener('input', () => { config.barCount = parseInt(barCountEl.value,10); barCountVal.textContent = barCountEl.value; });
     colorAEl.addEventListener('input', () => { config.colorA = colorAEl.value; });
     colorBEl.addEventListener('input', () => { config.colorB = colorBEl.value; });
-    textColorEl.addEventListener('input', () => { config.textColor = textColorEl.value; });
+    textColorEl.addEventListener('input', () => { config.textColor = textColorEl.value; drawInitial(); });
     glowEl.addEventListener('change', () => { config.glow = glowEl.checked; });
     brandingNameEl.addEventListener('input', () => { config.branding = brandingNameEl.value || 'DJ NoTag'; drawInitial(); });
-
-    // Presets
-    savePresetBtn.addEventListener('click', savePreset);
-    loadPresetBtn.addEventListener('click', loadSelectedPreset);
-    presetSelect.addEventListener('change', () => { /* nothing immediate */ });
+    particleDensityEl.addEventListener('input', () => { config.particles = parseInt(particleDensityEl.value,10); adjustParticles(); });
+    ringCountEl.addEventListener('input', () => { config.rings = parseInt(ringCountEl.value,10); });
+    savePresetBtn.addEventListener('click', savePreset); loadPresetBtn.addEventListener('click', loadSelectedPreset);
+    presetSelect.addEventListener('change', () => {});
     resetAllBtn.addEventListener('click', resetToDefaults);
     randomizeBtn.addEventListener('click', randomizeConfig);
   }
   bindControls();
 
-  // Presets via localStorage
+  // presets
   function presetKeyList(){ return JSON.parse(localStorage.getItem('av_presets:list') || '[]'); }
-  function savePreset(){
-    const name = prompt('Preset name:');
-    if(!name) return;
-    const item = {
-      name,
-      timestamp:Date.now(),
-      config: {
-        reactivity: config.reactivity,
-        baseRadius: config.baseRadius,
-        barWidth: config.barWidth,
-        barCount: config.barCount,
-        colorA: config.colorA,
-        colorB: config.colorB,
-        textColor: config.textColor,
-        glow: config.glow,
-        branding: config.branding
-      }
-    };
-    const list = presetKeyList();
-    list.push(item);
-    localStorage.setItem('av_presets:list', JSON.stringify(list));
-    rebuildPresetSelect();
-    status('Preset saved: ' + name);
-  }
-  function rebuildPresetSelect(){
-    const list = presetKeyList();
-    presetSelect.innerHTML = '<option value="">— choose preset —</option>';
-    list.slice().reverse().forEach((p, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx; // index in reversed list
-      opt.textContent = `${p.name} (${new Date(p.timestamp).toLocaleString()})`;
-      presetSelect.appendChild(opt);
-    });
-  }
-  function loadSelectedPreset(){
-    const idxStr = presetSelect.value;
-    if(!idxStr){ alert('Pick a preset first'); return; }
-    const list = presetKeyList();
-    const inverted = list.slice().reverse();
-    const p = inverted[parseInt(idxStr,10)];
-    if(!p) { alert('Preset not found'); return; }
-    // Apply
-    config.reactivity = p.config.reactivity; reactivityEl.value = config.reactivity;
-    config.baseRadius = p.config.baseRadius; baseRadiusEl.value = config.baseRadius;
-    config.barWidth = p.config.barWidth; barWidthEl.value = config.barWidth;
-    config.barCount = p.config.barCount; barCountEl.value = config.barCount;
-    config.colorA = p.config.colorA; colorAEl.value = config.colorA;
-    config.colorB = p.config.colorB; colorBEl.value = config.colorB;
-    config.textColor = p.config.textColor || '#ffffff'; textColorEl.value = config.textColor;
-    config.glow = p.config.glow; glowEl.checked = config.glow;
-    config.branding = p.config.branding; brandingNameEl.value = config.branding;
-    drawInitial();
-    status('Preset loaded: ' + p.name);
-  }
+  function savePreset(){ const name = prompt('Preset name:'); if(!name) return; const item = { name, timestamp:Date.now(), config:{ reactivity:config.reactivity, baseRadius:config.baseRadius, barWidth:config.barWidth, barCount:config.barCount, colorA:config.colorA, colorB:config.colorB, textColor:config.textColor, glow:config.glow, branding:config.branding, particles:config.particles, rings:config.rings } }; const list = presetKeyList(); list.push(item); localStorage.setItem('av_presets:list', JSON.stringify(list)); rebuildPresetSelect(); status('Preset saved: ' + name); }
+  function rebuildPresetSelect(){ const list = presetKeyList(); presetSelect.innerHTML = '<option value="">— choose preset —</option>'; list.slice().reverse().forEach((p, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${p.name} (${new Date(p.timestamp).toLocaleString()})`; presetSelect.appendChild(opt); }); }
+  function loadSelectedPreset(){ const idxStr = presetSelect.value; if(!idxStr){ alert('Pick a preset first'); return; } const list = presetKeyList(); const inverted = list.slice().reverse(); const p = inverted[parseInt(idxStr,10)]; if(!p){ alert('Preset not found'); return; } config.reactivity = p.config.reactivity; reactivityEl.value = config.reactivity; config.baseRadius = p.config.baseRadius; baseRadiusEl.value = config.baseRadius; config.barWidth = p.config.barWidth; barWidthEl.value = config.barWidth; config.barCount = p.config.barCount; barCountEl.value = config.barCount; config.colorA = p.config.colorA; colorAEl.value = config.colorA; config.colorB = p.config.colorB; colorBEl.value = config.colorB; config.textColor = p.config.textColor || '#ffffff'; textColorEl.value = config.textColor; config.glow = p.config.glow; glowEl.checked = config.glow; config.branding = p.config.branding; brandingNameEl.value = config.branding; config.particles = p.config.particles || 60; particleDensityEl.value = config.particles; config.rings = p.config.rings || 2; ringCountEl.value = config.rings; drawInitial(); status('Preset loaded: ' + p.name); }
   rebuildPresetSelect();
 
-  function resetToDefaults(){
-    reactivityEl.value = 0.6; config.reactivity = 0.6;
-    baseRadiusEl.value = 120; config.baseRadius = 120;
-    barWidthEl.value = 6; config.barWidth = 6;
-    barCountEl.value = 128; config.barCount = 128;
-    colorAEl.value = '#c36cf0'; config.colorA = '#c36cf0';
-    colorBEl.value = '#00e08a'; config.colorB = '#00e08a';
-    textColorEl.value = '#ffffff'; config.textColor = '#ffffff';
-    glowEl.checked = true; config.glow = true;
-    brandingNameEl.value = 'DJ NoTag'; config.branding = 'DJ NoTag';
-    bgImage.src = 'background.png'; bgPreview.src = 'background.png';
-    status('Reset to defaults');
-    drawInitial();
+  function resetToDefaults(){ reactivityEl.value = 0.6; config.reactivity = 0.6; baseRadiusEl.value = 120; config.baseRadius = 120; barWidthEl.value = 6; config.barWidth = 6; barCountEl.value = 128; config.barCount = 128; colorAEl.value = '#7c5cff'; config.colorA = '#7c5cff'; colorBEl.value = '#00f0a7'; config.colorB = '#00f0a7'; textColorEl.value = '#ffffff'; config.textColor = '#ffffff'; glowEl.checked = true; config.glow = true; brandingNameEl.value = 'DJ NoTag'; config.branding = 'DJ NoTag'; particleDensityEl.value = 60; config.particles = 60; ringCountEl.value = 2; config.rings = 2; bgImage.src = 'background.png'; bgPreview.src = 'background.png'; status('Reset to defaults'); drawInitial(); }
+
+  function randomizeConfig(){ const randColor = ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); config.reactivity = +(Math.random()*0.95).toFixed(2); reactivityEl.value = config.reactivity; config.baseRadius = Math.floor(60 + Math.random()*200); baseRadiusEl.value = config.baseRadius; config.barWidth = Math.floor(2 + Math.random()*24); barWidthEl.value = config.barWidth; config.barCount = Math.floor(32 + Math.random()*320); barCountEl.value = config.barCount; config.colorA = randColor(); colorAEl.value = config.colorA; config.colorB = randColor(); colorBEl.value = config.colorB; config.textColor = randColor(); textColorEl.value = config.textColor; config.glow = Math.random() > 0.4; glowEl.checked = config.glow; config.particles = Math.floor(10 + Math.random()*140); particleDensityEl.value = config.particles; config.rings = Math.floor(Math.random()*5); ringCountEl.value = config.rings; drawInitial(); status('Randomized'); }
+
+  // Rendering + particles
+  let rafId = null; let playingAnalyser = null; let lastTime = performance.now(); let frames = 0; let lastFpsUpdate = performance.now();
+
+  // mouse parallax
+  const mouse = {x:0,y:0};
+  const stageWrap = document.getElementById('stageWrap');
+  stageWrap.addEventListener('mousemove', (e)=>{
+    const r = stageWrap.getBoundingClientRect(); mouse.x = (e.clientX - r.left) / r.width - 0.5; mouse.y = (e.clientY - r.top) / r.height - 0.5;
+  });
+  stageWrap.addEventListener('mouseleave', ()=>{ mouse.x = 0; mouse.y = 0; });
+
+  // particles
+  let particles = [];
+  function createParticle() { return { x: (Math.random()-0.5), y: (Math.random()-0.5), vx: (Math.random()-0.5)*0.002, vy: (Math.random()-0.5)*0.002, size: 1+Math.random()*3, hue: Math.random()*360 }; }
+  function adjustParticles(){ const desired = Math.max(0, Math.min(600, config.particles)); while(particles.length < desired) particles.push(createParticle()); while(particles.length > desired) particles.pop(); }
+  adjustParticles();
+
+  function hexToRgb(hex) { const h = hex.replace('#',''); const num = parseInt(h,16); const r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255; return [r,g,b]; }
+
+  function drawInitial(){ ctx.clearRect(0,0,canvas.width,canvas.height); const cw = canvas.width/(window.devicePixelRatio||1); const ch = canvas.height/(window.devicePixelRatio||1);
+    // soft gradient background layer
+    if(bgLoaded){ try{ ctx.drawImage(bgImage,0,0,cw,ch); } catch(e){ ctx.fillStyle = '#041014'; ctx.fillRect(0,0,cw,ch);} }
+    else{ const g = ctx.createLinearGradient(0,0,cw,ch); g.addColorStop(0,'#071018'); g.addColorStop(1,'#092b23'); ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch); }
+
+    // subtle overlay
+    ctx.fillStyle = 'rgba(3,6,10,0.2)'; ctx.fillRect(0,0,cw,ch);
+
+    // center brand
+    const cx = cw/2, cy = ch/2;
+    ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20}px Montserrat, Inter`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8); ctx.restore();
   }
 
-  function randomizeConfig(){
-    config.reactivity = +(Math.random()*0.95).toFixed(2); reactivityEl.value = config.reactivity;
-    config.baseRadius = Math.floor(60 + Math.random()*200); baseRadiusEl.value = config.baseRadius;
-    config.barWidth = Math.floor(2 + Math.random()*24); barWidthEl.value = config.barWidth;
-    config.barCount = Math.floor(32 + Math.random()*320); barCountEl.value = config.barCount;
-    const randColor = ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-    config.colorA = randColor(); colorAEl.value = config.colorA;
-    config.colorB = randColor(); colorBEl.value = config.colorB;
-    config.textColor = randColor(); textColorEl.value = config.textColor;
-    config.glow = Math.random() > 0.4; glowEl.checked = config.glow;
-    drawInitial();
-    status('Randomized');
-  }
+  // render frame (combined visuals)
+  function renderFrame(){
+    if(!playingAnalyser){ drawInitial(); return; }
+    // FPS
+    frames++; const now = performance.now(); if(now - lastFpsUpdate > 500){ const fps = Math.round((frames*1000)/(now-lastFpsUpdate)); fpsBadge.textContent = fps + ' FPS'; frames = 0; lastFpsUpdate = now; }
 
-  // Rendering loop
-  let rafId = null;
-  let playingAnalyser = null;
-
-  function drawInitial() {
-    // single frame with background + brand
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const cw = canvas.width / (window.devicePixelRatio || 1);
-    const ch = canvas.height / (window.devicePixelRatio || 1);
+    const cw = canvas.width/(window.devicePixelRatio||1); const ch = canvas.height/(window.devicePixelRatio||1); const cx = cw/2, cy = ch/2;
 
     // background
-    if(bgLoaded) {
-      try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
-    } else {
-      ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch);
-    }
+    if(bgLoaded){ try{ ctx.drawImage(bgImage,0,0,cw,ch); } catch(e){ ctx.fillStyle = '#041014'; ctx.fillRect(0,0,cw,ch);} }
+    else{ const g = ctx.createLinearGradient(0,0,cw,ch); g.addColorStop(0,'#071018'); g.addColorStop(1,'#092b23'); ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch); }
 
-    // vignette
-    const cx = cw/2, cy = ch/2;
-    const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
-    vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
-    ctx.fillStyle = vig;
-    ctx.fillRect(0,0,cw,ch);
-
-    // Branding
-    ctx.save();
-    ctx.fillStyle = config.textColor;
-    ctx.font = `700 ${24}px Montserrat, Inter`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowBlur = 16; ctx.shadowColor = 'rgba(0,0,0,0.6)';
-    ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 6);
-    ctx.restore();
-
-    // small sponsor
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.font = '12px Inter';
-    ctx.textAlign = 'right';
-    ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
-  }
-
-  // Utility: convert hex to rgb array
-  function hexToRgb(hex) {
-    const h = hex.replace('#','');
-    const num = parseInt(h,16);
-    const r = (num >> 16) & 255, g = (num >> 8) & 255, b = num & 255;
-    return [r,g,b];
-  }
-
-  function renderFrame() {
-    if(!playingAnalyser) { drawInitial(); return; }
-
-    const cw = canvas.width / (window.devicePixelRatio || 1);
-    const ch = canvas.height / (window.devicePixelRatio || 1);
-    const cx = cw/2, cy = ch/2;
-
-    // background
-    if(bgLoaded) {
-      try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
-    } else { ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
-
-    // vignette
-    const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
-    vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.22)');
-    ctx.fillStyle = vig;
-    ctx.fillRect(0,0,cw,ch);
+    // subtle dark vignette
+    const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.08,cx,cy,Math.max(cw,ch)); vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,0.4)'); ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
 
     // get data
     playingAnalyser.getByteFrequencyData(dataArray);
     const smoothing = smoothingFromReactivity(config.reactivity);
+    for(let i=0;i<dataArray.length;i++){ smoothingArray[i] = smoothingArray[i] * smoothing + dataArray[i] * (1 - smoothing); }
 
-    // smooth array
-    for(let i=0;i<dataArray.length;i++){
-      smoothingArray[i] = smoothingArray[i] * smoothing + dataArray[i] * (1 - smoothing);
-    }
-
-    // drawing bars in radial mirrored layout
+    // base values
     const numBars = Math.max(8, Math.min(config.barCount, dataArray.length));
-    const baseRadius = Math.max(20, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
+    const baseRadius = Math.max(30, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
     const bw = Math.max(1, Math.min(config.barWidth, 80));
-    const maxBarHeight = Math.max(10, (Math.min(cw,ch)/2 - baseRadius - 20));
+    const maxBarHeight = Math.max(6, (Math.min(cw,ch)/2 - baseRadius - 12));
 
-    // prepare colors
-    const aRGB = hexToRgb(config.colorA);
-    const bRGB = hexToRgb(config.colorB);
-
-    if(config.glow) {
-      ctx.shadowBlur = 24;
-      ctx.shadowColor = 'rgba(0,0,0,0.45)';
-    } else {
-      ctx.shadowBlur = 0;
+    // draw rings
+    const ringCount = Math.max(0, Math.min(8, config.rings));
+    for(let r=ringCount; r>0; r--){
+      const t = (r / (ringCount+1));
+      const ringRad = baseRadius + (t * maxBarHeight * 0.7) + 8*((Math.sin(performance.now()/600 + r)));
+      ctx.beginPath(); ctx.lineWidth = 1.5; const alpha = 0.08 + 0.08*t; ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+      ctx.setLineDash([6,6]); ctx.arc(cx + mouse.x*12, cy + mouse.y*12, ringRad, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
     }
+
+    // bars (radial but smoothed, with bezier cap)
+    const aRGB = hexToRgb(config.colorA); const bRGB = hexToRgb(config.colorB);
     ctx.save();
-
+    if(config.glow) ctx.shadowBlur = 22, ctx.shadowColor = 'rgba(0,0,0,0.45)'; else ctx.shadowBlur = 0;
     for(let i=0;i<numBars;i++){
-      const raw = smoothingArray[i];
-      if(raw < 4) continue;
-      const norm = raw / 255;
-      const compressed = Math.pow(norm, 1.2);
-      let barH = compressed * maxBarHeight;
-      barH = Math.min(barH, maxBarHeight);
-      if(barH < 1) continue;
-
-      const angle = (i / numBars) * Math.PI - (Math.PI/2);
-      const mirroredAngle = Math.PI - angle;
-      const isA = (i % 2 === 0);
-
-      const light = isA ? aRGB : bRGB;
-      const dark  = isA ? bRGB : aRGB;
+      const raw = smoothingArray[i]; if(raw < 6) continue;
+      const norm = raw/255; const compressed = Math.pow(norm, 1.12); let barH = compressed * maxBarHeight; barH = Math.min(barH, maxBarHeight);
+      const ang = (i / numBars) * Math.PI - (Math.PI/2);
+      const mirrored = Math.PI - ang; const rotOffset = -Math.PI/2;
+      const light = (i % 2 === 0) ? aRGB : bRGB; const dark = (i % 2 === 0) ? bRGB : aRGB;
       const pct = Math.min(barH / maxBarHeight, 1);
+      const rcol = Math.round(light[0] + (dark[0]-light[0]) * pct);
+      const gcol = Math.round(light[1] + (dark[1]-light[1]) * pct);
+      const bcol = Math.round(light[2] + (dark[2]-light[2]) * pct);
 
-      // color interpolation
-      const r = Math.round(light[0] + (dark[0]-light[0]) * pct);
-      const g = Math.round(light[1] + (dark[1]-light[1]) * pct);
-      const b = Math.round(light[2] + (dark[2]-light[2]) * pct);
-
-      const drawBarAt = (rot) => {
-        ctx.save();
-        ctx.translate(cx,cy);
-        ctx.rotate(rot);
-        // gradient along bar
+      const drawBar = (rot)=>{
+        ctx.save(); ctx.translate(cx + mouse.x*10, cy + mouse.y*10); ctx.rotate(rot + rotOffset);
         const grad = ctx.createLinearGradient(0, baseRadius, 0, baseRadius + barH);
-        grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.1)`);
-        grad.addColorStop(0.4, `rgba(${light[0]},${light[1]},${light[2]},0.95)`);
-        grad.addColorStop(0.85, `rgba(${r},${g},${b},0.95)`);
-        grad.addColorStop(1, `rgba(${r},${g},${b},0.0)`);
+        grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.12)`);
+        grad.addColorStop(0.5, `rgba(${rcol},${gcol},${bcol},0.95)`);
+        grad.addColorStop(1, `rgba(${rcol},${gcol},${bcol},0.02)`);
         ctx.fillStyle = grad;
-        const rectH = Math.max(2, barH - (bw/2));
-        ctx.fillRect(-bw/2, baseRadius, bw, rectH);
-        ctx.beginPath();
-        ctx.arc(0, baseRadius + rectH, bw/2, 0, Math.PI*2);
-        ctx.fill();
+        // rounded rectangle via path
+        const w = bw; const h = Math.max(2, barH);
+        const x = -w/2; const y = baseRadius;
+        const rRad = w/1.8;
+        ctx.beginPath(); ctx.moveTo(x + rRad, y); ctx.lineTo(x + w - rRad, y); ctx.quadraticCurveTo(x + w, y, x + w, y + rRad); ctx.lineTo(x + w, y + h - rRad); ctx.quadraticCurveTo(x + w, y + h, x + w - rRad, y + h); ctx.lineTo(x + rRad, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - rRad); ctx.lineTo(x, y + rRad); ctx.quadraticCurveTo(x, y, x + rRad, y); ctx.fill();
         ctx.restore();
       };
 
-      const offset = -Math.PI/2;
-      drawBarAt(angle + offset);
-      drawBarAt(mirroredAngle + offset);
+      drawBar(ang); drawBar(mirrored);
     }
-
     ctx.restore();
 
-    // central pulse
-    let bassAvg = 0;
-    for(let i=0;i<5 && i<dataArray.length;i++) bassAvg += smoothingArray[i] || 0;
-    bassAvg = bassAvg / Math.min(5, dataArray.length);
-    const pulseRadius = Math.min(maxBarHeight*0.6, baseRadius + bassAvg * 0.07);
+    // particles update
+    const bass = (smoothingArray[1] || 0) / 255;
+    for(let p of particles){
+      // simple motion influenced by audio & mouse
+      p.vx += (Math.random()-0.5)*0.0006 + mouse.x*0.0006 + (bass-0.3)*0.0008;
+      p.vy += (Math.random()-0.5)*0.0006 + mouse.y*0.0006 + (bass-0.3)*0.0008;
+      p.x += p.vx * (20 + bass*40);
+      p.y += p.vy * (20 + bass*40);
+      // wrap
+      if(p.x < -1) p.x = 1; if(p.x > 1) p.x = -1; if(p.y < -1) p.y = 1; if(p.y > 1) p.y = -1;
+    }
 
-    const pulseGrad = ctx.createRadialGradient(cx,cy,8,cx,cy,pulseRadius);
-    pulseGrad.addColorStop(0, 'rgba(200,100,255,0.45)');
-    pulseGrad.addColorStop(0.6, 'rgba(0,220,170,0.06)');
+    // draw particles
+    ctx.save(); ctx.translate(cx,cy);
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i]; const px = p.x * Math.min(cw,ch)/2; const py = p.y * Math.min(cw,ch)/2;
+      const size = p.size * (0.6 + bass*1.4);
+      const hue = (i*7 + performance.now()/40) % 360;
+      ctx.beginPath(); ctx.fillStyle = `rgba(255,255,255,${0.03 + Math.abs(bass)*0.12})`; ctx.arc(px + mouse.x*8, py + mouse.y*8, size, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+
+    // center pulse
+    let bassAvg = 0; for(let i=0;i<6 && i<smoothingArray.length;i++) bassAvg += smoothingArray[i] || 0; bassAvg = bassAvg / Math.min(6, smoothingArray.length);
+    const pulseRadius = Math.min(maxBarHeight*0.7, baseRadius + bassAvg * 0.06);
+    const pulseGrad = ctx.createRadialGradient(cx,cy,6,cx,cy,pulseRadius);
+    const [caR,caG,caB] = hexToRgb(config.colorA); const [cbR,cbG,cbB] = hexToRgb(config.colorB);
+    pulseGrad.addColorStop(0, `rgba(${caR},${caG},${caB},0.25)`);
+    pulseGrad.addColorStop(0.5, `rgba(${cbR},${cbG},${cbB},0.06)`);
     pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = pulseGrad;
-    ctx.beginPath();
-    ctx.arc(cx,cy,pulseRadius,0,Math.PI*2);
-    ctx.fill();
+    ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx + mouse.x*6, cy + mouse.y*6, pulseRadius, 0, Math.PI*2); ctx.fill();
 
     // branding
-    ctx.save();
-    ctx.fillStyle = config.textColor;
-    ctx.font = `700 ${28 + Math.min(24, bassAvg*0.1)}px Montserrat, Inter`;
-    ctx.textAlign = 'center';
-    ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.6)';
-    ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
-    ctx.restore();
+    ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20 + Math.min(18, bassAvg*0.09)}px Montserrat, Inter`; ctx.textAlign='center'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx + mouse.x*6, cy - 8); ctx.restore();
 
-    // sponsor small text
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.font = '12px Inter';
-    ctx.textAlign = 'right';
-    ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
-
-    // loop
     rafId = requestAnimationFrame(renderFrame);
   }
 
-  function startVisualization() {
-    if(!audioPlayer.src) { status('Load an audio file first'); return; }
-    ensureAudioContext();
-
-    // if already started and not connected, connect
-    if(sourceNode) {
-      try { sourceNode.disconnect(); } catch(e){}
-    }
-    sourceNode = audioCtx.createMediaElementSource(audioPlayer);
-    sourceNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    playingAnalyser = analyser;
-    // ensure arrays sized correctly if fftSize changed
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    smoothingArray = new Float32Array(bufferLength);
-
-    // resume audio context on user gesture if needed
-    if(audioCtx.state === 'suspended') audioCtx.resume();
-
-    // start player if not playing
-    if(audioPlayer.paused) {
-      audioPlayer.currentTime = 0;
-      audioPlayer.play().catch(()=>{ /* ignore play failures */ });
-    }
-    // UI
-    startBtn.style.display = 'none';
-    stopBtn.style.display = 'inline-block';
-    status('Playing — visualizer active');
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(renderFrame);
+  function startVisualization(){ if(!audioPlayer.src){ status('Load an audio file first'); return; } ensureAudioContext(); if(sourceNode){ try{ sourceNode.disconnect(); } catch(e){} }
+    sourceNode = audioCtx.createMediaElementSource(audioPlayer); sourceNode.connect(analyser); analyser.connect(audioCtx.destination); playingAnalyser = analyser; bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength); smoothingArray = new Float32Array(bufferLength);
+    if(audioCtx.state === 'suspended') audioCtx.resume(); if(audioPlayer.paused){ audioPlayer.currentTime = 0; audioPlayer.play().catch(()=>{}); }
+    startBtn.style.display = 'none'; stopBtn.style.display = 'inline-block'; status('Playing — visualizer active'); if(rafId) cancelAnimationFrame(rafId); rafId = requestAnimationFrame(renderFrame);
   }
 
-  function stopVisualization() {
-    if(rafId) cancelAnimationFrame(rafId);
-    rafId = null;
-    if(sourceNode) {
-      try { sourceNode.disconnect(); } catch(e){}
-    }
-    playingAnalyser = null;
-    startBtn.style.display = 'inline-block';
-    stopBtn.style.display = 'none';
-    status('Stopped');
-    drawInitial();
-  }
+  function stopVisualization(){ if(rafId) cancelAnimationFrame(rafId); rafId = null; if(sourceNode){ try{ sourceNode.disconnect(); } catch(e){} } playingAnalyser = null; startBtn.style.display='inline-block'; stopBtn.style.display='none'; status('Stopped'); drawInitial(); }
 
   startBtn.addEventListener('click', startVisualization);
-  stopBtn.addEventListener('click', () => {
-    // pause the audio but don't clear file
-    if(!audioPlayer.paused) audioPlayer.pause();
-    stopVisualization();
-  });
+  stopBtn.addEventListener('click', ()=>{ if(!audioPlayer.paused) audioPlayer.pause(); stopVisualization(); });
 
-  // Export (captureStream + MediaRecorder)
+  // export (keeps behavior similar to v1 but uses updated visuals)
   exportBtn.addEventListener('click', async () => {
-    if(!audioPlayer.src) { status('Load audio to export'); return; }
-    stopVisualization(); // Stop the live preview
-    
+    if(!audioPlayer.src){ status('Load audio to export'); return; }
+    stopVisualization();
     const FPS = 30;
-
-    // create an analyser in a separate audio context to avoid playback conflicts
     const exportAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const exportAudio = new Audio(audioPlayer.src);
-    exportAudio.crossOrigin = 'anonymous';
+    const exportAudio = new Audio(audioPlayer.src); exportAudio.crossOrigin = 'anonymous';
     const exportSource = exportAudioCtx.createMediaElementSource(exportAudio);
-    const exportAnalyser = exportAudioCtx.createAnalyser();
-    exportAnalyser.fftSize = 2048;
-    exportSource.connect(exportAnalyser);
-    exportSource.connect(exportAudioCtx.destination);
+    const exportAnalyser = exportAudioCtx.createAnalyser(); exportAnalyser.fftSize = 2048; exportSource.connect(exportAnalyser); exportSource.connect(exportAudioCtx.destination);
+    const exportData = new Uint8Array(exportAnalyser.frequencyBinCount); const exportSmooth = new Float32Array(exportAnalyser.frequencyBinCount); for(let i=0;i<exportSmooth.length;i++) exportSmooth[i]=0;
 
-    const exportData = new Uint8Array(exportAnalyser.frequencyBinCount);
-    const exportSmooth = new Float32Array(exportAnalyser.frequencyBinCount);
-    for(let i=0;i<exportSmooth.length;i++) exportSmooth[i]=0;
+    status('Preparing export...'); progressWrap.style.display = 'flex'; progressBar.style.width = '0%'; progressText.textContent = '0%';
 
-    status('Preparing export...');
-    progressWrap.style.display = 'flex';
-    progressBar.style.width = '0%';
-    progressText.textContent = '0%';
-
-    // Use captureStream to record canvas, then mix with audio track
     const canvasStream = canvas.captureStream(FPS);
-    const audioDest = exportAudioCtx.createMediaStreamDestination();
-    exportSource.connect(audioDest);
+    const audioDest = exportAudioCtx.createMediaStreamDestination(); exportSource.connect(audioDest);
     const audioTrack = audioDest.stream.getAudioTracks()[0];
     const combined = new MediaStream([canvasStream.getVideoTracks()[0], audioTrack]);
 
-    // choose mime
-    let mime = 'video/webm; codecs=vp8,opus';
-    if(!MediaRecorder.isTypeSupported(mime)) {
-      if(MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) mime = 'video/webm; codecs=vp9,opus';
-      else if(MediaRecorder.isTypeSupported('video/webm')) mime = 'video/webm';
-      else mime = '';
-    }
-    let recorder;
-    try { recorder = mime ? new MediaRecorder(combined, { mimeType: mime, videoBitsPerSecond: 2500000 }) : new MediaRecorder(combined); }
-    catch(e){ status('Recording not supported in this browser'); console.warn(e); progressWrap.style.display='none'; return; }
+    let mime = 'video/webm; codecs=vp8,opus'; if(!MediaRecorder.isTypeSupported(mime)){ if(MediaRecorder.isTypeSupported('video/webm; codecs=vp9,opus')) mime='video/webm; codecs=vp9,opus'; else if(MediaRecorder.isTypeSupported('video/webm')) mime='video/webm'; else mime=''; }
+    let recorder; try{ recorder = mime ? new MediaRecorder(combined, { mimeType: mime, videoBitsPerSecond: 3500000 }) : new MediaRecorder(combined); } catch(e){ status('Recording not supported in this browser'); progressWrap.style.display='none'; return; }
 
-    const chunks = [];
-    recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
-    recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.download = 'audiovisualizer.webm';
-      downloadLink.style.display = 'inline-block';
-      status('Export ready — click download');
-      progressWrap.style.display = 'none';
-      drawInitial(); // Reset canvas to initial state
-    };
+    const chunks = []; recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = ()=>{ const blob = new Blob(chunks, { type: 'video/webm' }); const url = URL.createObjectURL(blob); downloadLink.href = url; downloadLink.download = 'audiovisualizer.webm'; downloadLink.style.display = 'inline-block'; status('Export ready — click download'); progressWrap.style.display = 'none'; drawInitial(); };
 
-    // draw loop for export canvas
+    // export loop: render using exportAnalyser data
     let exportRafId = null;
-    function renderExportFrame() {
-      // update progress
-      if(exportAudio.duration && !isNaN(exportAudio.duration)) {
-        const pct = Math.min(100, (exportAudio.currentTime / exportAudio.duration)*100);
-        progressBar.style.width = pct + '%';
-        progressText.textContent = Math.round(pct) + '%';
-      }
+    function renderExportFrame(){ if(exportAudio.duration && !isNaN(exportAudio.duration)){ const pct = Math.min(100, (exportAudio.currentTime/exportAudio.duration)*100); progressBar.style.width = pct + '%'; progressText.textContent = Math.round(pct) + '%'; }
+      // draw same visuals but using exportAnalyser
+      const cw = canvas.width/(window.devicePixelRatio||1); const ch = canvas.height/(window.devicePixelRatio||1); const cx = cw/2, cy = ch/2;
+      if(bgLoaded){ try{ ctx.drawImage(bgImage,0,0,cw,ch); } catch(e){ ctx.fillStyle = '#041014'; ctx.fillRect(0,0,cw,ch);} } else { const g = ctx.createLinearGradient(0,0,cw,ch); g.addColorStop(0,'#071018'); g.addColorStop(1,'#092b23'); ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch); }
+      const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.08,cx,cy,Math.max(cw,ch)); vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,0.4)'); ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
 
-      // This is a direct copy of renderFrame, but using the export audio data source
-      const cw = canvas.width / (window.devicePixelRatio || 1);
-      const ch = canvas.height / (window.devicePixelRatio || 1);
-      const cx = cw/2, cy = ch/2;
-
-      // background
-      if(bgLoaded) {
-        try { ctx.drawImage(bgImage, 0, 0, cw, ch); } catch(e){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
-      } else { ctx.fillStyle = '#000'; ctx.fillRect(0,0,cw,ch); }
-
-      // vignette
-      const vig = ctx.createRadialGradient(cx,cy,Math.min(cw,ch)*0.18, cx,cy, Math.max(cw,ch));
-      vig.addColorStop(0, 'rgba(0,0,0,0)');
-      vig.addColorStop(1, 'rgba(0,0,0,0.22)');
-      ctx.fillStyle = vig; ctx.fillRect(0,0,cw,ch);
-
-      // get data from export source
       exportAnalyser.getByteFrequencyData(exportData);
       const smoothing = smoothingFromReactivity(config.reactivity);
       for(let i=0;i<exportData.length;i++) exportSmooth[i] = exportSmooth[i] * smoothing + exportData[i] * (1 - smoothing);
-      
-      // drawing bars
+
       const numBars = Math.max(8, Math.min(config.barCount, exportData.length));
-      const baseRadius = Math.max(20, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
+      const baseRadius = Math.max(30, Math.min(config.baseRadius, Math.min(cw,ch)/2 - 20));
       const bw = Math.max(1, Math.min(config.barWidth, 80));
-      const maxBarHeight = Math.max(10, (Math.min(cw,ch)/2 - baseRadius - 20));
+      const maxBarHeight = Math.max(6, (Math.min(cw,ch)/2 - baseRadius - 12));
+
+      // rings
+      const ringCount = Math.max(0, Math.min(8, config.rings));
+      for(let r=ringCount; r>0; r--){ const t=(r/(ringCount+1)); const ringRad = baseRadius + (t*maxBarHeight*0.7)+8*((Math.sin(performance.now()/600 + r))); ctx.beginPath(); ctx.lineWidth=1.5; const alpha = 0.08+0.08*t; ctx.strokeStyle = `rgba(255,255,255,${alpha})`; ctx.setLineDash([6,6]); ctx.arc(cx,cy,ringRad,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
+
+      // bars
       const aRGB = hexToRgb(config.colorA); const bRGB = hexToRgb(config.colorB);
-      if(config.glow) { ctx.shadowBlur = 24; ctx.shadowColor = 'rgba(0,0,0,0.45)'; } else { ctx.shadowBlur = 0; }
-      ctx.save();
-      for(let i=0;i<numBars;i++){
-        const raw = exportSmooth[i]; if(raw < 4) continue;
-        const norm = raw/255; const compressed = Math.pow(norm, 1.2); let barH = compressed * maxBarHeight; barH = Math.min(barH, maxBarHeight); if(barH < 1) continue;
-        const angle = (i / numBars) * Math.PI - (Math.PI/2); const mirroredAngle = Math.PI - angle;
-        const isA = i % 2 === 0;
-        const light = isA ? aRGB : bRGB; const dark  = isA ? bRGB : aRGB;
-        const pct = Math.min(barH / maxBarHeight, 1);
-        const r = Math.round(light[0] + (dark[0]-light[0]) * pct); const g = Math.round(light[1] + (dark[1]-light[1]) * pct); const b = Math.round(light[2] + (dark[2]-light[2]) * pct);
-        const drawBarAt = (rot) => {
-          ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
-          const grad = ctx.createLinearGradient(0, baseRadius, 0, baseRadius + barH);
-          grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.1)`);
-          grad.addColorStop(0.4, `rgba(${light[0]},${light[1]},${light[2]},0.95)`);
-          grad.addColorStop(0.85, `rgba(${r},${g},${b},0.95)`);
-          grad.addColorStop(1, `rgba(${r},${g},${b},0.0)`);
-          ctx.fillStyle = grad;
-          const rectH = Math.max(2, barH - (bw/2));
-          ctx.fillRect(-bw/2, baseRadius, bw, rectH);
-          ctx.beginPath(); ctx.arc(0, baseRadius + rectH, bw/2, 0, Math.PI*2); ctx.fill();
-          ctx.restore();
-        };
-        const offset = -Math.PI/2;
-        drawBarAt(angle + offset); drawBarAt(mirroredAngle + offset);
+      ctx.save(); if(config.glow) ctx.shadowBlur = 22, ctx.shadowColor = 'rgba(0,0,0,0.45)'; else ctx.shadowBlur = 0;
+      for(let i=0;i<numBars;i++){ const raw = exportSmooth[i]; if(raw < 6) continue; const norm=raw/255; const compressed=Math.pow(norm,1.12); let barH=compressed*maxBarHeight; barH=Math.min(barH,maxBarHeight); const ang=(i/numBars)*Math.PI - (Math.PI/2); const mirrored=Math.PI - ang; const light=(i%2===0)?aRGB:bRGB; const dark=(i%2===0)?bRGB:aRGB; const pct=Math.min(barH/maxBarHeight,1); const rcol=Math.round(light[0]+(dark[0]-light[0])*pct); const gcol=Math.round(light[1]+(dark[1]-light[1])*pct); const bcol=Math.round(light[2]+(dark[2]-light[2])*pct);
+        const drawBar=(rot)=>{ ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot - Math.PI/2); const grad = ctx.createLinearGradient(0, baseRadius, 0, baseRadius + barH); grad.addColorStop(0, `rgba(${light[0]},${light[1]},${light[2]},0.12)`); grad.addColorStop(0.5, `rgba(${rcol},${gcol},${bcol},0.95)`); grad.addColorStop(1, `rgba(${rcol},${gcol},${bcol},0.02)`); ctx.fillStyle = grad; const w=bw; const h=Math.max(2,barH); const x=-w/2; const y=baseRadius; const rRad=w/1.8; ctx.beginPath(); ctx.moveTo(x + rRad, y); ctx.lineTo(x + w - rRad, y); ctx.quadraticCurveTo(x + w, y, x + w, y + rRad); ctx.lineTo(x + w, y + h - rRad); ctx.quadraticCurveTo(x + w, y + h, x + w - rRad, y + h); ctx.lineTo(x + rRad, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - rRad); ctx.lineTo(x, y + rRad); ctx.quadraticCurveTo(x, y, x + rRad, y); ctx.fill(); ctx.restore(); };
+        drawBar(ang); drawBar(mirrored);
       }
       ctx.restore();
 
-      // central pulse
-      let bassAvg = 0; for(let i=0;i<5 && i<exportSmooth.length;i++) bassAvg += exportSmooth[i] || 0;
-      bassAvg = bassAvg / Math.min(5, exportSmooth.length);
-      const pulseRadius = Math.min(maxBarHeight*0.6, baseRadius + bassAvg * 0.07);
-      const pulseGrad = ctx.createRadialGradient(cx,cy,8,cx,cy,pulseRadius);
-      pulseGrad.addColorStop(0, 'rgba(200,100,255,0.45)');
-      pulseGrad.addColorStop(0.6, 'rgba(0,220,170,0.06)');
-      pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx,cy,pulseRadius,0,Math.PI*2); ctx.fill();
+      // simple pulse
+      let bassAvg=0; for(let i=0;i<6 && i<exportSmooth.length;i++) bassAvg += exportSmooth[i]||0; bassAvg = bassAvg/Math.min(6, exportSmooth.length); const pulseRadius = Math.min(maxBarHeight*0.7, baseRadius + bassAvg*0.06);
+      const pulseGrad = ctx.createRadialGradient(cx,cy,6,cx,cy,pulseRadius); const [caR,caG,caB] = hexToRgb(config.colorA); const [cbR,cbG,cbB] = hexToRgb(config.colorB); pulseGrad.addColorStop(0, `rgba(${caR},${caG},${caB},0.25)`); pulseGrad.addColorStop(0.5, `rgba(${cbR},${cbG},${cbB},0.06)`); pulseGrad.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx,cy,pulseRadius,0,Math.PI*2); ctx.fill();
 
-      // branding
-      ctx.save();
-      ctx.fillStyle = config.textColor;
-      ctx.font = `700 ${28 + Math.min(24, bassAvg*0.1)}px Montserrat, Inter`;
-      ctx.textAlign = 'center';
-      ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.6)';
-      ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
-      ctx.restore();
-
-      // sponsor small text
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.font = '12px Inter';
-      ctx.textAlign = 'right';
-      ctx.fillText('Sponsored by Rooted Revival US', cw - 12, ch - 12);
-      
-      // request next frame
       exportRafId = requestAnimationFrame(renderExportFrame);
     }
 
-    // start recording
-    recorder.start();
-    exportAudio.play().catch(()=>{ /* ignore */ });
-    exportRafId = requestAnimationFrame(renderExportFrame);
-
-    // stop when audio ends
-    exportAudio.addEventListener('ended', () => {
-      if(exportRafId) cancelAnimationFrame(exportRafId);
-      try { recorder.stop(); } catch(e){ console.warn(e); }
-      exportAudioCtx.close().catch(()=>{});
-    });
-
+    recorder.start(); exportAudio.play().catch(()=>{}); exportRafId = requestAnimationFrame(renderExportFrame);
+    exportAudio.addEventListener('ended', ()=>{ if(exportRafId) cancelAnimationFrame(exportRafId); try{ recorder.stop(); } catch(e){} exportAudioCtx.close().catch(()=>{}); });
     status('Recording export...');
   });
 
   // helpers
-  function status(s){
-    statusEl.textContent = s;
-  }
+  function status(s){ statusEl.textContent = s; }
+
+  // particle init
+  adjustParticles();
 
   // initial draw
   drawInitial();
 
-  // load saved presets on start
-  rebuildPresetSelect();
-
-  // ensure canvas redraw when controls change
-  const uiInputs = [reactivityEl, baseRadiusEl, barWidthEl, barCountEl, colorAEl, colorBEl, glowEl, textColorEl];
+  // keep UI -> config sync and preview redraws
+  const uiInputs = [reactivityEl, baseRadiusEl, barWidthEl, barCountEl, colorAEl, colorBEl, glowEl, textColorEl, particleDensityEl, ringCountEl];
   uiInputs.forEach(el => el.addEventListener('input', () => {
-    // update config from controls immediately
     config.reactivity = parseFloat(reactivityEl.value);
     config.baseRadius = parseInt(baseRadiusEl.value,10);
     config.barWidth = parseInt(barWidthEl.value,10);
     config.barCount = parseInt(barCountEl.value,10);
-    config.colorA = colorAEl.value;
-    config.colorB = colorBEl.value;
-    config.textColor = textColorEl.value;
-    config.glow = glowEl.checked;
-    // Don't redraw if playing, it will be handled by the render loop
-    if(!playingAnalyser) {
-        drawInitial();
-    }
+    config.colorA = colorAEl.value; config.colorB = colorBEl.value;
+    config.textColor = textColorEl.value; config.glow = glowEl.checked; config.particles = parseInt(particleDensityEl.value,10); config.rings = parseInt(ringCountEl.value,10);
+    if(!playingAnalyser) drawInitial();
   }));
 
-  // make initial statuses
+  // final status
   status('Ready');
-
   </script>
 </body>
 </html>
