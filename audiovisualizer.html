@@ -76,6 +76,8 @@
 
     /* tiny FPS badge */
     .fps-badge{position:absolute;right:12px;top:12px;background:rgba(0,0,0,0.35);backdrop-filter: blur(6px);padding:6px 8px;border-radius:8px;color:var(--muted);font-weight:700;font-size:12px}
+    /* utility to hide native file inputs (they were visible accidentally) */
+    .hidden{display:none !important}
   </style>
 </head>
 <body>
@@ -125,6 +127,7 @@
             <div id="wav-drop-area" class="file-drop-area">
               <div style="font-weight:700;color:rgba(255,255,255,0.9)">Drop audio (.wav/.mp3) or click to choose</div>
               <div id="wavFileName" class="muted" style="margin-top:6px"></div>
+              <button id="chooseWavBtn" class="file-choose-btn">Choose file</button>
             </div>
             <input id="wavFileInput" type="file" accept="audio/*" class="hidden" />
           </div>
@@ -288,6 +291,7 @@
   const reactivityVal = document.getElementById('reactivityVal');
   const baseVal = document.getElementById('baseVal');
   const barCountVal = document.getElementById('barCountVal');
+  const chooseWavBtn = document.getElementById('chooseWavBtn');
 
   // Canvas size helper
   function resizeCanvas() {
@@ -341,7 +345,6 @@
     textColor: textColorEl.value,
     glow: glowEl.checked,
     branding: brandingNameEl.value,
-    particles: parseInt(particleDensityEl.value,10),
     rings: parseInt(ringCountEl.value,10)
   };
 
@@ -369,14 +372,15 @@
 
   // presets
   function presetKeyList(){ return JSON.parse(localStorage.getItem('av_presets:list') || '[]'); }
-  function savePreset(){ const name = prompt('Preset name:'); if(!name) return; const item = { name, timestamp:Date.now(), config:{ reactivity:config.reactivity, baseRadius:config.baseRadius, barWidth:config.barWidth, barCount:config.barCount, colorA:config.colorA, colorB:config.colorB, textColor:config.textColor, glow:config.glow, branding:config.branding, particles:config.particles, rings:config.rings } }; const list = presetKeyList(); list.push(item); localStorage.setItem('av_presets:list', JSON.stringify(list)); rebuildPresetSelect(); status('Preset saved: ' + name); }
+  // Remove particles from saved preset payload (particles were removed)
+  function savePreset(){ const name = prompt('Preset name:'); if(!name) return; const item = { name, timestamp:Date.now(), config:{ reactivity:config.reactivity, baseRadius:config.baseRadius, barWidth:config.barWidth, barCount:config.barCount, colorA:config.colorA, colorB:config.colorB, textColor:config.textColor, glow:config.glow, branding:config.branding, rings:config.rings } }; const list = presetKeyList(); list.push(item); localStorage.setItem('av_presets:list', JSON.stringify(list)); rebuildPresetSelect(); status('Preset saved: ' + name); }
   function rebuildPresetSelect(){ const list = presetKeyList(); presetSelect.innerHTML = '<option value="">— choose preset —</option>'; list.slice().reverse().forEach((p, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${p.name} (${new Date(p.timestamp).toLocaleString()})`; presetSelect.appendChild(opt); }); }
-  function loadSelectedPreset(){ const idxStr = presetSelect.value; if(!idxStr){ alert('Pick a preset first'); return; } const list = presetKeyList(); const inverted = list.slice().reverse(); const p = inverted[parseInt(idxStr,10)]; if(!p){ alert('Preset not found'); return; } config.reactivity = p.config.reactivity; reactivityEl.value = config.reactivity; config.baseRadius = p.config.baseRadius; baseRadiusEl.value = config.baseRadius; config.barWidth = p.config.barWidth; barWidthEl.value = config.barWidth; config.barCount = p.config.barCount; barCountEl.value = config.barCount; config.colorA = p.config.colorA; colorAEl.value = config.colorA; config.colorB = p.config.colorB; colorBEl.value = config.colorB; config.textColor = p.config.textColor || '#ffffff'; textColorEl.value = config.textColor; config.glow = p.config.glow; glowEl.checked = config.glow; config.branding = p.config.branding; brandingNameEl.value = config.branding; config.particles = p.config.particles || 60; particleDensityEl.value = config.particles; config.rings = p.config.rings || 2; ringCountEl.value = config.rings; drawInitial(); status('Preset loaded: ' + p.name); }
+  function loadSelectedPreset(){ const idxStr = presetSelect.value; if(!idxStr){ alert('Pick a preset first'); return; } const list = presetKeyList(); const inverted = list.slice().reverse(); const p = inverted[parseInt(idxStr,10)]; if(!p){ alert('Preset not found'); return; } config.reactivity = p.config.reactivity; reactivityEl.value = config.reactivity; config.baseRadius = p.config.baseRadius; baseRadiusEl.value = config.baseRadius; config.barWidth = p.config.barWidth; barWidthEl.value = config.barWidth; config.barCount = p.config.barCount; barCountEl.value = config.barCount; config.colorA = p.config.colorA; colorAEl.value = config.colorA; config.colorB = p.config.colorB; colorBEl.value = config.colorB; config.textColor = p.config.textColor || '#ffffff'; textColorEl.value = config.textColor; config.glow = p.config.glow; glowEl.checked = config.glow; config.branding = p.config.branding; brandingNameEl.value = config.branding; config.rings = p.config.rings || 2; ringCountEl.value = config.rings; drawInitial(); status('Preset loaded: ' + p.name); }
   rebuildPresetSelect();
 
-  function resetToDefaults(){ reactivityEl.value = 0.6; config.reactivity = 0.6; baseRadiusEl.value = 120; config.baseRadius = 120; barWidthEl.value = 6; config.barWidth = 6; barCountEl.value = 128; config.barCount = 128; colorAEl.value = '#7c5cff'; config.colorA = '#7c5cff'; colorBEl.value = '#00f0a7'; config.colorB = '#00f0a7'; textColorEl.value = '#ffffff'; config.textColor = '#ffffff'; glowEl.checked = true; config.glow = true; brandingNameEl.value = 'DJ NoTag'; config.branding = 'DJ NoTag'; particleDensityEl.value = 60; config.particles = 60; ringCountEl.value = 2; config.rings = 2; bgImage.src = 'background.png'; bgPreview.src = 'background.png'; status('Reset to defaults'); drawInitial(); }
+  function resetToDefaults(){ reactivityEl.value = 0.6; config.reactivity = 0.6; baseRadiusEl.value = 120; config.baseRadius = 120; barWidthEl.value = 6; config.barWidth = 6; barCountEl.value = 128; config.barCount = 128; colorAEl.value = '#7c5cff'; config.colorA = '#7c5cff'; colorBEl.value = '#00f0a7'; config.colorB = '#00f0a7'; textColorEl.value = '#ffffff'; config.textColor = '#ffffff'; glowEl.checked = true; config.glow = true; brandingNameEl.value = 'DJ NoTag'; config.branding = 'DJ NoTag'; ringCountEl.value = 2; config.rings = 2; bgImage.src = 'background.png'; bgPreview.src = 'background.png'; status('Reset to defaults'); drawInitial(); }
 
-  function randomizeConfig(){ const randColor = ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); config.reactivity = +(Math.random()*0.95).toFixed(2); reactivityEl.value = config.reactivity; config.baseRadius = Math.floor(60 + Math.random()*200); baseRadiusEl.value = config.baseRadius; config.barWidth = Math.floor(2 + Math.random()*24); barWidthEl.value = config.barWidth; config.barCount = Math.floor(32 + Math.random()*320); barCountEl.value = config.barCount; config.colorA = randColor(); colorAEl.value = config.colorA; config.colorB = randColor(); colorBEl.value = config.colorB; config.textColor = randColor(); textColorEl.value = config.textColor; config.glow = Math.random() > 0.4; glowEl.checked = config.glow; config.particles = Math.floor(10 + Math.random()*140); particleDensityEl.value = config.particles; config.rings = Math.floor(Math.random()*5); ringCountEl.value = config.rings; drawInitial(); status('Randomized'); }
+  function randomizeConfig(){ const randColor = ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); config.reactivity = +(Math.random()*0.95).toFixed(2); reactivityEl.value = config.reactivity; config.baseRadius = Math.floor(60 + Math.random()*200); baseRadiusEl.value = config.baseRadius; config.barWidth = Math.floor(2 + Math.random()*24); barWidthEl.value = config.barWidth; config.barCount = Math.floor(32 + Math.random()*320); barCountEl.value = config.barCount; config.colorA = randColor(); colorAEl.value = config.colorA; config.colorB = randColor(); colorBEl.value = config.colorB; config.textColor = randColor(); textColorEl.value = config.textColor; config.glow = Math.random() > 0.4; glowEl.checked = config.glow; config.rings = Math.floor(Math.random()*5); ringCountEl.value = config.rings; drawInitial(); status('Randomized'); }
 
   // Rendering + particles
   let rafId = null; let playingAnalyser = null; let lastTime = performance.now(); let frames = 0; let lastFpsUpdate = performance.now();
@@ -593,20 +597,23 @@
 
   // bokeh default handled in drawInitial/renderFrame via #bokeh checkbox
 
+  // wire choose button to hidden input and prevent duplicate native inputs showing
+  if(chooseWavBtn){ chooseWavBtn.addEventListener('click', (e)=>{ e.stopPropagation(); wavFileInput.click(); }); }
+
   // initial draw
   drawInitial();
 
   // keep UI -> config sync and preview redraws
   const uiInputs = [reactivityEl, baseRadiusEl, barWidthEl, barCountEl, colorAEl, colorBEl, glowEl, textColorEl, bokehEl, ringCountEl];
   uiInputs.forEach(el => el.addEventListener('input', () => {
-    config.reactivity = parseFloat(reactivityEl.value);
-    config.baseRadius = parseInt(baseRadiusEl.value,10);
-    config.barWidth = parseInt(barWidthEl.value,10);
-    config.barCount = parseInt(barCountEl.value,10);
-    config.colorA = colorAEl.value; config.colorB = colorBEl.value;
-    config.textColor = textColorEl.value; config.glow = glowEl.checked; config.particles = parseInt(particleDensityEl.value,10); config.rings = parseInt(ringCountEl.value,10);
-    if(!playingAnalyser) drawInitial();
-  }));
+     config.reactivity = parseFloat(reactivityEl.value);
+     config.baseRadius = parseInt(baseRadiusEl.value,10);
+     config.barWidth = parseInt(barWidthEl.value,10);
+     config.barCount = parseInt(barCountEl.value,10);
+     config.colorA = colorAEl.value; config.colorB = colorBEl.value;
+     config.textColor = textColorEl.value; config.glow = glowEl.checked; config.rings = parseInt(ringCountEl.value,10);
+     if(!playingAnalyser) drawInitial();
+   }));
 
   // final status
   status('Ready');
