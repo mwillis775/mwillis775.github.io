@@ -308,7 +308,8 @@
   // background image
   const bgImage = new Image();
   let customBgURL = null; let bgLoaded = false;
-  bgImage.onload = () => { bgLoaded = true; drawInitial(); };
+  // Defer initial draw from image onload to next frame to ensure config and functions are initialized
+  bgImage.onload = () => { bgLoaded = true; requestAnimationFrame(() => { if (typeof drawInitial === 'function') drawInitial(); }); };
   bgImage.onerror = () => { bgLoaded = false; };
   bgImage.src = 'background.png';
 
