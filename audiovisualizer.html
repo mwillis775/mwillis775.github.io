@@ -597,6 +597,9 @@
   // helpers
   function status(s){ statusEl.textContent = s; }
 
+  // convert #rrggbb or #rgb to [r,g,b]
+  function hexToRgb(hex){ if(!hex) return [0,0,0]; hex = String(hex).trim().replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); if(hex.length!==6) return [0,0,0]; const n = parseInt(hex,16); return [(n>>16)&255, (n>>8)&255, n&255]; }
+
   // bokeh default handled in drawInitial/renderFrame via #bokeh checkbox
 
   // wire choose button to hidden input and prevent duplicate native inputs showing
