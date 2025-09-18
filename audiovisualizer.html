@@ -288,6 +288,7 @@
   const resetAllBtn = document.getElementById('resetAll');
   const randomizeBtn = document.getElementById('randomize');
   const bokehEl = document.getElementById('bokeh');
+  const ringCountEl = document.getElementById('ringCount');
   const reactivityVal = document.getElementById('reactivityVal');
   const baseVal = document.getElementById('baseVal');
   const barCountVal = document.getElementById('barCountVal');
@@ -309,7 +310,7 @@
   const bgImage = new Image();
   let customBgURL = null; let bgLoaded = false;
   // Defer initial draw from image onload to next frame to ensure config and functions are initialized
-  bgImage.onload = () => { bgLoaded = true; requestAnimationFrame(() => { if (typeof drawInitial === 'function') drawInitial(); }); };
+  bgImage.onload = () => { bgLoaded = true; requestAnimationFrame(() => { if (typeof config !== 'undefined' && typeof drawInitial === 'function') drawInitial(); }); };
   bgImage.onerror = () => { bgLoaded = false; };
   bgImage.src = 'background.png';
 
