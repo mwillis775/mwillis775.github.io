@@ -243,6 +243,9 @@
     <footer>
       Built for Rooted Revival — audiovisual experiments. Exports use WebM (VP8/Opus) when available.
     </footer>
+    <div id="sponsored" style="position:fixed;right:24px;bottom:18px;z-index:99;background:rgba(0,0,0,0.32);color:#fff;padding:8px 16px;border-radius:10px;font-size:15px;font-family:Montserrat,Inter;font-weight:700;box-shadow:0 2px 12px rgba(0,0,0,0.18);pointer-events:none;">
+      Sponsored by Rooted Revival
+    </div>
   </div>
 
   <script>
@@ -414,9 +417,23 @@
       const g2 = ctx.createRadialGradient(bX2,bY2,10,bX2,bY2,bR2); g2.addColorStop(0,'rgba(0,240,167,0.03)'); g2.addColorStop(1,'rgba(0,240,167,0)'); ctx.fillStyle = g2; ctx.fillRect(0,0,cw,ch);
     }
 
-    // center brand
-    const cx = cw/2, cy = ch/2;
-    ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20}px Montserrat, Inter`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8); ctx.restore();
+  // center brand
+  const cx = cw/2, cy = ch/2;
+  ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20}px Montserrat, Inter`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8); ctx.restore();
+
+  // sponsored overlay (bottom right)
+  ctx.save();
+  ctx.font = '700 15px Montserrat, Inter';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  ctx.fillRect(cw-12-220, ch-12-32, 220, 32);
+  ctx.fillStyle = '#fff';
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = 'rgba(0,0,0,0.18)';
+  ctx.fillText('Sponsored by Rooted Revival', cw-24, ch-18);
+  ctx.restore();
   }
 
   // render frame (combined visuals)
@@ -511,8 +528,22 @@
     pulseGrad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx + mouse.x*6, cy + mouse.y*6, pulseRadius, 0, Math.PI*2); ctx.fill();
 
-    // branding
-    ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20 + Math.min(18, bassAvg*0.09)}px Montserrat, Inter`; ctx.textAlign='center'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx + mouse.x*6, cy - 8); ctx.restore();
+  // branding
+  ctx.save(); ctx.fillStyle = config.textColor; ctx.font = `700 ${20 + Math.min(18, bassAvg*0.09)}px Montserrat, Inter`; ctx.textAlign='center'; ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.fillText(config.branding || 'DJ NoTag', cx + mouse.x*6, cy - 8); ctx.restore();
+
+  // sponsored overlay (bottom right)
+  ctx.save();
+  ctx.font = '700 15px Montserrat, Inter';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  ctx.fillRect(cw-12-220, ch-12-32, 220, 32);
+  ctx.fillStyle = '#fff';
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = 'rgba(0,0,0,0.18)';
+  ctx.fillText('Sponsored by Rooted Revival', cw-24, ch-18);
+  ctx.restore();
 
     rafId = requestAnimationFrame(renderFrame);
   }
@@ -595,6 +626,20 @@
   ctx.shadowBlur = 12;
   ctx.shadowColor = 'rgba(0,0,0,0.6)';
   ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
+  ctx.restore();
+
+  // sponsored overlay (bottom right)
+  ctx.save();
+  ctx.font = '700 15px Montserrat, Inter';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = 'rgba(0,0,0,0.32)';
+  ctx.fillRect(cw-12-220, ch-12-32, 220, 32);
+  ctx.fillStyle = '#fff';
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = 'rgba(0,0,0,0.18)';
+  ctx.fillText('Sponsored by Rooted Revival', cw-24, ch-18);
   ctx.restore();
 
   exportRafId = requestAnimationFrame(renderExportFrame);
