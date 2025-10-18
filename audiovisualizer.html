@@ -586,7 +586,18 @@
       let bassAvg=0; for(let i=0;i<6 && i<exportSmooth.length;i++) bassAvg += exportSmooth[i]||0; bassAvg = bassAvg/Math.min(6, exportSmooth.length); const pulseRadius = Math.min(maxBarHeight*0.7, baseRadius + bassAvg*0.06);
       const pulseGrad = ctx.createRadialGradient(cx,cy,6,cx,cy,pulseRadius); const [caR,caG,caB] = hexToRgb(config.colorA); const [cbR,cbG,cbB] = hexToRgb(config.colorB); pulseGrad.addColorStop(0, `rgba(${caR},${caG},${caB},0.25)`); pulseGrad.addColorStop(0.5, `rgba(${cbR},${cbG},${cbB},0.06)`); pulseGrad.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = pulseGrad; ctx.beginPath(); ctx.arc(cx,cy,pulseRadius,0,Math.PI*2); ctx.fill();
 
-      exportRafId = requestAnimationFrame(renderExportFrame);
+  // branding
+  ctx.save();
+  ctx.fillStyle = config.textColor;
+  ctx.font = `700 ${20}px Montserrat, Inter`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.fillText(config.branding || 'DJ NoTag', cx, cy - 8);
+  ctx.restore();
+
+  exportRafId = requestAnimationFrame(renderExportFrame);
     }
 
     recorder.start(); exportAudio.play().catch(()=>{}); exportRafId = requestAnimationFrame(renderExportFrame);
