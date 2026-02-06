@@ -541,15 +541,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let svgWidth = container.node().clientWidth || 1200;
 
-    const svg = container.append("svg")
-        .attr("width", svgWidth);
+    // Make the container scrollable with a fixed viewport height
+    const viewportHeight = Math.max(window.innerHeight * 0.8, 600);
+    container.style("max-height", viewportHeight + "px")
+        .style("overflow-y", "auto")
+        .style("overflow-x", "hidden");
 
-    // Timeline group (fixed, not affected by zoom)
+    // --- Tree Layout Configuration ---
+    const nodeVerticalSeparation = 14;
+    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, 1]);
+
+    // --- Data Processing & Hierarchy ---
+    rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
+
+    // Time step used when interpolating divergence times for nodes without explicit values
+    const TIME_INTERPOLATION_STEP = 10; // MYA
+
+    // Assign time-based positions: propagate times down the tree
+    function assignTimes(node) {
+        if (node.data.time !== null && node.data.time !== undefined) {
+            node.timeValue = node.data.time;
+        } else if (node.parent && node.parent.timeValue !== undefined) {
+            if (node.children || node._children) {
+                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - TIME_INTERPOLATION_STEP);
+            } else {
+                node.timeValue = 0;
+            }
+        } else {
+            node.timeValue = 0;
+        }
+        if (node.children) {
+            node.children.forEach(assignTimes);
+        }
+    }
+    assignTimes(rootNode);
+
+    // --- Keep tree fully expanded (no collapsing) ---
+    // Count leaves to compute needed SVG height
+    const leafCount = rootNode.leaves().length;
+    let svgHeight = leafCount * nodeVerticalSeparation + margin.top + timelineHeight + margin.bottom + 100;
+    svgHeight = Math.max(svgHeight, 700);
+
+    const svg = container.append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
+
+    // Timeline group (fixed at top via CSS sticky positioning)
     const timelineG = svg.append("g")
         .attr("class", "timeline-group")
         .attr("transform", `translate(0, 0)`);
 
-    // Main content group (zoomable)
+    // Main content group
     const g = svg.append("g").attr("class", "content-group");
 
     // --- Time Scale ---
@@ -610,55 +652,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     drawTimeline();
 
-    // --- Tree Layout Configuration ---
-    const nodeVerticalSeparation = 16;
-    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, 1]); // horizontal spacing handled by time scale
-
-    // --- Data Processing & Hierarchy ---
-    rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
-
-    // Time step used when interpolating divergence times for nodes without explicit values
-    const TIME_INTERPOLATION_STEP = 10; // MYA
-
-    // Assign time-based positions: propagate times down the tree
-    function assignTimes(node) {
-        if (node.data.time !== null && node.data.time !== undefined) {
-            node.timeValue = node.data.time;
-        } else if (node.parent && node.parent.timeValue !== undefined) {
-            if (node.children || node._children) {
-                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - TIME_INTERPOLATION_STEP);
-            } else {
-                node.timeValue = 0;
-            }
-        } else {
-            node.timeValue = 0;
-        }
-        if (node.children) {
-            node.children.forEach(assignTimes);
-        }
-    }
-    assignTimes(rootNode);
-
-    // --- Keep tree fully expanded (no collapsing) ---
-    // Count all leaves to compute needed height
-    const allLeaves = rootNode.leaves();
-    const leafCount = allLeaves.length;
-    const treeContentHeight = leafCount * nodeVerticalSeparation;
-    let svgHeight = treeContentHeight + margin.top + timelineHeight + margin.bottom + 100;
-    svgHeight = Math.max(svgHeight, 700);
-
-    svg.attr("height", svgHeight);
-
-    // --- Zoom & Pan Behavior ---
-    const zoom = d3.zoom()
-        .scaleExtent([0.05, 4])
-        .on("zoom", (event) => {
-            currentTransform = event.transform;
-            g.attr("transform", event.transform);
-        });
-
-    svg.call(zoom);
-
     // --- Initial Render ---
     update(rootNode);
 
@@ -707,21 +700,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (firstMatch && firstMatch.x !== undefined && firstMatch.y !== undefined) {
             setTimeout(() => {
-                const svgNode = svg.node();
-                const svgWidthCurrent = svgNode.clientWidth;
-                const svgHeightCurrent = svgNode.clientHeight;
-                const targetX = svgWidthCurrent / 2;
-                const targetY = svgHeightCurrent / 2;
-                const nodeX = firstMatch.y;
-                const nodeY = firstMatch.x;
-                const currentScale = currentTransform.k;
-
-                const newTx = targetX - nodeX * currentScale;
-                const newTy = targetY - nodeY * currentScale;
-                const newTransform = d3.zoomIdentity.translate(newTx, newTy).scale(currentScale);
-
-                svg.transition().duration(750).call(zoom.transform, newTransform);
-                currentTransform = newTransform;
+                // Scroll the container to bring the first match into view
+                if (firstMatch.svgNode) {
+                    const containerEl = container.node();
+                    const svgEl = svg.node();
+                    const svgRect = svgEl.getBoundingClientRect();
+                    const containerRect = containerEl.getBoundingClientRect();
+                    // firstMatch.x is vertical position in SVG coordinates
+                    const nodeYInContainer = firstMatch.x - containerEl.scrollTop;
+                    const targetScroll = firstMatch.x - containerRect.height / 2;
+                    containerEl.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                }
             }, 150);
         }
     }
@@ -742,6 +731,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (resetSearchButton) {
         resetSearchButton.addEventListener('click', resetSearchHighlight);
+    }
+
+    // Reset View button - scroll to top of tree
+    const resetViewButton = document.getElementById('reset-view');
+    if (resetViewButton) {
+        resetViewButton.addEventListener('click', () => {
+            container.node().scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     // --- Utility Functions ---
@@ -799,10 +796,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const nodes = treeData.descendants();
         const links = treeData.descendants().slice(1);
 
-        // Find min x to offset all nodes so tree starts from top
+        // Find min x to offset all nodes so tree starts below timeline
         let minX = Infinity;
         nodes.forEach(d => { if (d.x < minX) minX = d.x; });
-        const xOffset = margin.top + timelineHeight + 20 - minX;
+        const xOffset = margin.top + timelineHeight + 10 - minX;
 
         // Override horizontal positions (y) with time-based values
         // Shift vertical positions (x) so tree is visible below timeline
@@ -814,8 +811,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update SVG height to fit all nodes
         let maxX = 0;
         nodes.forEach(d => { if (d.x > maxX) maxX = d.x; });
-        const neededHeight = maxX + margin.bottom + 40;
-        if (neededHeight > svgHeight) {
+        const neededHeight = maxX + margin.bottom + 20;
+        if (neededHeight !== svgHeight) {
             svgHeight = neededHeight;
             svg.attr("height", svgHeight);
         }
@@ -977,6 +974,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', () => {
         svgWidth = container.node().clientWidth || 1200;
         svg.attr("width", svgWidth);
+
+        const newViewportHeight = Math.max(window.innerHeight * 0.8, 600);
+        container.style("max-height", newViewportHeight + "px");
 
         timeScale.range([margin.left, svgWidth - margin.right]);
 
