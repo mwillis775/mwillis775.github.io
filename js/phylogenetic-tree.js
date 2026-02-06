@@ -22,6 +22,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "Marchantiophyta": {
                 name: "Marchantiophyta (Liverworts)",
+                time: 450,
                 subgroups: {
                     "Haplomitriopsida": {
                         name: "Class: Haplomitriopsida",
@@ -95,6 +96,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "Bryophyta": {
                 name: "Bryophyta (Mosses)",
+                time: 440,
                 subgroups: {
                     // --- Basal Lineages ---
                     "Takakiopsida": { name: "Class: Takakiopsida", subgroups: { "Takakiales": { name: "Order: Takakiales", families: ["Takakiaceae"] } } },
@@ -164,6 +166,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "Anthocerotophyta": {
                 name: "Anthocerotophyta (Hornworts)",
+                time: 430,
                  subgroups: {
                     "Leiosporocerotales": { name: "Order: Leiosporocerotales", families: ["Leiosporocerotaceae"] },
                     "Anthocerotales": { name: "Order: Anthocerotales", families: ["Anthocerotaceae"] },
@@ -187,6 +190,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "lycophytes": {
                 name: "Lycopodiophyta (Lycophytes)",
+                time: 420,
                 subgroups: {
                     "Lycopodiales": {
                         name: "Order: Lycopodiales",
@@ -202,6 +206,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "monilophytes": {
                 name: "Polypodiophyta (Ferns & Allies - Monilophytes)",
+                time: 400,
                 subgroups: {
                     "Equisetopsida": {
                         name: "Class: Equisetopsida",
@@ -265,6 +270,7 @@ const plantData = {
             // -----------------------------------------------------------------
             "spermatophytes": {
                 name: "Spermatophytes (Seed Plants)",
+                time: 350,
                 subgroups: {
                     // ---------------------------------------------------------
                     // Division: Gymnosperms (Acrogymnospermae - Paraphyletic or Polyphyletic depending on definition)
@@ -272,6 +278,7 @@ const plantData = {
                     "gymnosperms": {
                         name: "Gymnosperms",
                         note: "Extant gymnosperms comprise four distinct groups/orders.",
+                        time: 310,
                         subgroups: {
                             "Cycadales": { name: "Order: Cycadales (Cycads)", families: ["Cycadaceae", "Zamiaceae", "Stangeriaceae"] }, // Stangeriaceae often included in Zamiaceae
                             "Ginkgoales": { name: "Order: Ginkgoales (Ginkgo)", families: ["Ginkgoaceae"] },
@@ -285,10 +292,12 @@ const plantData = {
                     // ---------------------------------------------------------
                     "angiosperms": {
                         name: "Angiosperms (Flowering Plants)",
+                        time: 140,
                         subgroups: {
                             // --- Basal Angiosperms (ANA Grade - Paraphyletic) ---
                             "basal_angiosperms": {
                                 name: "Basal Angiosperms (ANA Grade)",
+                                time: 135,
                                 subgroups: {
                                     "Amborellales": { name: "Order: Amborellales", families: ["Amborellaceae"] },
                                     "Nymphaeales": { name: "Order: Nymphaeales (Water Lilies)", families: ["Nymphaeaceae", "Cabombaceae", "Hydatellaceae"] },
@@ -298,12 +307,14 @@ const plantData = {
                             // --- Mesangiospermae ---
                             "mesangiospermae": {
                                 name: "Mesangiospermae",
+                                time: 130,
                                 subgroups: {
                                     "Chloranthales": { name: "Order: Chloranthales", families: ["Chloranthaceae"] }, // Position relative to Magnoliids/Monocots/Eudicots debated
                                     "Ceratophyllales": { name: "Order: Ceratophyllales", families: ["Ceratophyllaceae"] }, // Position uncertain, often sister to Eudicots
                                     // --- Magnoliids ---
                                     "magnoliids": {
                                         name: "Magnoliids",
+                                        time: 120,
                                         subgroups: {
                                             "Magnoliales": { name: "Order: Magnoliales", families: ["Magnoliaceae", "Annonaceae", "Myristicaceae", "Degeneriaceae", "Eupomatiaceae", "Himantandraceae"] },
                                             "Laurales": { name: "Order: Laurales", families: ["Lauraceae", "Calycanthaceae", "Monimiaceae", "Atherospermataceae", "Gomortegaceae", "Hernandiaceae", "Siparunaceae"] },
@@ -314,6 +325,7 @@ const plantData = {
                                     // --- Monocots ---
                                     "monocots": {
                                         name: "Monocots",
+                                        time: 120,
                                         subgroups: {
                                             "Acorales": { name: "Order: Acorales", families: ["Acoraceae"] },
                                             "Alismatales": { name: "Order: Alismatales", families: ["Alismataceae", "Araceae", "Potamogetonaceae", "Hydrocharitaceae", "Juncaginaceae", "Butomaceae", "Aponogetonaceae", "Scheuchzeriaceae", "Posidoniaceae", "Ruppiaceae", "Cymodoceaceae", "Zosteraceae", "Tofieldiaceae", "Maundiaceae"] }, // Araceae includes Lemnaceae
@@ -333,6 +345,7 @@ const plantData = {
                                     // --- Eudicots ---
                                     "eudicots": {
                                         name: "Eudicots",
+                                        time: 120,
                                         subgroups: {
                                             // --- Basal Eudicots (Paraphyletic grade) ---
                                             "Ranunculales": { name: "Order: Ranunculales", families: ["Ranunculaceae", "Berberidaceae", "Papaveraceae", "Menispermaceae", "Lardizabalaceae", "Eupteleaceae", "Circaeasteraceae"] }, // Papaveraceae includes Fumariaceae, Pteridophyllaceae
@@ -343,18 +356,21 @@ const plantData = {
                                             // --- Core Eudicots ---
                                             "core_eudicots": {
                                                 name: "Core Eudicots",
+                                                time: 115,
                                                 subgroups: {
                                                     "Gunnerales": { name: "Order: Gunnerales", families: ["Gunneraceae", "Myrothamnaceae"] },
                                                     "Dilleniales": { name: "Order: Dilleniales", families: ["Dilleniaceae"] },
                                                     // --- Superrosids ---
                                                     "superrosids": {
                                                         name: "Superrosids",
+                                                        time: 110,
                                                         subgroups: {
                                                             "Saxifragales": { name: "Order: Saxifragales", families: ["Saxifragaceae", "Crassulaceae", "Grossulariaceae", "Hamamelidaceae", "Paeoniaceae", "Altingiaceae", "Cercidiphyllaceae", "Iteaceae", "Haloragaceae", "Aphanopetalaceae", "Daphniphyllaceae", "Cynomoriaceae", "Penthoraceae", "Tetracarpaeaceae", "Peridiscaceae"] }, // Peridiscaceae position debated
                                                             "Vitales": { name: "Order: Vitales", families: ["Vitaceae"] },
                                                             // --- Rosids ---
                                                             "rosids": {
                                                                 name: "Rosids",
+                                                                time: 105,
                                                                 subgroups: {
                                                                     // Fabids (Nitrogen-fixing clade)
                                                                     "Fabales": { name: "Order: Fabales", families: ["Fabaceae", "Polygalaceae", "Surianaceae", "Quillajaceae"] }, // Fabaceae includes Caesalpiniaceae, Mimosaceae
@@ -381,6 +397,7 @@ const plantData = {
                                                     // --- Superasterids ---
                                                     "superasterids": {
                                                         name: "Superasterids",
+                                                        time: 110,
                                                         subgroups: {
                                                             "Berberidopsidales": { name: "Order: Berberidopsidales", families: ["Berberidopsidaceae", "Aextoxicaceae"] },
                                                             "Santalales": { name: "Order: Santalales", families: ["Santalaceae", "Balanophoraceae", "Misodendraceae", "Opiliaceae", "Loranthaceae", "Schoepfiaceae", "Erythropalaceae", "Strombosiaceae", "Coulaceae", "Ximeniaceae", "Aptandraceae", "Olacaceae", "Comandraceae", "Viscaceae", "Amphorogynaceae", "Thesiaceae"] }, // Santalaceae s.l. includes Viscaceae, Eremolepidaceae etc.; Olacaceae s.l. now split into multiple families
@@ -388,9 +405,11 @@ const plantData = {
                                                             // --- Asterids ---
                                                             "asterids": {
                                                                 name: "Asterids",
+                                                                time: 100,
                                                                 subgroups: {
                                                                     "lamiids": {
                                                                         name: "Lamiids (Euasterids I)",
+                                                                        time: 90,
                                                                         subgroups: {
                                                                             "Icacinales": { name: "Order: Icacinales", families: ["Icacinaceae", "Oncothecaceae"] }, // Icacinaceae s.s. after splitting
                                                                             "Metteniusales": { name: "Order: Metteniusales", families: ["Metteniusaceae"] },
@@ -404,6 +423,7 @@ const plantData = {
                                                                     },
                                                                     "campanulids": {
                                                                         name: "Campanulids (Euasterids II)",
+                                                                        time: 90,
                                                                         subgroups: {
                                                                             "Aquifoliales": { name: "Order: Aquifoliales", families: ["Aquifoliaceae", "Cardiopteridaceae", "Stemonuraceae", "Phyllonomaceae", "Helwingiaceae"] }, // Cardiopteridaceae includes Leptaulaceae
                                                                             "Asterales": { name: "Order: Asterales", families: ["Asteraceae", "Campanulaceae", "Menyanthaceae", "Goodeniaceae", "Calyceraceae", "Stylidiaceae", "Alseuosmiaceae", "Argophyllaceae", "Phellinaceae", "Rousseaceae", "Pentaphragmataceae"] }, // Asteraceae (Compositae) is huge; Campanulaceae includes Lobeliaceae; Stylidiaceae includes Donatiaceae
@@ -442,48 +462,36 @@ console.log("DEBUG: Building plant hierarchy...");
  * @returns {object} - The root node of the D3 hierarchy.
  */
 function buildHierarchy(data) {
-    function createNode(name, children = null, url = null, note = null, time = null) { // Added time handling
+    function createNode(name, children = null, url = null, note = null, time = null) {
         const node = { name: name };
         if (url) node.url = url;
-        if (note) node.note = note; // Add note if present
-        if (time !== null) node.time = time; // Add divergence time if present
+        if (note) node.note = note;
+        if (time !== null) node.time = time;
         if (children && children.length > 0) node.children = children;
         return node;
     }
 
     function processSubgroups(subgroups) {
-        // Using Object.entries preserves the order more reliably across environments
-        // compared to Object.values if the keys were numeric, but for string keys
-        // like ours, Object.values() typically respects insertion order in modern JS.
-        // We rely on the order in plantData to reflect approximate phylogeny.
         return Object.entries(subgroups || {}).map(([key, subgroup]) => {
             const children = subgroup.subgroups ? processSubgroups(subgroup.subgroups) : null;
             const families = subgroup.families ? subgroup.families.map(family =>
-                // Assume family name implies the HTML file name for simplicity
-                // Add a check or more robust mapping if names differ significantly
-                createNode(family, null, `families/${family.toLowerCase().replace(/ /g, '_')}.html`) // Basic URL generation
+                createNode(family, null, `families/${family.toLowerCase().replace(/ /g, '_')}.html`, null, 0)
             ) : null;
 
-            // Combine children (subgroups) and families
             const allChildren = [...(children || []), ...(families || [])];
-
-            // Pass the note from the data to the node
-            return createNode(subgroup.name, allChildren.length > 0 ? allChildren : null, null, subgroup.note);
+            return createNode(subgroup.name, allChildren.length > 0 ? allChildren : null, null, subgroup.note, subgroup.time || null);
         });
     }
 
-    const root = createNode("Plants"); // The ultimate root
+    const root = createNode("Plants", null, null, null, 500);
 
-    // Process top-level groups (Bryophytes, Vascular Plants)
     const topLevelChildren = Object.values(data || {}).map(topGroup => {
         if (topGroup && topGroup.name) {
-            // Process the subgroups within this top-level group
             const children = processSubgroups(topGroup.subgroups);
-            // Pass the note from the top-level group
-            return createNode(topGroup.name, children, null, topGroup.note);
+            return createNode(topGroup.name, children, null, topGroup.note, topGroup.time || null);
         }
         return null;
-    }).filter(n => n !== null); // Filter out any null results
+    }).filter(n => n !== null);
 
     root.children = topLevelChildren;
 
@@ -493,8 +501,22 @@ function buildHierarchy(data) {
 
 // --- Generate the comprehensive tree data for D3 ---
 const comprehensiveTreeData = buildHierarchy(plantData);
-// console.log(JSON.stringify(comprehensiveTreeData, null, 2)); // For debugging
 
+// --- Geological periods for the timeline ---
+const geoPeriods = [
+    { name: "Cambrian", start: 541, end: 485, color: "#7fa87f" },
+    { name: "Ordovician", start: 485, end: 444, color: "#009270" },
+    { name: "Silurian", start: 444, end: 419, color: "#b3e1b6" },
+    { name: "Devonian", start: 419, end: 359, color: "#cb8c37" },
+    { name: "Carboniferous", start: 359, end: 299, color: "#67a599" },
+    { name: "Permian", start: 299, end: 252, color: "#f04028" },
+    { name: "Triassic", start: 252, end: 201, color: "#812b92" },
+    { name: "Jurassic", start: 201, end: 145, color: "#34b2c9" },
+    { name: "Cretaceous", start: 145, end: 66, color: "#7fc64e" },
+    { name: "Paleogene", start: 66, end: 23, color: "#fd9a52" },
+    { name: "Neogene", start: 23, end: 2.6, color: "#ffe619" },
+    { name: "Quaternary", start: 2.6, end: 0, color: "#f9f97f" }
+];
 
 // --- D3.js Visualization Code ---
 document.addEventListener('DOMContentLoaded', function() {
@@ -513,73 +535,144 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    let svg = container.select("svg");
-    if (svg.empty()) {
-        svg = container.append("svg")
-            .attr("width", "100%")
-            .attr("height", 800); // Adjust height as needed or make dynamic
-            // .style("border", "1px solid #ccc");
-    }
-
     // --- Dynamic Sizing & Margins ---
-    const margin = { top: 20, right: 180, bottom: 20, left: 120 }; // Adjusted margins
+    const margin = { top: 60, right: 20, bottom: 30, left: 20 };
+    const timelineHeight = 40; // Height for the geological timeline bar
 
     let svgWidth = container.node().clientWidth || 1200;
-    let svgHeight = window.innerHeight * 0.9 || 800; // Keep height dynamic based on window
-    svg.attr("width", svgWidth).attr("height", svgHeight);
+    let svgHeight = Math.max(window.innerHeight * 0.85, 700);
 
-    let g = svg.select("g.content-group");
-    if (g.empty()) {
-        g = svg.append("g").attr("class", "content-group");
-    }
-    // Initial transform applied later with zoom
+    const svg = container.append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
 
-    // --- Tree Layout Configuration ---
-    // **** KEY CHANGE FOR PHYLOGENY VISUALIZATION ****
-    // Increase horizontal separation significantly more than vertical
-    // to emphasize the branching levels (depth/time).
-    const nodeVerticalSeparation = 25;   // Relatively small vertical distance between siblings
-    const nodeHorizontalSeparation = 220; // Increased horizontal distance between parent/child levels
-    // **************************************************
+    // Timeline group (fixed, not affected by zoom)
+    const timelineG = svg.append("g")
+        .attr("class", "timeline-group")
+        .attr("transform", `translate(0, 0)`);
 
-    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, nodeHorizontalSeparation]);
+    // Main content group (zoomable)
+    const g = svg.append("g").attr("class", "content-group");
 
-    // --- Zoom & Pan Behavior ---
-    const zoom = d3.zoom()
-        .scaleExtent([0.05, 3])
-        .on("zoom", (event) => {
-            currentTransform = event.transform;
-            g.attr("transform", event.transform);
+    // Clipping rect to prevent tree from overlapping timeline
+    svg.append("defs").append("clipPath")
+        .attr("id", "tree-clip")
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", margin.top + timelineHeight)
+        .attr("width", svgWidth)
+        .attr("height", svgHeight - margin.top - timelineHeight);
+
+    g.attr("clip-path", "url(#tree-clip)");
+
+    // --- Time Scale ---
+    const maxTime = 520; // MYA - start of visible timeline
+    const treeWidth = svgWidth - margin.left - margin.right;
+
+    timeScale
+        .domain([maxTime, 0]) // MYA: past on left, present on right
+        .range([margin.left, svgWidth - margin.right]);
+
+    // --- Draw Geological Timeline ---
+    function drawTimeline() {
+        timelineG.selectAll("*").remove();
+
+        // Background for timeline
+        timelineG.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", svgWidth)
+            .attr("height", margin.top + timelineHeight)
+            .attr("fill", "#ffffff");
+
+        // Draw geological period bars
+        geoPeriods.forEach(period => {
+            const x1 = timeScale(period.start);
+            const x2 = timeScale(period.end);
+            const width = Math.max(0, x2 - x1);
+
+            if (x2 > 0 && x1 < svgWidth) {
+                timelineG.append("rect")
+                    .attr("class", "geo-period")
+                    .attr("x", Math.max(0, x1))
+                    .attr("y", margin.top - 5)
+                    .attr("width", Math.min(width, svgWidth - Math.max(0, x1)))
+                    .attr("height", timelineHeight + 5)
+                    .attr("fill", period.color);
+
+                // Period label (only if wide enough)
+                if (width > 30) {
+                    timelineG.append("text")
+                        .attr("class", "geo-period-label")
+                        .attr("x", Math.max(0, x1) + Math.min(width, svgWidth - Math.max(0, x1)) / 2)
+                        .attr("y", margin.top + timelineHeight / 2 + 3)
+                        .text(period.name);
+                }
+            }
         });
 
-    svg.call(zoom);
+        // Time axis
+        const timeAxis = d3.axisTop(timeScale)
+            .ticks(10)
+            .tickFormat(d => d === 0 ? "Now" : d + " MYA");
 
-    // --- Initial Zoom State ---
-    // **** ADJUSTED INITIAL VIEW ****
-    // Start slightly zoomed out, panned so the root is near the left margin.
-    const initialScale = 0.7; // Start a bit more zoomed in than before
-    const initialTranslateX = margin.left + 50; // Pan right so root ("Plants") is visible left
-    const initialTranslateY = svgHeight / 2;   // Center vertically initially
-    // ********************************
-    const initialTransform = d3.zoomIdentity.translate(initialTranslateX, initialTranslateY).scale(initialScale);
+        timelineG.append("g")
+            .attr("class", "timeline-axis")
+            .attr("transform", `translate(0, ${margin.top - 5})`)
+            .call(timeAxis);
 
-    svg.call(zoom.transform, initialTransform);
-    g.attr("transform", initialTransform); // Ensure group starts transformed
-    currentTransform = initialTransform;
+        // Vertical gridlines extending into tree area
+        const gridTicks = timeScale.ticks(20);
+        g.selectAll(".grid-line").remove();
+        gridTicks.forEach(t => {
+            g.append("line")
+                .attr("class", "grid-line")
+                .attr("x1", timeScale(t))
+                .attr("x2", timeScale(t))
+                .attr("y1", margin.top + timelineHeight)
+                .attr("y2", svgHeight * 10) // extend far down
+                .attr("stroke", "#eee")
+                .attr("stroke-width", 0.5)
+                .attr("stroke-dasharray", "2,4");
+        });
+    }
 
+    drawTimeline();
+
+    // --- Tree Layout Configuration ---
+    const nodeVerticalSeparation = 18;
+    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, 1]); // horizontal spacing handled by time scale
 
     // --- Data Processing & Hierarchy ---
     rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
-    rootNode.x0 = initialTranslateY / initialScale; // Adjust initial position based on scale/translate
-    rootNode.y0 = 0; // Root starts at horizontal position 0
+
+    // Assign time-based positions: propagate times down the tree
+    function assignTimes(node) {
+        if (node.data.time !== null && node.data.time !== undefined) {
+            node.timeValue = node.data.time;
+        } else if (node.parent && node.parent.timeValue !== undefined) {
+            // For nodes without explicit time, interpolate
+            if (node.children || node._children) {
+                // Internal node without time: use parent time minus a fraction
+                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - 10);
+            } else {
+                // Leaf node (family): position near present
+                node.timeValue = 0;
+            }
+        } else {
+            node.timeValue = 0;
+        }
+        if (node.children) {
+            node.children.forEach(assignTimes);
+        }
+    }
+    assignTimes(rootNode);
 
     // --- Initial Collapse State ---
-    // Function to collapse nodes that only have leaf children (Families)
     function collapseLastBranch(node) {
        if (node.children) {
            const allChildrenAreLeaves = node.children.every(child => !child.children && !child._children);
-           // Collapse nodes deeper than level 1 (Divisions) if they only contain leaves (families)
-           if (allChildrenAreLeaves && node.depth > 1) { // Don't collapse Bryophytes/Vascular
+           if (allChildrenAreLeaves && node.depth > 1) {
                node._children = node.children;
                node.children = null;
            } else {
@@ -588,7 +681,6 @@ document.addEventListener('DOMContentLoaded', function() {
        }
     }
 
-    // Ensure all nodes start expanded before applying specific collapse logic
     rootNode.each(d => {
        if (d._children) {
            d.children = d._children;
@@ -596,23 +688,58 @@ document.addEventListener('DOMContentLoaded', function() {
        }
     });
 
-    // Apply the initial collapse logic
     if (rootNode.children) {
-       rootNode.children.forEach(collapseLastBranch); // Collapse orders/subgroups containing only families
+       rootNode.children.forEach(collapseLastBranch);
     }
+
+    // --- Zoom & Pan Behavior ---
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            currentTransform = event.transform;
+            g.attr("transform", event.transform);
+        });
+
+    svg.call(zoom);
+
+    // Initial zoom: fit tree to viewport after first render
+    const initialScale = 0.35;
+    const initialTranslateX = 0;
+    const initialTranslateY = margin.top + timelineHeight + 20;
+    const initialTransform = d3.zoomIdentity.translate(initialTranslateX, initialTranslateY).scale(initialScale);
+
+    svg.call(zoom.transform, initialTransform);
+    currentTransform = initialTransform;
 
     // --- Initial Render ---
     update(rootNode);
+
+    // Auto-fit tree to viewport after initial render
+    setTimeout(() => {
+        const bbox = g.node().getBBox();
+        if (bbox.width > 0 && bbox.height > 0) {
+            const treeAreaTop = margin.top + timelineHeight;
+            const availableHeight = svgHeight - treeAreaTop - 20;
+            const availableWidth = svgWidth - 20;
+            const scaleX = availableWidth / bbox.width;
+            const scaleY = availableHeight / bbox.height;
+            const fitScale = Math.min(scaleX, scaleY, 1); // Don't zoom in beyond 1x
+            const tx = -bbox.x * fitScale + 10;
+            const ty = -bbox.y * fitScale + treeAreaTop + 10;
+            const fitTransform = d3.zoomIdentity.translate(tx, ty).scale(fitScale);
+            svg.transition().duration(500).call(zoom.transform, fitTransform);
+            currentTransform = fitTransform;
+        }
+    }, 100);
 
     // --- Search Functionality ---
     const searchInput = document.getElementById('family-search');
     const resetSearchButton = document.getElementById('reset-search');
 
     function performSearch(searchTerm) {
-        g.selectAll('.node text').classed('highlighted', false).style('font-weight', 'normal').style('fill', function(d) { // Reset fill color too
-             return d.data.url && d.data.url !== "families/missing_families_placeholder.html" ? '#0d6efd' : '#333';
+        g.selectAll('.node text').classed('highlighted', false).style('font-weight', 'normal').style('fill', function(d) {
+             return d.data.url ? '#1565C0' : '#333';
         });
-
 
         if (!rootNode || !searchTerm || searchTerm.length < 2) {
             return;
@@ -622,12 +749,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let matchedNodes = [];
         let firstMatch = null;
 
-        // Traverse the *entire* tree data, expanding nodes as needed to search
         rootNode.each(d => {
-            // Check if node should be expanded for search (if it's collapsed but has children)
             if(d._children) {
-                // Temporarily expand to search children, will be updated visually later if needed
-                 expand(d); // Need expand function defined before this point
+                 expand(d);
             }
             let nodeName = d.data.name ? d.data.name.toLowerCase() : '';
             if (nodeName.includes(searchTerm)) {
@@ -636,27 +760,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-         // Expand parents of *only* the matched nodes to make them visible
-         // and highlight them.
         matchedNodes.forEach(d => {
-            expandParents(d); // Ensure path to the node is visible
+            expandParents(d);
         });
 
-        // Update the tree visual structure *after* expanding necessary nodes
         update(rootNode);
 
-        // Apply highlighting *after* the update ensures the DOM elements exist
         matchedNodes.forEach(d => {
-            if (d.svgNode) { // Check if the SVG element exists after update
+            if (d.svgNode) {
                 d3.select(d.svgNode).select('text')
                     .classed('highlighted', true)
                     .style('font-weight', 'bold')
-                    .style('fill', 'red'); // Make highlighted text red for visibility
+                    .style('fill', '#d32f2f');
             }
         });
 
-
-        // Center View on First Match
         if (firstMatch && firstMatch.x !== undefined && firstMatch.y !== undefined) {
             setTimeout(() => {
                 const svgNode = svg.node();
@@ -664,36 +782,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const svgHeightCurrent = svgNode.clientHeight;
                 const targetX = svgWidthCurrent / 2;
                 const targetY = svgHeightCurrent / 2;
-                const nodeX = firstMatch.y; // Horizontal position in tree space
-                const nodeY = firstMatch.x; // Vertical position in tree space
-                const currentScale = currentTransform.k; // Use the *current* zoom scale
+                const nodeX = firstMatch.y;
+                const nodeY = firstMatch.x;
+                const currentScale = currentTransform.k;
 
                 const newTx = targetX - nodeX * currentScale;
                 const newTy = targetY - nodeY * currentScale;
                 const newTransform = d3.zoomIdentity.translate(newTx, newTy).scale(currentScale);
 
                 svg.transition().duration(750).call(zoom.transform, newTransform);
-                currentTransform = newTransform; // Store the new transform state
+                currentTransform = newTransform;
             }, 150);
         }
     }
 
     function resetSearchHighlight() {
-        searchInput.value = ''; // Clear input
-        // Remove highlights by selecting elements with the class
+        searchInput.value = '';
          g.selectAll('.node text.highlighted')
              .classed('highlighted', false)
              .style('font-weight', 'normal')
-              .style('fill', function(d) { // Reset fill color based on link status
-                  return d.data.url && d.data.url !== "families/missing_families_placeholder.html" ? '#0d6efd' : '#333';
+              .style('fill', function(d) {
+                  return d.data.url ? '#1565C0' : '#333';
              });
-        // Optional: Reset zoom
-        // svg.transition().duration(750).call(zoom.transform, initialTransform);
-        // currentTransform = initialTransform;
     }
 
-
-    // Attach event listeners
     if (searchInput) {
         searchInput.addEventListener('input', () => performSearch(searchInput.value));
         searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(searchInput.value); });
@@ -702,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resetSearchButton.addEventListener('click', resetSearchHighlight);
     }
 
-    // --- Utility Functions (Collapse/Expand) ---
+    // --- Utility Functions ---
     function collapse(d) {
         if (d.children) {
             d._children = d.children;
@@ -730,61 +842,56 @@ document.addEventListener('DOMContentLoaded', function() {
             collapse(d);
         } else if (d._children) {
             expand(d);
-            // Optional: Expand all children when expanding a node
-            // if (d.children) {
-            //     d.children.forEach(expand);
-            // }
         } else {
-            return; // Leaf node
+            return;
         }
-        update(d); // Update starting from the clicked node
+        update(d);
     }
 
+    // --- Elbow link generator for phylogenetic tree style ---
+    function elbowLink(d) {
+        const sourceY = d.parent.y;
+        const sourceX = d.parent.x;
+        const targetY = d.y;
+        const targetX = d.x;
+        return `M${sourceY},${sourceX}H${targetY}V${targetX}`;
+    }
 
-    // --- Main Update Function (Renders Tree) ---
+    // --- Main Update Function ---
     function update(source) {
-        const duration = 750; // Transition duration
+        const duration = 500;
 
-        // Use the standard horizontal diagonal path generator
-        const diagonal = d3.linkHorizontal().x(d => d.y).y(d => d.x);
+        // Re-assign times after expand/collapse
+        assignTimes(rootNode);
 
-        // Compute the new tree layout.
+        // Compute the new tree layout for vertical positioning (x values)
         const treeData = treemap(rootNode);
         const nodes = treeData.descendants();
-        const links = treeData.descendants().slice(1); // Links exclude the root
+        const links = treeData.descendants().slice(1);
 
-        // Normalize for fixed-depth. We adjust y based on depth.
-        // This might not be strictly necessary with nodeSize, but ensures consistency.
-        // nodes.forEach(d => { d.y = d.depth * nodeHorizontalSeparation; });
+        // Override horizontal positions (y) with time-based values
+        nodes.forEach(d => {
+            d.y = timeScale(d.timeValue !== undefined ? d.timeValue : 0);
+        });
 
         // --- Nodes Section ---
         const node = g.selectAll('g.node')
             .data(nodes, d => d.id || (d.id = ++nodeIdCounter));
 
-        // Enter new nodes at the parent's previous position.
         const nodeEnter = node.enter().append('g')
             .attr('class', 'node')
             .classed('node--internal', d => d.children || d._children)
             .classed('node--leaf', d => !(d.children || d._children))
-            .attr("transform", `translate(${source.y0 ?? 0},${source.x0 ?? 0})`)
-            .each(function(d) { d.svgNode = this; }) // Store SVG node reference
+            .attr("transform", `translate(${source.y0 ?? timeScale(source.timeValue || 0)},${source.x0 ?? 0})`)
+            .each(function(d) { d.svgNode = this; })
             .on('click', (event, d) => {
                  if (event.defaultPrevented) return;
                  if (d.children || d._children) {
                      toggleChildren(d);
                  } else if (d.data.url) {
-                     // Basic check for placeholder
-                     if (d.data.url !== "families/missing_families_placeholder.html") {
-                        // Construct the full URL if necessary (assuming relative path)
-                        // Example: const targetUrl = new URL(d.data.url, window.location.href).href;
-                        window.open(d.data.url, '_blank');
-                     } else {
-                         console.log("No detailed page available for " + d.data.name);
-                         // Optionally show a small temporary message near the node
-                     }
+                     window.open(d.data.url, '_blank');
                  }
             })
-             // Tooltip shows name and potentially the note
             .on('mouseover', (event, d) => {
                  if (!d3.select(event.currentTarget).select('text').classed('highlighted')) {
                      d3.select(event.currentTarget).select('text').style('font-weight', 'bold');
@@ -793,20 +900,25 @@ document.addEventListener('DOMContentLoaded', function() {
                  if (d.data.note) {
                      tooltipHtml += `<br><small><em>${d.data.note}</em></small>`;
                  }
+                 if (d.timeValue > 0) {
+                     tooltipHtml += `<br><small>~${d.timeValue} MYA</small>`;
+                 }
 
                  d3.select('body').append('div').attr('class', 'tooltip')
                      .style('position', 'absolute')
-                     .style('background', 'rgba(240, 240, 240, 0.9)')
-                     .style('padding', '5px 10px')
-                     .style('border', '1px solid #aaa')
+                     .style('background', 'rgba(255, 255, 255, 0.95)')
+                     .style('padding', '6px 10px')
+                     .style('border', '1px solid #4a7c59')
                      .style('border-radius', '4px')
-                     .style('box-shadow', '0 2px 4px rgba(0,0,0,0.2)')
-                     .style('left', (event.pageX + 15) + 'px')
-                     .style('top', (event.pageY - 15) + 'px')
+                     .style('box-shadow', '0 2px 6px rgba(0,0,0,0.15)')
+                     .style('left', (event.pageX + 12) + 'px')
+                     .style('top', (event.pageY - 12) + 'px')
                      .style('pointer-events', 'none')
-                     .style('font-size', '12px')
-                     .style('max-width', '250px') // Prevent very wide tooltips
-                     .html(tooltipHtml); // Show name and note
+                     .style('font-size', '11px')
+                     .style('font-family', "'Open Sans', sans-serif")
+                     .style('max-width', '280px')
+                     .style('z-index', '10000')
+                     .html(tooltipHtml);
              })
              .on('mouseout', (event, d) => {
                   if (!d3.select(event.currentTarget).select('text').classed('highlighted')) {
@@ -815,93 +927,120 @@ document.addEventListener('DOMContentLoaded', function() {
                   d3.selectAll('.tooltip').remove();
              });
 
+        // Node circles
+        nodeEnter.append('circle').attr('r', 1e-6);
 
-        // Add Circle for the nodes
-        nodeEnter.append('circle').attr('r', 1e-6); // Start small
-
-        // Add labels for the nodes
+        // Node labels
         nodeEnter.append('text')
             .attr("dy", ".35em")
-            .attr("x", d => d.children || d._children ? -10 : 10) // Text left for internal, right for leaf
+            .attr("x", d => d.children || d._children ? -8 : 8)
             .attr("text-anchor", d => d.children || d._children ? "end" : "start")
-            .text(d => d.data.name)
-            .style("fill-opacity", 1e-6) // Start transparent
-            .style('fill', d => d.data.url && d.data.url !== "families/missing_families_placeholder.html" ? '#0d6efd' : '#333') // Blue if linkable leaf
-            .style('cursor', d => (d.children || d._children || (d.data.url && d.data.url !== "families/missing_families_placeholder.html")) ? 'pointer' : 'default')
-            .style('text-decoration', d => d.data.url && d.data.url !== "families/missing_families_placeholder.html" ? 'underline' : 'none')
-            .style("font-size", "12px");
+            .text(d => {
+                const name = d.data.name;
+                // Truncate long names for readability
+                if (name.length > 40 && !(d.children || d._children)) {
+                    return name.substring(0, 37) + '...';
+                }
+                return name;
+            })
+            .style("fill-opacity", 1e-6)
+            .style('fill', d => d.data.url ? '#1565C0' : '#333')
+            .style('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default')
+            .style('text-decoration', d => d.data.url ? 'underline' : 'none')
+            .style("font-size", d => {
+                if (d.depth <= 1) return "12px";
+                if (d.depth <= 3) return "11px";
+                return "10px";
+            });
 
         // --- UPDATE section ---
         const nodeUpdate = nodeEnter.merge(node);
 
         nodeUpdate.transition().duration(duration)
-            .attr("transform", d => `translate(${d.y},${d.x})`); // Move to final position
+            .attr("transform", d => `translate(${d.y},${d.x})`);
 
-        // Update circles
         nodeUpdate.select('circle')
-            .attr('r', 5) // Final radius
-            .style("fill", d => d._children ? "lightsteelblue" : "#fff") // Blue if collapsed, white if expanded
-            .style("stroke", d => (d.children || d._children) ? "#555" : "#ccc") // Darker stroke for internal nodes
+            .attr('r', d => {
+                if (d.depth === 0) return 6;
+                if (d.children || d._children) return 4;
+                return 3;
+            })
+            .classed('collapsed', d => !!d._children)
+            .style("fill", d => {
+                if (d._children) return "#81c784"; // Collapsed: light green
+                if (d.children) return "#4a7c59";  // Expanded internal: dark green
+                return "#a5d6a7"; // Leaf: soft green
+            })
+            .style("stroke", d => (d.children || d._children) ? "#2e5939" : "#4a7c59")
             .style("stroke-width", "1.5px")
-            .attr('cursor', d => (d.children || d._children || (d.data.url && d.data.url !== "families/missing_families_placeholder.html")) ? 'pointer' : 'default');
+            .attr('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default');
 
-        // Update text
         nodeUpdate.select('text')
-            .style("fill-opacity", 1) // Fade in text
-             // Re-apply highlight class/style if needed after update
-             .classed('highlighted', function(d) { return d3.select(this).classed('highlighted'); })
-             .style('font-weight', function(d) { return d3.select(this).classed('highlighted') ? 'bold' : 'normal'; })
-             .style('fill', function(d) { // Ensure correct color (search override or default)
-                 if (d3.select(this).classed('highlighted')) {
-                     return 'red';
-                 }
-                 return d.data.url && d.data.url !== "families/missing_families_placeholder.html" ? '#0d6efd' : '#333';
+            .style("fill-opacity", 1)
+            .classed('highlighted', function(d) { return d3.select(this).classed('highlighted'); })
+            .style('font-weight', function(d) { return d3.select(this).classed('highlighted') ? 'bold' : 'normal'; })
+            .style('fill', function(d) {
+                 if (d3.select(this).classed('highlighted')) return '#d32f2f';
+                 return d.data.url ? '#1565C0' : '#333';
              });
-
 
         // --- EXIT section ---
         const nodeExit = node.exit().transition().duration(duration)
-            .attr("transform", d => `translate(${source.y},${source.x})`) // Move exiting nodes to parent's pos
+            .attr("transform", d => `translate(${source.y},${source.x})`)
             .remove();
 
-        nodeExit.select('circle').attr('r', 1e-6); // Shrink circle
-        nodeExit.select('text').style('fill-opacity', 1e-6); // Fade out text
+        nodeExit.select('circle').attr('r', 1e-6);
+        nodeExit.select('text').style('fill-opacity', 1e-6);
 
-        // --- Links Section ---
+        // --- Links Section (Elbow style) ---
         const link = g.selectAll('path.link')
             .data(links, d => d.id);
 
-        // Enter new links at the parent's previous position.
-        const linkEnter = link.enter().insert('path', "g") // Insert links behind nodes
+        const linkEnter = link.enter().insert('path', "g")
             .attr("class", "link")
             .style('fill', 'none')
-            .style('stroke', '#ccc')
+            .style('stroke', '#bbb')
             .style('stroke-width', '1.5px')
-            .attr('d', d => { // Start link at parent's prior position
+            .attr('d', d => {
                 const o = { x: source.x0 ?? source.x, y: source.y0 ?? source.y };
-                return diagonal({ source: o, target: o });
+                return `M${o.y},${o.x}H${o.y}V${o.x}`;
             });
 
-        // UPDATE links
         const linkUpdate = linkEnter.merge(link);
 
         linkUpdate.transition().duration(duration)
-            .attr('d', d => diagonal({ source: d.parent, target: d })); // Transition to final position
+            .attr('d', d => elbowLink(d));
 
-        // EXIT links
         link.exit().transition().duration(duration)
-            .attr('d', d => { // Collapse link to parent's new position
+            .attr('d', d => {
                 const o = { x: source.x, y: source.y };
-                return diagonal({ source: o, target: o });
+                return `M${o.y},${o.x}H${o.y}V${o.x}`;
             })
             .remove();
 
-        // Store the final positions for the next transition.
+        // Store positions for next transition
         nodes.forEach(d => {
             d.x0 = d.x;
             d.y0 = d.y;
         });
 
     } // End update function
+
+    // --- Handle window resize ---
+    window.addEventListener('resize', () => {
+        svgWidth = container.node().clientWidth || 1200;
+        svgHeight = Math.max(window.innerHeight * 0.85, 600);
+        svg.attr("width", svgWidth).attr("height", svgHeight);
+
+        timeScale.range([margin.left, svgWidth - margin.right]);
+
+        // Update clip path
+        svg.select("#tree-clip rect")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight - margin.top - timelineHeight);
+
+        drawTimeline();
+        update(rootNode);
+    });
 
 }); // End DOMContentLoaded

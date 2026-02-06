@@ -9,26 +9,31 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&amp;family=open+sans:wght@400;600&amp;family=playfair+display:ital@0;1&amp;display=swap" rel="stylesheet"/>
 <link href="css/styles.css" rel="stylesheet"/>
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="js/d3.v7.min.js"></script>
 <style>
         .node circle {
             fill: #fff;
-            stroke: steelblue;
-            stroke-width: 3px;
+            stroke: #4a7c59;
+            stroke-width: 2px;
+            cursor: pointer;
         }
         .node text {
-            font: 12px sans-serif;
-            cursor: pointer; 
+            font: 11px 'Open Sans', sans-serif;
+            cursor: pointer;
         }
         .node text.highlighted {
-             fill: #ff9900; 
+             fill: #d32f2f;
              font-weight: bold;
         }
         .node--internal circle {
-            fill: #555;
+            fill: #4a7c59;
+        }
+        .node--internal circle.collapsed {
+            fill: #81c784;
         }
         .node--leaf circle {
-             fill: steelblue; 
+             fill: #a5d6a7;
+             stroke: #4a7c59;
         }
         .node--leaf text {
             text-anchor: start;
@@ -38,11 +43,31 @@
         }
         .link {
             fill: none;
-            stroke: #ccc;
-            stroke-width: 2px;
+            stroke: #bbb;
+            stroke-width: 1.5px;
         }
         .tree-visualization {
-            overflow: hidden; 
+            overflow: hidden;
+            position: relative;
+        }
+        .timeline-axis .domain {
+            stroke: #999;
+        }
+        .timeline-axis .tick line {
+            stroke: #ccc;
+        }
+        .timeline-axis .tick text {
+            fill: #666;
+            font-size: 10px;
+        }
+        .geo-period {
+            opacity: 0.15;
+        }
+        .geo-period-label {
+            font-size: 9px;
+            fill: #555;
+            text-anchor: middle;
+            pointer-events: none;
         }
     </style>
 <link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
@@ -103,7 +128,8 @@
 <section class="phylogenetic-tree-container">
 <div class="container">
 <div class="tree-visualization" id="phylogenetic-tree">
-<svg height="1500" width="1000"></svg> </div>
+<!-- SVG will be created by D3 -->
+</div>
 </div>
 </section>
 <section class="tree-information">
