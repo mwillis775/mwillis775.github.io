@@ -646,17 +646,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Data Processing & Hierarchy ---
     rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
 
+    // Time step used when interpolating divergence times for nodes without explicit values
+    const TIME_INTERPOLATION_STEP = 10; // MYA
+
     // Assign time-based positions: propagate times down the tree
     function assignTimes(node) {
         if (node.data.time !== null && node.data.time !== undefined) {
             node.timeValue = node.data.time;
         } else if (node.parent && node.parent.timeValue !== undefined) {
-            // For nodes without explicit time, interpolate
             if (node.children || node._children) {
-                // Internal node without time: use parent time minus a fraction
-                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - 10);
+                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - TIME_INTERPOLATION_STEP);
             } else {
-                // Leaf node (family): position near present
                 node.timeValue = 0;
             }
         } else {
@@ -937,9 +937,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr("text-anchor", d => d.children || d._children ? "end" : "start")
             .text(d => {
                 const name = d.data.name;
-                // Truncate long names for readability
-                if (name.length > 40 && !(d.children || d._children)) {
-                    return name.substring(0, 37) + '...';
+                const MAX_LABEL_LENGTH = 40;
+                if (name.length > MAX_LABEL_LENGTH && !(d.children || d._children)) {
+                    return name.substring(0, MAX_LABEL_LENGTH - 3) + '...';
                 }
                 return name;
             })
@@ -1029,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Handle window resize ---
     window.addEventListener('resize', () => {
         svgWidth = container.node().clientWidth || 1200;
-        svgHeight = Math.max(window.innerHeight * 0.85, 600);
+        svgHeight = Math.max(window.innerHeight * 0.85, 700);
         svg.attr("width", svgWidth).attr("height", svgHeight);
 
         timeScale.range([margin.left, svgWidth - margin.right]);

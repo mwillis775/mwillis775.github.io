@@ -233,7 +233,13 @@ document.addEventListener('DOMContentLoaded', function() {
     matches.forEach(name => {
         const li = document.createElement('li');
         const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-        li.innerHTML = `<a href="families/${name}.html">${displayName}</a><p>View details about the ${displayName} plant family.</p>`;
+        const a = document.createElement('a');
+        a.href = 'families/' + encodeURIComponent(name) + '.html';
+        a.textContent = displayName;
+        const p = document.createElement('p');
+        p.textContent = 'View details about the ' + displayName + ' plant family.';
+        li.appendChild(a);
+        li.appendChild(p);
         resultsList.appendChild(li);
     });
 });
