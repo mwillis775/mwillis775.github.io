@@ -536,38 +536,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Dynamic Sizing & Margins ---
-    const margin = { top: 60, right: 20, bottom: 30, left: 20 };
+    const margin = { top: 60, right: 200, bottom: 30, left: 20 };
     const timelineHeight = 40; // Height for the geological timeline bar
 
     let svgWidth = container.node().clientWidth || 1200;
-    let svgHeight = Math.max(window.innerHeight * 0.85, 700);
+
+    // Make the container scrollable with a fixed viewport height
+    const viewportHeight = Math.max(window.innerHeight * 0.8, 600);
+    container.style("max-height", viewportHeight + "px")
+        .style("overflow-y", "auto")
+        .style("overflow-x", "hidden");
+
+    // --- Tree Layout Configuration ---
+    const nodeVerticalSeparation = 14;
+    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, 1]);
+
+    // --- Data Processing & Hierarchy ---
+    rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
+
+    // Time step used when interpolating divergence times for nodes without explicit values
+    const TIME_INTERPOLATION_STEP = 10; // MYA
+
+    // Assign time-based positions: propagate times down the tree
+    function assignTimes(node) {
+        if (node.data.time !== null && node.data.time !== undefined) {
+            node.timeValue = node.data.time;
+        } else if (node.parent && node.parent.timeValue !== undefined) {
+            if (node.children || node._children) {
+                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - TIME_INTERPOLATION_STEP);
+            } else {
+                node.timeValue = 0;
+            }
+        } else {
+            node.timeValue = 0;
+        }
+        if (node.children) {
+            node.children.forEach(assignTimes);
+        }
+    }
+    assignTimes(rootNode);
+
+    // --- Keep tree fully expanded (no collapsing) ---
+    // Count leaves to compute needed SVG height
+    const leafCount = rootNode.leaves().length;
+    let svgHeight = leafCount * nodeVerticalSeparation + margin.top + timelineHeight + margin.bottom + 100;
+    svgHeight = Math.max(svgHeight, 700);
 
     const svg = container.append("svg")
         .attr("width", svgWidth)
         .attr("height", svgHeight);
 
-    // Timeline group (fixed, not affected by zoom)
+    // Timeline group (fixed at top via CSS sticky positioning)
     const timelineG = svg.append("g")
         .attr("class", "timeline-group")
         .attr("transform", `translate(0, 0)`);
 
-    // Main content group (zoomable)
+    // Main content group
     const g = svg.append("g").attr("class", "content-group");
-
-    // Clipping rect to prevent tree from overlapping timeline
-    svg.append("defs").append("clipPath")
-        .attr("id", "tree-clip")
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", margin.top + timelineHeight)
-        .attr("width", svgWidth)
-        .attr("height", svgHeight - margin.top - timelineHeight);
-
-    g.attr("clip-path", "url(#tree-clip)");
 
     // --- Time Scale ---
     const maxTime = 520; // MYA - start of visible timeline
-    const treeWidth = svgWidth - margin.left - margin.right;
 
     timeScale
         .domain([maxTime, 0]) // MYA: past on left, present on right
@@ -583,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr("y", 0)
             .attr("width", svgWidth)
             .attr("height", margin.top + timelineHeight)
-            .attr("fill", "#ffffff");
+            .attr("fill", "#0a0a0a");
 
         // Draw geological period bars
         geoPeriods.forEach(period => {
@@ -620,117 +648,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr("class", "timeline-axis")
             .attr("transform", `translate(0, ${margin.top - 5})`)
             .call(timeAxis);
-
-        // Vertical gridlines extending into tree area
-        const gridTicks = timeScale.ticks(20);
-        g.selectAll(".grid-line").remove();
-        gridTicks.forEach(t => {
-            g.append("line")
-                .attr("class", "grid-line")
-                .attr("x1", timeScale(t))
-                .attr("x2", timeScale(t))
-                .attr("y1", margin.top + timelineHeight)
-                .attr("y2", svgHeight * 10) // extend far down
-                .attr("stroke", "#eee")
-                .attr("stroke-width", 0.5)
-                .attr("stroke-dasharray", "2,4");
-        });
     }
 
     drawTimeline();
 
-    // --- Tree Layout Configuration ---
-    const nodeVerticalSeparation = 18;
-    const treemap = d3.tree().nodeSize([nodeVerticalSeparation, 1]); // horizontal spacing handled by time scale
-
-    // --- Data Processing & Hierarchy ---
-    rootNode = d3.hierarchy(comprehensiveTreeData, d => d.children);
-
-    // Time step used when interpolating divergence times for nodes without explicit values
-    const TIME_INTERPOLATION_STEP = 10; // MYA
-
-    // Assign time-based positions: propagate times down the tree
-    function assignTimes(node) {
-        if (node.data.time !== null && node.data.time !== undefined) {
-            node.timeValue = node.data.time;
-        } else if (node.parent && node.parent.timeValue !== undefined) {
-            if (node.children || node._children) {
-                node.timeValue = Math.max(0, (node.parent.timeValue || 0) - TIME_INTERPOLATION_STEP);
-            } else {
-                node.timeValue = 0;
-            }
-        } else {
-            node.timeValue = 0;
-        }
-        if (node.children) {
-            node.children.forEach(assignTimes);
-        }
-    }
-    assignTimes(rootNode);
-
-    // --- Initial Collapse State ---
-    function collapseLastBranch(node) {
-       if (node.children) {
-           const allChildrenAreLeaves = node.children.every(child => !child.children && !child._children);
-           if (allChildrenAreLeaves && node.depth > 1) {
-               node._children = node.children;
-               node.children = null;
-           } else {
-               node.children.forEach(collapseLastBranch);
-           }
-       }
-    }
-
-    rootNode.each(d => {
-       if (d._children) {
-           d.children = d._children;
-           d._children = null;
-       }
-    });
-
-    if (rootNode.children) {
-       rootNode.children.forEach(collapseLastBranch);
-    }
-
-    // --- Zoom & Pan Behavior ---
-    const zoom = d3.zoom()
-        .scaleExtent([0.1, 4])
-        .on("zoom", (event) => {
-            currentTransform = event.transform;
-            g.attr("transform", event.transform);
-        });
-
-    svg.call(zoom);
-
-    // Initial zoom: fit tree to viewport after first render
-    const initialScale = 0.35;
-    const initialTranslateX = 0;
-    const initialTranslateY = margin.top + timelineHeight + 20;
-    const initialTransform = d3.zoomIdentity.translate(initialTranslateX, initialTranslateY).scale(initialScale);
-
-    svg.call(zoom.transform, initialTransform);
-    currentTransform = initialTransform;
-
     // --- Initial Render ---
     update(rootNode);
-
-    // Auto-fit tree to viewport after initial render
-    setTimeout(() => {
-        const bbox = g.node().getBBox();
-        if (bbox.width > 0 && bbox.height > 0) {
-            const treeAreaTop = margin.top + timelineHeight;
-            const availableHeight = svgHeight - treeAreaTop - 20;
-            const availableWidth = svgWidth - 20;
-            const scaleX = availableWidth / bbox.width;
-            const scaleY = availableHeight / bbox.height;
-            const fitScale = Math.min(scaleX, scaleY, 1); // Don't zoom in beyond 1x
-            const tx = -bbox.x * fitScale + 10;
-            const ty = -bbox.y * fitScale + treeAreaTop + 10;
-            const fitTransform = d3.zoomIdentity.translate(tx, ty).scale(fitScale);
-            svg.transition().duration(500).call(zoom.transform, fitTransform);
-            currentTransform = fitTransform;
-        }
-    }, 100);
 
     // --- Search Functionality ---
     const searchInput = document.getElementById('family-search');
@@ -738,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function performSearch(searchTerm) {
         g.selectAll('.node text').classed('highlighted', false).style('font-weight', 'normal').style('fill', function(d) {
-             return d.data.url ? '#1565C0' : '#333';
+             return d.data.url ? '#ffbf00' : '#00ff41';
         });
 
         if (!rootNode || !searchTerm || searchTerm.length < 2) {
@@ -771,27 +694,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 d3.select(d.svgNode).select('text')
                     .classed('highlighted', true)
                     .style('font-weight', 'bold')
-                    .style('fill', '#d32f2f');
+                    .style('fill', '#ffbf00');
             }
         });
 
         if (firstMatch && firstMatch.x !== undefined && firstMatch.y !== undefined) {
             setTimeout(() => {
-                const svgNode = svg.node();
-                const svgWidthCurrent = svgNode.clientWidth;
-                const svgHeightCurrent = svgNode.clientHeight;
-                const targetX = svgWidthCurrent / 2;
-                const targetY = svgHeightCurrent / 2;
-                const nodeX = firstMatch.y;
-                const nodeY = firstMatch.x;
-                const currentScale = currentTransform.k;
-
-                const newTx = targetX - nodeX * currentScale;
-                const newTy = targetY - nodeY * currentScale;
-                const newTransform = d3.zoomIdentity.translate(newTx, newTy).scale(currentScale);
-
-                svg.transition().duration(750).call(zoom.transform, newTransform);
-                currentTransform = newTransform;
+                // Scroll the container to bring the first match into view
+                if (firstMatch.svgNode) {
+                    const containerEl = container.node();
+                    const containerRect = containerEl.getBoundingClientRect();
+                    // firstMatch.x is vertical position in SVG coordinates
+                    const targetScroll = firstMatch.x - containerRect.height / 2;
+                    containerEl.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+                }
             }, 150);
         }
     }
@@ -802,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
              .classed('highlighted', false)
              .style('font-weight', 'normal')
               .style('fill', function(d) {
-                  return d.data.url ? '#1565C0' : '#333';
+                  return d.data.url ? '#ffbf00' : '#00ff41';
              });
     }
 
@@ -812,6 +728,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (resetSearchButton) {
         resetSearchButton.addEventListener('click', resetSearchHighlight);
+    }
+
+    // Reset View button - scroll to top of tree
+    const resetViewButton = document.getElementById('reset-view');
+    if (resetViewButton) {
+        resetViewButton.addEventListener('click', () => {
+            container.node().scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     // --- Utility Functions ---
@@ -869,10 +793,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const nodes = treeData.descendants();
         const links = treeData.descendants().slice(1);
 
+        // Find min x to offset all nodes so tree starts below timeline
+        let minX = Infinity;
+        nodes.forEach(d => { if (d.x < minX) minX = d.x; });
+        const xOffset = margin.top + timelineHeight + 10 - minX;
+
         // Override horizontal positions (y) with time-based values
+        // Shift vertical positions (x) so tree is visible below timeline
         nodes.forEach(d => {
             d.y = timeScale(d.timeValue !== undefined ? d.timeValue : 0);
+            d.x = d.x + xOffset;
         });
+
+        // Update SVG height to fit all nodes
+        let maxX = 0;
+        nodes.forEach(d => { if (d.x > maxX) maxX = d.x; });
+        const neededHeight = maxX + margin.bottom + 20;
+        if (neededHeight !== svgHeight) {
+            svgHeight = neededHeight;
+            svg.attr("height", svgHeight);
+        }
 
         // --- Nodes Section ---
         const node = g.selectAll('g.node')
@@ -906,11 +846,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                  d3.select('body').append('div').attr('class', 'tooltip')
                      .style('position', 'absolute')
-                     .style('background', 'rgba(255, 255, 255, 0.95)')
+                     .style('background', 'rgba(10, 10, 10, 0.95)')
                      .style('padding', '6px 10px')
-                     .style('border', '1px solid #4a7c59')
+                     .style('border', '1px solid #00ff41')
                      .style('border-radius', '4px')
-                     .style('box-shadow', '0 2px 6px rgba(0,0,0,0.15)')
+                     .style('box-shadow', '0 2px 6px rgba(0,255,65,0.15)')
+                     .style('color', '#00ff41')
                      .style('left', (event.pageX + 12) + 'px')
                      .style('top', (event.pageY - 12) + 'px')
                      .style('pointer-events', 'none')
@@ -937,20 +878,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr("text-anchor", d => d.children || d._children ? "end" : "start")
             .text(d => {
                 const name = d.data.name;
-                const MAX_LABEL_LENGTH = 40;
+                const MAX_LABEL_LENGTH = 30;
                 if (name.length > MAX_LABEL_LENGTH && !(d.children || d._children)) {
                     return name.substring(0, MAX_LABEL_LENGTH - 3) + '...';
                 }
                 return name;
             })
             .style("fill-opacity", 1e-6)
-            .style('fill', d => d.data.url ? '#1565C0' : '#333')
+            .style('fill', d => d.data.url ? '#ffbf00' : '#00ff41')
             .style('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default')
             .style('text-decoration', d => d.data.url ? 'underline' : 'none')
             .style("font-size", d => {
-                if (d.depth <= 1) return "12px";
-                if (d.depth <= 3) return "11px";
-                return "10px";
+                if (d.depth <= 1) return "11px";
+                if (d.depth <= 3) return "9px";
+                return "8px";
             });
 
         // --- UPDATE section ---
@@ -967,11 +908,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .classed('collapsed', d => !!d._children)
             .style("fill", d => {
-                if (d._children) return "#81c784"; // Collapsed: light green
-                if (d.children) return "#4a7c59";  // Expanded internal: dark green
-                return "#a5d6a7"; // Leaf: soft green
+                if (d._children) return "#00cc33"; // Collapsed: lighter green
+                if (d.children) return "#00802b";  // Expanded internal: dark green
+                return "#00ff41"; // Leaf: bright phosphor green
             })
-            .style("stroke", d => (d.children || d._children) ? "#2e5939" : "#4a7c59")
+            .style("stroke", d => (d.children || d._children) ? "#00ff41" : "#00802b")
             .style("stroke-width", "1.5px")
             .attr('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default');
 
@@ -980,8 +921,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .classed('highlighted', function(d) { return d3.select(this).classed('highlighted'); })
             .style('font-weight', function(d) { return d3.select(this).classed('highlighted') ? 'bold' : 'normal'; })
             .style('fill', function(d) {
-                 if (d3.select(this).classed('highlighted')) return '#d32f2f';
-                 return d.data.url ? '#1565C0' : '#333';
+                 if (d3.select(this).classed('highlighted')) return '#ffbf00';
+                 return d.data.url ? '#ffbf00' : '#00ff41';
              });
 
         // --- EXIT section ---
@@ -999,7 +940,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const linkEnter = link.enter().insert('path', "g")
             .attr("class", "link")
             .style('fill', 'none')
-            .style('stroke', '#bbb')
+            .style('stroke', '#00802b')
             .style('stroke-width', '1.5px')
             .attr('d', d => {
                 const o = { x: source.x0 ?? source.x, y: source.y0 ?? source.y };
@@ -1029,15 +970,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Handle window resize ---
     window.addEventListener('resize', () => {
         svgWidth = container.node().clientWidth || 1200;
-        svgHeight = Math.max(window.innerHeight * 0.85, 700);
-        svg.attr("width", svgWidth).attr("height", svgHeight);
+        svg.attr("width", svgWidth);
+
+        const newViewportHeight = Math.max(window.innerHeight * 0.8, 600);
+        container.style("max-height", newViewportHeight + "px");
 
         timeScale.range([margin.left, svgWidth - margin.right]);
-
-        // Update clip path
-        svg.select("#tree-clip rect")
-            .attr("width", svgWidth)
-            .attr("height", svgHeight - margin.top - timelineHeight);
 
         drawTimeline();
         update(rootNode);

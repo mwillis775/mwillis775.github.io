@@ -15,8 +15,8 @@ html {
 body {
   font-family: 'Open Sans', sans-serif;
   line-height: 1.6;
-  color: #2e2e2e; /* Darker natural text color */
-  background-color: #eae4d3; /* Match header background color */
+  color: #00ff41; /* Phosphor green text */
+  background-color: #0a0a0a; /* Dark black background */
 }
 
 /* --- Typography --- */
@@ -25,7 +25,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.3;
   margin-bottom: 0.75rem;
-  color: #2e5939; /* Dark green for headings */
+  color: #00ff41; /* Phosphor green for headings */
 }
 
 h1 { font-size: 2.5rem; }
@@ -38,12 +38,12 @@ p {
 }
 
 a {
-  color: #4a7c59; /* Earthy green for links */
+  color: #ffbf00; /* Phosphor amber for links */
   text-decoration: none;
 }
 
 a:hover {
-  color: #2e5939; /* Darker green on hover */
+  color: #ffd54f; /* Lighter amber on hover */
 }
 
 /* --- Layout --- */
@@ -56,9 +56,9 @@ a:hover {
 
 /* --- Header & Navigation --- */
 header {
-  background-color: #2e5939; /* Dark green for header */
+  background-color: #111111; /* Dark header */
   padding: 1rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 255, 65, 0.1);
   position: sticky; /* Keep header visible */
   top: 0;
   z-index: 1000;
@@ -84,7 +84,7 @@ header .logo a {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
-  color: #f4f1e9; /* Light beige for logo text */
+  color: #00ff41; /* Phosphor green for logo text */
 }
 
 header .logo img {
@@ -104,7 +104,7 @@ header .main-nav {
 
 header .main-nav a {
   text-decoration: none;
-  color: #f4f1e9; /* Light beige for navigation links */
+  color: #00ff41; /* Phosphor green for navigation links */
   font-weight: 500;
   padding-bottom: 0.25rem;
   font-weight: 500;
@@ -115,15 +115,15 @@ header .main-nav a {
 
 header .main-nav a:hover,
 header .main-nav a.active {
-  color: #d9d2c5; /* Softer beige for active links */
-  border-bottom-color: #d9d2c5;
+  color: #ffbf00; /* Phosphor amber for active links */
+  border-bottom-color: #ffbf00;
 }
 
 /* Basic Search Bar */
 header .search-bar {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid #00ff41;
   border-radius: 20px; /* Rounded corners */
   padding: 0.25rem 0.5rem;
 }
@@ -134,6 +134,7 @@ header .search-bar input[type="text"] {
   padding: 0.25rem 0.5rem;
   flex-grow: 1;
   background: transparent;
+  color: #00ff41;
 }
 
 header .search-bar button {
@@ -148,7 +149,7 @@ header .search-bar button {
 header .search-bar svg {
   width: 18px;
   height: 18px;
-  fill: #555;
+  fill: #00ff41;
 }
 
 /* Mobile Menu Toggle (Hidden by default on larger screens) */
@@ -163,7 +164,7 @@ header .search-bar svg {
   display: block;
   width: 25px;
   height: 3px;
-  background-color: #f4f1e9; /* Light beige - visible on dark green header */
+  background-color: #00ff41; /* Phosphor green - visible on dark header */
   margin: 5px 0;
   transition: all 0.3s ease;
 }
@@ -174,14 +175,14 @@ main {
 }
 
 .page-header {
-  background-color: #e9ecef; /* Light grey header background */
+  background-color: #111111; /* Dark header background */
   padding: 2rem 0;
   margin-bottom: 2rem;
   text-align: center;
 }
 
 .page-header h1 {
-  color: #2c3e50;
+  color: #00ff41;
 }
 
 /* --- Browse Controls --- */
@@ -196,7 +197,7 @@ main {
   flex-wrap: wrap;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #1a3a1a;
 }
 
 .browse-options {
@@ -209,17 +210,17 @@ main {
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease;
-  color: #555;
+  color: #00cc33;
 }
 
 .browse-option:hover {
-  color: #007bff;
+  color: #ffbf00;
 }
 
 .browse-option.active {
-  color: #333;
+  color: #00ff41;
   font-weight: 700;
-  border-bottom-color: #007bff;
+  border-bottom-color: #ffbf00;
 }
 
 .filter-dropdown label {
@@ -236,7 +237,7 @@ main {
 /* --- Family List & Cards --- */
 .families-list-container .container p { /* Style the 'Loading...' or 'No families...' message */
   font-style: italic;
-  color: #666;
+  color: #00cc33;
   text-align: center;
   padding: 2rem;
 }
@@ -252,7 +253,7 @@ main {
 .phylogenetic-level-6 {
   margin-top: 1.5rem;
   padding-left: 1.5rem; /* Indent nested groups */
-  border-left: 2px solid #e9ecef; /* Subtle visual hierarchy */
+  border-left: 2px solid #1a3a1a; /* Dark green visual hierarchy */
 }
 
 /* --- Updated Family Cards Layout --- */
@@ -297,11 +298,11 @@ main {
 
 /* Individual Family Card Styling (Applies everywhere) */
 .family-card {
-  border: 1px solid #e0e0e0;
+  border: 1px solid #1a3a1a;
   border-radius: 8px;
   overflow: hidden; /* Keep image corners rounded */
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  background-color: #111111;
+  box-shadow: 0 4px 8px rgba(0,255,65,0.05);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   display: flex;
   flex-direction: column; /* Stack image and content */
@@ -309,7 +310,7 @@ main {
 
 .family-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 12px rgba(0,255,65,0.12);
 }
 
 .family-card .family-image img {
@@ -317,7 +318,7 @@ main {
   height: auto; /* Maintain aspect ratio */
   object-fit: contain; /* Ensure the entire image fits within the box */
   display: block; /* Remove extra space below image */
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #1a3a1a;
 }
 
 .family-card .family-content {
@@ -331,15 +332,15 @@ main {
   margin-top: 0;
   margin-bottom: 0.75rem; /* More space below heading */
   font-size: 1.15rem; /* Slightly larger heading */
-  color: #34495e; /* Slightly softer dark blue */
+  color: #00ff41; /* Phosphor green */
   text-transform: capitalize; /* Capitalize family names */
 }
 
 .family-card .btn {
   display: inline-block;
   padding: 0.6rem 1.2rem;
-  background-color: #1a950c;
-  color: white;
+  background-color: #00802b;
+  color: #0a0a0a;
   text-decoration: none;
   border-radius: 5px;
   text-align: center;
@@ -351,7 +352,7 @@ main {
 }
 
 .family-card .btn:hover {
-  background-color: #00b33c;
+  background-color: #00ff41;
   text-decoration: none; /* Remove underline on hover */
 }
 
@@ -374,10 +375,11 @@ main {
 
 /* --- Footer --- */
 footer {
-  background-color: #343a40; /* Dark footer */
-  color: #f8f9fa; /* Light text */
+  background-color: #0a0a0a; /* Dark footer */
+  color: #00ff41; /* Phosphor green text */
   padding: 3rem 0 1rem 0;
   margin-top: 3rem;
+  border-top: 1px solid #1a3a1a;
 }
 
 .footer-columns {
@@ -394,13 +396,13 @@ footer {
 }
 
 .footer-column h4 {
-  color: #ffffff;
+  color: #ffbf00; /* Phosphor amber */
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
 
 .footer-column p {
-  color: #adb5bd; /* Lighter grey for text */
+  color: #00cc33; /* Slightly dimmer green for text */
   font-size: 0.9rem;
 }
 
@@ -414,14 +416,14 @@ footer {
 }
 
 .footer-column ul a {
-  color: #adb5bd;
+  color: #00cc33;
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.2s ease;
 }
 
 .footer-column ul a:hover {
-  color: #ffffff;
+  color: #ffbf00;
   text-decoration: underline;
 }
 
@@ -429,9 +431,9 @@ footer {
   text-align: center;
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #495057; /* Separator line */
+  border-top: 1px solid #1a3a1a; /* Dark separator line */
   font-size: 0.85rem;
-  color: #adb5bd;
+  color: #00cc33;
 }
 
 
@@ -446,8 +448,8 @@ footer {
     position: absolute;
     top: 100%; /* Position below header */
     left: 0;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #111111;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     padding: 1rem 0;
     gap: 0; /* Remove gap for vertical layout */
   }
@@ -464,14 +466,14 @@ footer {
   header .main-nav a {
      display: block;
      padding: 0.75rem 1rem;
-     color: #2e5939; /* Dark green text - visible on white mobile dropdown */
-     border-bottom: 1px solid #eee; /* Separator for mobile */
+     color: #00ff41; /* Phosphor green text */
+     border-bottom: 1px solid #1a3a1a; /* Separator for mobile */
   }
    header .main-nav a:hover,
    header .main-nav a.active {
-     background-color: #f8f9fa;
-     color: #2e5939;
-     border-bottom-color: #eee; /* Keep separator consistent */
+     background-color: #0f1a0f;
+     color: #ffbf00;
+     border-bottom-color: #1a3a1a; /* Keep separator consistent */
    }
 
 
@@ -498,8 +500,8 @@ footer {
 
 /* --- Buttons --- */
 button, .btn {
-  background-color: #4a7c59; /* Earthy green */
-  color: #f4f1e9; /* Light beige text */
+  background-color: #00802b; /* Dark green */
+  color: #0a0a0a; /* Dark text on green button */
   border: none;
   border-radius: 5px;
   padding: 0.6rem 1.2rem;
@@ -509,55 +511,55 @@ button, .btn {
 }
 
 button:hover, .btn:hover {
-  background-color: #2e5939; /* Darker green */
+  background-color: #00ff41; /* Bright phosphor green */
   transform: scale(1.05);
 }
 
 /* --- Inputs and Forms --- */
 input, select, textarea {
-  border: 1px solid #d9d2c5; /* Soft beige border */
+  border: 1px solid #1a3a1a; /* Dark green border */
   border-radius: 4px;
   padding: 0.5rem;
   font-size: 1rem;
-  background-color: #ffffff; /* White background */
-  color: #2e2e2e; /* Neutral dark text */
+  background-color: #111111; /* Dark background */
+  color: #00ff41; /* Phosphor green text */
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: #4a7c59; /* Earthy green focus */
+  border-color: #00ff41; /* Phosphor green focus */
   outline: none;
-  box-shadow: 0 0 5px rgba(74, 124, 89, 0.5);
+  box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 }
 
 /* --- Cards --- */
 .card {
-  background-color: #ffffff; /* White background */
-  border: 1px solid #d9d2c5; /* Soft beige border */
+  background-color: #111111; /* Dark background */
+  border: 1px solid #1a3a1a; /* Dark green border */
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(74, 124, 89, 0.2); /* Greenish shadow */
+  box-shadow: 0 6px 12px rgba(0, 255, 65, 0.1); /* Green glow shadow */
 }
 
 .card-header {
-  background-color: #eae4d3; /* Soft beige */
+  background-color: #0f1a0f; /* Very dark green */
   padding: 1rem;
   font-size: 1.25rem;
   font-weight: bold;
-  color: #2e5939; /* Dark green */
+  color: #00ff41; /* Phosphor green */
 }
 
 .card-body {
   padding: 1rem;
-  color: #2e2e2e; /* Neutral dark text */
+  color: #00ff41; /* Phosphor green text */
 }
 
 .card-footer {
-  background-color: #f4f1e9; /* Light beige */
+  background-color: #0a0a0a; /* Dark */
   padding: 0.75rem;
   text-align: right;
 }
@@ -570,23 +572,23 @@ table {
 }
 
 table th, table td {
-  border: 1px solid #d9d2c5; /* Soft beige border */
+  border: 1px solid #1a3a1a; /* Dark green border */
   padding: 0.75rem;
   text-align: left;
 }
 
 table th {
-  background-color: #eae4d3; /* Soft beige */
-  color: #2e5939; /* Dark green */
+  background-color: #0f1a0f; /* Very dark green */
+  color: #00ff41; /* Phosphor green */
   font-weight: bold;
 }
 
 table tr:nth-child(even) {
-  background-color: #f4f1e9; /* Light beige */
+  background-color: #111111; /* Dark */
 }
 
 table tr:hover {
-  background-color: #eae4d3; /* Soft beige hover */
+  background-color: #0f1a0f; /* Dark green hover */
 }
 
 /* --- Additional Animations --- */
@@ -606,8 +608,8 @@ table tr:hover {
 /* --- Hero Section --- */
 .hero {
   padding: 4rem 0;
-  background-color: #4a7c59;
-  color: #f4f1e9;
+  background-color: #0f1a0f;
+  color: #00ff41;
 }
 
 .hero .container {
@@ -621,7 +623,7 @@ table tr:hover {
 }
 
 .hero-content h1 {
-  color: #f4f1e9;
+  color: #00ff41;
   font-size: 2.8rem;
   margin-bottom: 1.5rem;
 }
@@ -629,7 +631,7 @@ table tr:hover {
 .hero-content p {
   font-size: 1.15rem;
   margin-bottom: 2rem;
-  color: #eae4d3;
+  color: #00cc33;
 }
 
 .hero-buttons {
@@ -651,7 +653,7 @@ table tr:hover {
 /* --- Intro Section --- */
 .intro {
   padding: 4rem 0;
-  background-color: #ffffff;
+  background-color: #0a0a0a;
 }
 
 .phylogeny-preview {
@@ -673,7 +675,7 @@ table tr:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(46, 89, 57, 0.7);
+  background-color: rgba(0, 255, 65, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -694,7 +696,7 @@ table tr:hover {
 /* --- Featured Families Section --- */
 .featured-families {
   padding: 4rem 0;
-  background-color: #f4f1e9;
+  background-color: #0f0f0f;
 }
 
 .quick-facts {
@@ -711,7 +713,7 @@ table tr:hover {
 
 .quick-facts li::before {
   content: "•";
-  color: #4a7c59;
+  color: #ffbf00;
   font-weight: bold;
   position: absolute;
   left: 0;
@@ -720,13 +722,13 @@ table tr:hover {
 .scientific-name {
   font-family: 'Playfair Display', serif;
   font-style: italic;
-  color: #795548;
+  color: #ffbf00;
 }
 
 /* --- Identification Teaser Section --- */
 .identification-teaser {
   padding: 4rem 0;
-  background-color: #ffffff;
+  background-color: #0a0a0a;
 }
 
 .identification-teaser .container {
@@ -753,7 +755,7 @@ table tr:hover {
 
 .id-features li::before {
   content: "✓";
-  color: #4a7c59;
+  color: #ffbf00;
   position: absolute;
   left: 0;
 }
@@ -771,24 +773,24 @@ table tr:hover {
 
 /* --- Btn Variants --- */
 .btn-primary {
-  background-color: #4a7c59;
-  color: #f4f1e9;
+  background-color: #00802b;
+  color: #0a0a0a;
 }
 
 .btn-primary:hover {
-  background-color: #2e5939;
-  color: #f4f1e9;
+  background-color: #00ff41;
+  color: #0a0a0a;
 }
 
 .btn-secondary {
-  background-color: #ffffff;
-  color: #4a7c59;
-  border: 2px solid #4a7c59;
+  background-color: transparent;
+  color: #00ff41;
+  border: 2px solid #00ff41;
 }
 
 .btn-secondary:hover {
-  background-color: #f4f1e9;
-  color: #2e5939;
+  background-color: #00ff41;
+  color: #0a0a0a;
 }
 
 .btn-small {
@@ -815,17 +817,17 @@ table tr:hover {
 
 /* --- Guide Cards (Identification page) --- */
 .guide-card {
-  background-color: #ffffff;
-  border: 1px solid #d9d2c5;
+  background-color: #111111;
+  border: 1px solid #1a3a1a;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .guide-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(74, 124, 89, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 255, 65, 0.1);
 }
 
 .guide-card img {
@@ -852,17 +854,17 @@ table tr:hover {
 /* --- Family Guide Cards --- */
 .family-guide-card {
   text-align: center;
-  background-color: #ffffff;
-  border: 1px solid #d9d2c5;
+  background-color: #111111;
+  border: 1px solid #1a3a1a;
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .family-guide-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(74, 124, 89, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 255, 65, 0.1);
 }
 
 .family-guide-card img {
@@ -881,16 +883,16 @@ table tr:hover {
 
 .family-guide-card p {
   font-size: 0.85rem;
-  color: #555;
+  color: #00cc33;
 }
 
 /* --- Incomplete List Banner --- */
 .incomplete-list-banner {
-  background-color: #fff3cd;
-  border-bottom: 1px solid #ffc107;
+  background-color: #1a1a00;
+  border-bottom: 1px solid #ffbf00;
   padding: 0.75rem 0;
   font-size: 0.9rem;
-  color: #856404;
+  color: #ffbf00;
 }
 
 /* --- Glossary --- */
@@ -903,9 +905,9 @@ table tr:hover {
 
 .glossary-item {
   padding: 1rem;
-  background-color: #f4f1e9;
+  background-color: #111111;
   border-radius: 6px;
-  border-left: 3px solid #4a7c59;
+  border-left: 3px solid #00ff41;
 }
 
 .glossary-item h3 {
@@ -933,7 +935,7 @@ table tr:hover {
 
 .search-results-list li {
   padding: 1rem;
-  border-bottom: 1px solid #d9d2c5;
+  border-bottom: 1px solid #1a3a1a;
 }
 
 .search-results-list li a {
@@ -943,7 +945,7 @@ table tr:hover {
 
 .search-results-list li p {
   font-size: 0.9rem;
-  color: #555;
+  color: #00cc33;
   margin-top: 0.25rem;
   margin-bottom: 0;
 }
@@ -951,8 +953,8 @@ table tr:hover {
 /* --- Phylogenetic Tree Controls --- */
 .phylogenetic-tree-controls {
   padding: 1rem 0;
-  background-color: #f4f1e9;
-  border-bottom: 1px solid #d9d2c5;
+  background-color: #111111;
+  border-bottom: 1px solid #1a3a1a;
 }
 
 .search-controls {
@@ -964,7 +966,7 @@ table tr:hover {
 
 .search-controls label {
   font-weight: 600;
-  color: #2e5939;
+  color: #00ff41;
 }
 
 .search-controls input {
@@ -979,10 +981,11 @@ table tr:hover {
 }
 
 .tree-visualization {
-  overflow: hidden;
-  border: 1px solid #d9d2c5;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #1a3a1a;
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: #0a0a0a;
 }
 
 .tree-visualization svg {
@@ -993,7 +996,7 @@ table tr:hover {
 /* --- Tree Information Section --- */
 .tree-information {
   padding: 2rem 0;
-  background-color: #f4f1e9;
+  background-color: #0f0f0f;
 }
 
 /* --- Responsive Enhancements --- */
