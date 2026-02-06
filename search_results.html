@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Results - Plant Families Explorer</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&amp;family=open+sans:wght@400;600&amp;family=playfair+display:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<link href="css/styles.css" rel="stylesheet"/>
+<link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
+</head>
+<body>
+<header>
+<div class="container">
+<div class="logo">
+<a href="index.html">
+<img alt="Plant Families Explorer Logo" src="img/logo.svg"/>
+<span>Plant Families Explorer</span>
+</a>
+</div>
+<nav>
+<button aria-label="Toggle menu" class="mobile-menu-toggle">
+<span></span>
+<span></span>
+<span></span>
+</button>
+<ul class="main-nav">
+<li><a href="/index.html">Home</a></li>
+<li><a href="/phylogenetic-tree.html">Phylogenetic Tree</a></li>
+<li><a href="/families.html">Plant Families</a></li>
+<li><a href="/identification.html">Field Identification</a></li>
+<li><a href="/about.html">About</a></li>
+<li><a href="/audiovisualizer.html">Audiovisualizer</a></li>
+</ul>
+</nav>
+<form class="search-bar" onsubmit="event.preventDefault(); performSearch(document.querySelector('.search-bar input').value.trim().toLowerCase());">
+<input placeholder="Search families..." type="text"/>
+<button type="submit">Search</button>
+</form>
+</div>
+</header>
+<main>
+<section class="page-header">
+<div class="container">
+<h1>Search Results</h1>
+<p id="search-query-display">Searching...</p>
+</div>
+</section>
+<section class="search-results">
+<div class="container">
+<ul class="search-results-list" id="results-list">
+</ul>
+<p id="no-results" style="display: none; text-align: center; padding: 2rem; color: #666; font-style: italic;">No matching plant families found. Try a different search term.</p>
+</div>
+</section>
+</main>
+<footer>
+<div class="container">
+<div class="footer-columns">
+<div class="footer-column">
+<h4>Plant Families Explorer</h4>
+<p>A comprehensive guide to plant families in phylogenetic order with identification features for botanists, students, and nature enthusiasts.</p>
+</div>
+<div class="footer-column">
+<h4>Quick Links</h4>
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="phylogenetic-tree.html">Phylogenetic Tree</a></li>
+<li><a href="families.html">Plant Families</a></li>
+<li><a href="identification.html">Field Identification</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</div>
+<div class="footer-column">
+<h4>Resources</h4>
+<ul>
+<li><a href="about.html#apg">APG IV System</a></li>
+<li><a href="about.html#references">References</a></li>
+<li><a href="about.html#glossary">Botanical Glossary</a></li>
+<li><a href="about.html#contact">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<p>&copy; 2025 Plant Families Explorer. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<script src="js/main.js"></script>
+<script>
+// Get all family HTML files by scanning the families directory listing
+const familyNames = [
+    "acanthaceae","achariaceae","achatocarpaceae","acoraceae","actinidiaceae",
+    "adoxaceae","aextoxicaceae","agdestidaceae","aizoaceae","akaniaceae",
+    "alismataceae","alseuosmiaceae","alstroemeriaceae","altingiaceae","alzateaceae",
+    "amaranthaceae","amaryllidaceae","amborellaceae","anacardiaceae","anarthriaceae",
+    "ancistrocladaceae","annonaceae","aphanopetalaceae","aphloiaceae","apiaceae",
+    "apocynaceae","apodanthaceae","aponogetonaceae","aptandraceae","aquifoliaceae",
+    "araceae","araliaceae","araucariaceae","arecaceae","argophyllaceae",
+    "aristolochiaceae","asparagaceae","asphodelaceae","aspleniaceae","asteliaceae",
+    "asteraceae","asteropeiaceae","atherospermataceae","athyriaceae","austrobaileyaceae",
+    "balanopaceae","balanophoraceae","balsaminaceae","barbeuiaceae","barbeyaceae",
+    "basellaceae","bataceae","begoniaceae","berberidaceae","berberidopsidaceae",
+    "betulaceae","biebersteiniaceae","bignoniaceae","bixaceae","blandfordiaceae",
+    "blechnaceae","bonnetiaceae","boraginaceae","boryaceae","brassicaceae",
+    "bromeliaceae","brunelliaceae","bruniaceae","burmanniaceae","burseraceae",
+    "butomaceae","buxaceae","byblidaceae","cabombaceae","cactaceae",
+    "calceolariaceae","calophyllaceae","calycanthaceae","calyceraceae","campanulaceae",
+    "campynemataceae","canellaceae","cannabaceae","cannaceae","capparaceae",
+    "caprifoliaceae","cardiopteridaceae","caricaceae","carlemanniaceae","caryocaraceae",
+    "caryophyllaceae","casuarinaceae","celastraceae","centrolepidaceae","centroplacaceae",
+    "cephalotaceae","ceratophyllaceae","cercidiphyllaceae","chloranthaceae",
+    "chrysobalanaceae","cibotiaceae","circaeasteraceae","cistaceae","cleomaceae",
+    "clethraceae","clusiaceae","codonaceae","colchicaceae","columelliaceae",
+    "comandraceae","combretaceae","commelinaceae","connaraceae","convolvulaceae",
+    "cordiaceae","coriariaceae","cornaceae","corsiaceae","corynocarpaceae",
+    "costaceae","coulaceae","crassulaceae","crossosomataceae","crypteroniaceae",
+    "ctenolophonaceae","cucurbitaceae","culcitaceae","cunoniaceae","cupressaceae",
+    "curtisiaceae","cyatheaceae","cycadaceae","cyclanthaceae","cymodoceaceae",
+    "cynomoriaceae","cyperaceae","cyrillaceae","cytinaceae","daphniphyllaceae",
+    "dasypogonaceae","datiscaceae","davalliaceae","degeneriaceae","dennstaedtiaceae",
+    "diapensiaceae","dichapetalaceae","dicksoniaceae","didiereaceae","dilleniaceae",
+    "dioncophyllaceae","dioscoreaceae","dipentodontaceae","dipteridaceae",
+    "dipterocarpaceae","dirachmaceae","doryanthaceae","droseraceae","drosophyllaceae",
+    "dryopteridaceae","ebenaceae","ecdeiocoleaceae","ehretiaceae","elaeagnaceae",
+    "elaeocarpaceae","elatinaceae","emblingiaceae","ephedraceae","equisetaceae",
+    "ericaceae","eriocaulaceae","erythropalaceae","erythroxylaceae","escalloniaceae",
+    "eucommiaceae","euphorbiaceae","euphroniaceae","eupomatiaceae","eupteleaceae",
+    "fabaceae","fagaceae","flagellariaceae","fouquieriaceae","francoaceae",
+    "frankeniaceae","garryaceae","geissolomataceae","gelsemiaceae","gentianaceae",
+    "geraniaceae","gerrardinaceae","gesneriaceae","ginkgoaceae","gisekiaceae",
+    "gleicheniaceae","gnetaceae","gomortegaceae","goodeniaceae","goupiaceae",
+    "griseliniaceae","grossulariaceae","grubbiaceae","guamatelaceae","gunneraceae",
+    "gyrostemonaceae","haemodoraceae","halophytaceae","haloragaceae","hamamelidaceae",
+    "hanguanaceae","haptanthaceae","heliconiaceae","heliotropiaceae","helwingiaceae",
+    "hernandiaceae","heteropyxidaceae","himantandraceae","huaceae","humiriaceae",
+    "hydatellaceae","hydnoraceae","hydrangeaceae","hydrocharitaceae","hydroleaceae",
+    "hydrostachyaceae","hymenophyllaceae","hypericaceae","hypoxidaceae","icacinaceae",
+    "iridaceae","irvingiaceae","isoetaceae","iteaceae","ixerbaceae",
+    "ixioliriaceae","ixonanthaceae","joinvilleaceae","juglandaceae","juncaceae",
+    "juncaginaceae","kewaceae","kirkiaceae","koeberliniaceae","lacistemataceae",
+    "lamiaceae","lanariaceae","lardizabalaceae","lauraceae","lecythidaceae",
+    "lentibulariaceae","lepidobotryaceae","liliaceae","limeaceae","limnanthaceae",
+    "linaceae","linderniaceae","lindsaeaceae","loasaceae","loganiaceae",
+    "lophopyxidaceae","loranthaceae","lowiaceae","loxsomataceae","lycopodiaceae",
+    "lythraceae","macarthuriaceae","magnoliaceae","malesherbiaceae","malpighiaceae",
+    "malvaceae","marantaceae","marattiaceae","marcgraviaceae","marsileaceae",
+    "martyniaceae","matoniaceae","maundiaceae","mayacaceae","mazaceae",
+    "melanthiaceae","melastomataceae","meliaceae","melianthaceae","menispermaceae",
+    "menyanthaceae","metaxyaceae","metteniusaceae","microteaceae","misodendraceae",
+    "mitrastemonaceae","molluginaceae","monimiaceae","montiaceae","montiniaceae",
+    "moraceae","moringaceae","muntingiaceae","musaceae","myodocarpaceae",
+    "myricaceae","myristicaceae","myrothamnaceae","myrtaceae","namaceae",
+    "nartheciaceae","nelumbonaceae","nepenthaceae","nephrolepidaceae","neuradaceae",
+    "nitrariaceae","nothofagaceae","nyctaginaceae","nymphaeaceae","nyssaceae",
+    "ochnaceae","olacaceae","oleaceae","oleandraceae","oliniaceae",
+    "onagraceae","oncothecaceae","ophioglossaceae","opiliaceae","orchidaceae",
+    "orobanchaceae","osmundaceae","oxalidaceae","paeoniaceae","pandaceae",
+    "pandanaceae","papaveraceae","paracryphiaceae","passifloraceae","paulowniaceae",
+    "pedaliaceae","penaeaceae","pennantiaceae","pentadiplandraceae","pentaphragmataceae",
+    "pentaphylacaceae","penthoraceae","peraceae","peridiscaceae","petenaeaceae",
+    "petermanniaceae","petiveriaceae","petrosaviaceae","phellinaceae","philesiaceae",
+    "philydraceae","phrymaceae","phyllanthaceae","phyllonomaceae","physenaceae",
+    "phytolaccaceae","picramniaceae","picrodendraceae","pinaceae","piperaceae",
+    "pittosporaceae","plagiogyriaceae","plantaginaceae","platanaceae",
+    "plocospermataceae","plumbaginaceae","poaceae","podocarpaceae","podostemaceae",
+    "polemoniaceae","polygalaceae","polygonaceae","polyosmaceae","polypodiaceae",
+    "pontederiaceae","portulacaceae","posidoniaceae","potamogetonaceae","primulaceae",
+    "proteaceae","psilotaceae","psiloxylaceae","pteridaceae","putranjivaceae",
+    "quillajaceae","quintiniaceae","rafflesiaceae","ranunculaceae","rapateaceae",
+    "resedaceae","restionaceae","rhabdodendraceae","rhamnaceae","rhizophoraceae",
+    "rhynchocalycaceae","ripogonaceae","roridulaceae","rosaceae","rousseaceae",
+    "rubiaceae","ruppiaceae","rutaceae","sabiaceae","saccolomataceae",
+    "salicaceae","salvadoraceae","salviniaceae","samydaceae","santalaceae",
+    "sapindaceae","sapotaceae","sarcobataceae","sarcolaenaceae","sarraceniaceae",
+    "saururaceae","saxifragaceae","scheuchzeriaceae","schisandraceae","schizaeaceae",
+    "schlegeliaceae","schoepfiaceae","sciadopityaceae","scrophulariaceae",
+    "selaginellaceae","simaroubaceae","simmondsiaceae","siparunaceae","sladeniaceae",
+    "smilacaceae","solanaceae","sphaerosepalaceae","sphenocleaceae","sphenostemonaceae",
+    "stachyuraceae","stangeriaceae","staphyleaceae","stegnospermataceae","stemonaceae",
+    "stemonuraceae","stilbaceae","strasburgeriaceae","strelitziaceae","strombosiaceae",
+    "strychnaceae","stylidiaceae","styracaceae","surianaceae","symplocaceae",
+    "talinaceae","tamaricaceae","tapisciaceae","taxaceae","tecophilaeaceae",
+    "tectariaceae","tepuianthaceae","tetracarpaeaceae","tetrachondraceae",
+    "tetramelaceae","tetrameristaceae","theaceae","thelypteridaceae","thomandersiaceae",
+    "thurniaceae","thymelaeaceae","ticodendraceae","tofieldiaceae","torricelliaceae",
+    "tovariaceae","trigoniaceae","trimeniaceae","triuridaceae","trochodendraceae",
+    "tropaeolaceae","turneraceae","typhaceae","ulmaceae","urticaceae",
+    "vahliaceae","velloziaceae","verbenaceae","violaceae","viscaceae",
+    "vitaceae","vochysiaceae","wellstediaceae","welwitschiaceae","wightiaceae",
+    "winteraceae","woodsiaceae","xeronemataceae","ximeniaceae","xyridaceae",
+    "zamiaceae","zingiberaceae","zosteraceae","zygophyllaceae"
+];
+
+function performSearch(searchTerm) {
+    if (!searchTerm) {
+        alert('Please enter a search term.');
+        return;
+    }
+    const searchResultsUrl = `search_results.html?query=${encodeURIComponent(searchTerm)}`;
+    window.location.href = searchResultsUrl;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('query') || '';
+    const queryDisplay = document.getElementById('search-query-display');
+    const resultsList = document.getElementById('results-list');
+    const noResults = document.getElementById('no-results');
+    const searchInput = document.querySelector('.search-bar input');
+
+    if (searchInput && query) {
+        searchInput.value = query;
+    }
+
+    if (!query) {
+        queryDisplay.textContent = 'Please enter a search term.';
+        noResults.style.display = 'block';
+        return;
+    }
+
+    queryDisplay.textContent = `Results for "${query}"`;
+    const lowerQuery = query.toLowerCase();
+
+    const matches = familyNames.filter(name => name.includes(lowerQuery));
+
+    if (matches.length === 0) {
+        noResults.style.display = 'block';
+        return;
+    }
+
+    matches.forEach(name => {
+        const li = document.createElement('li');
+        const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+        const a = document.createElement('a');
+        a.href = 'families/' + encodeURIComponent(name) + '.html';
+        a.textContent = displayName;
+        const p = document.createElement('p');
+        p.textContent = 'View details about the ' + displayName + ' plant family.';
+        li.appendChild(a);
+        li.appendChild(p);
+        resultsList.appendChild(li);
+    });
+});
+</script>
+</body>
+</html>

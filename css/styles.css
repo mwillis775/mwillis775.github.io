@@ -64,6 +64,12 @@ header {
   z-index: 1000;
 }
 
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 header nav {
   display: flex;
   justify-content: space-between;
@@ -157,7 +163,7 @@ header .search-bar svg {
   display: block;
   width: 25px;
   height: 3px;
-  background-color: #333;
+  background-color: #f4f1e9; /* Light beige - visible on dark green header */
   margin: 5px 0;
   transition: all 0.3s ease;
 }
@@ -458,11 +464,13 @@ footer {
   header .main-nav a {
      display: block;
      padding: 0.75rem 1rem;
+     color: #2e5939; /* Dark green text - visible on white mobile dropdown */
      border-bottom: 1px solid #eee; /* Separator for mobile */
   }
    header .main-nav a:hover,
    header .main-nav a.active {
      background-color: #f8f9fa;
+     color: #2e5939;
      border-bottom-color: #eee; /* Keep separator consistent */
    }
 
@@ -593,5 +601,488 @@ table tr:hover {
 
 .fade-in {
   animation: fadeIn 1s ease-in;
+}
+
+/* --- Hero Section --- */
+.hero {
+  padding: 4rem 0;
+  background-color: #4a7c59;
+  color: #f4f1e9;
+}
+
+.hero .container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-content {
+  flex: 1;
+}
+
+.hero-content h1 {
+  color: #f4f1e9;
+  font-size: 2.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+  font-size: 1.15rem;
+  margin-bottom: 2rem;
+  color: #eae4d3;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* --- Intro Section --- */
+.intro {
+  padding: 4rem 0;
+  background-color: #ffffff;
+}
+
+.phylogeny-preview {
+  margin-top: 2rem;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.phylogeny-preview img {
+  width: 100%;
+  display: block;
+}
+
+.overlay-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(46, 89, 57, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.overlay-link span {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.phylogeny-preview:hover .overlay-link {
+  opacity: 1;
+}
+
+/* --- Featured Families Section --- */
+.featured-families {
+  padding: 4rem 0;
+  background-color: #f4f1e9;
+}
+
+.quick-facts {
+  list-style: none;
+  margin: 1rem 0;
+  padding-left: 0;
+}
+
+.quick-facts li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.quick-facts li::before {
+  content: "•";
+  color: #4a7c59;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.scientific-name {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #795548;
+}
+
+/* --- Identification Teaser Section --- */
+.identification-teaser {
+  padding: 4rem 0;
+  background-color: #ffffff;
+}
+
+.identification-teaser .container {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.id-content {
+  flex: 1;
+}
+
+.id-features {
+  list-style: none;
+  margin: 1rem 0 2rem;
+  padding-left: 0;
+}
+
+.id-features li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.id-features li::before {
+  content: "✓";
+  color: #4a7c59;
+  position: absolute;
+  left: 0;
+}
+
+.id-image {
+  flex: 1;
+  text-align: center;
+}
+
+.id-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* --- Btn Variants --- */
+.btn-primary {
+  background-color: #4a7c59;
+  color: #f4f1e9;
+}
+
+.btn-primary:hover {
+  background-color: #2e5939;
+  color: #f4f1e9;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #4a7c59;
+  border: 2px solid #4a7c59;
+}
+
+.btn-secondary:hover {
+  background-color: #f4f1e9;
+  color: #2e5939;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* --- Info Columns (Phylogenetic Tree page) --- */
+.info-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.info-column ul {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.info-column li {
+  margin-bottom: 0.5rem;
+}
+
+/* --- Guide Cards (Identification page) --- */
+.guide-card {
+  background-color: #ffffff;
+  border: 1px solid #d9d2c5;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guide-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(74, 124, 89, 0.2);
+}
+
+.guide-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.guide-content {
+  padding: 1.5rem;
+}
+
+.guide-content ul {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+
+.guide-content li {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* --- Family Guide Cards --- */
+.family-guide-card {
+  text-align: center;
+  background-color: #ffffff;
+  border: 1px solid #d9d2c5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.family-guide-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(74, 124, 89, 0.2);
+}
+
+.family-guide-card img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 0 auto 1rem;
+  border-radius: 4px;
+}
+
+.family-guide-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.family-guide-card p {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* --- Incomplete List Banner --- */
+.incomplete-list-banner {
+  background-color: #fff3cd;
+  border-bottom: 1px solid #ffc107;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+  color: #856404;
+}
+
+/* --- Glossary --- */
+.glossary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.glossary-item {
+  padding: 1rem;
+  background-color: #f4f1e9;
+  border-radius: 6px;
+  border-left: 3px solid #4a7c59;
+}
+
+.glossary-item h3 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.glossary-item p {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* --- Reference List --- */
+.reference-list li {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* --- Search Results --- */
+.search-results-list {
+  list-style: none;
+  padding: 0;
+}
+
+.search-results-list li {
+  padding: 1rem;
+  border-bottom: 1px solid #d9d2c5;
+}
+
+.search-results-list li a {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.search-results-list li p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+/* --- Phylogenetic Tree Controls --- */
+.phylogenetic-tree-controls {
+  padding: 1rem 0;
+  background-color: #f4f1e9;
+  border-bottom: 1px solid #d9d2c5;
+}
+
+.search-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-controls label {
+  font-weight: 600;
+  color: #2e5939;
+}
+
+.search-controls input {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+/* --- Phylogenetic Tree Container --- */
+.phylogenetic-tree-container {
+  padding: 1rem 0;
+}
+
+.tree-visualization {
+  overflow: hidden;
+  border: 1px solid #d9d2c5;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.tree-visualization svg {
+  display: block;
+  width: 100%;
+}
+
+/* --- Tree Information Section --- */
+.tree-information {
+  padding: 2rem 0;
+  background-color: #f4f1e9;
+}
+
+/* --- Responsive Enhancements --- */
+@media (max-width: 992px) {
+  .hero .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-image {
+    margin-top: 2rem;
+  }
+
+  .identification-teaser .container {
+    flex-direction: column;
+  }
+
+  .id-image {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.6rem; }
+  h3 { font-size: 1.3rem; }
+
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .info-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-columns {
+    flex-direction: column;
+  }
+
+  .search-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-controls input {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    width: 95%;
+    padding: 0 10px;
+  }
+
+  .family-card {
+    max-width: 100%;
+  }
+
+  header .container {
+    flex-wrap: wrap;
+  }
+
+  header .search-bar {
+    order: 3;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }
 
