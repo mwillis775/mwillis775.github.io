@@ -981,7 +981,8 @@ table tr:hover {
 }
 
 .tree-visualization {
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: 1px solid #1a3a1a;
   border-radius: 8px;
   background-color: #0a0a0a;

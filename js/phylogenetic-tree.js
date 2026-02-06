@@ -703,11 +703,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Scroll the container to bring the first match into view
                 if (firstMatch.svgNode) {
                     const containerEl = container.node();
-                    const svgEl = svg.node();
-                    const svgRect = svgEl.getBoundingClientRect();
                     const containerRect = containerEl.getBoundingClientRect();
                     // firstMatch.x is vertical position in SVG coordinates
-                    const nodeYInContainer = firstMatch.x - containerEl.scrollTop;
                     const targetScroll = firstMatch.x - containerRect.height / 2;
                     containerEl.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
                 }
