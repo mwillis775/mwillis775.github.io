@@ -1401,3 +1401,328 @@ table tr:hover {
   }
 }
 
+
+/* =============================================================================
+ * BIG-BANG MODERNIZATION LAYER (v0.2)
+ * =============================================================================
+ * The legacy rules above use hardcoded hex colors and Open Sans / Montserrat.
+ * This trailing layer overrides them via the design tokens declared at the
+ * top of this file, so every existing page (including the 731 family pages)
+ * picks up the refined neo-retro terminal aesthetic without HTML changes.
+ *
+ * Anything in here can be turned off in one place by deleting this block —
+ * the legacy styles still resolve. That is the reversibility guarantee.
+ * ========================================================================== */
+
+/* Body & typographic baseline -------------------------------------------- */
+body {
+  font-family: var(--font-mono);
+  background-color: var(--bg-1);
+  color: var(--phosphor-300);
+  line-height: var(--lh-base);
+  font-feature-settings: 'tnum' 1, 'cv02' 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--phosphor-200);
+  letter-spacing: -0.005em;
+  line-height: var(--lh-tight);
+}
+h1 { font-size: var(--fs-3xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-xl); }
+h4 { font-size: var(--fs-lg); }
+
+p { max-width: var(--measure); }
+
+a { color: var(--amber-link); }
+a:hover { color: var(--amber-link-hover); }
+
+/* Header & nav ----------------------------------------------------------- */
+header {
+  background-color: var(--bg-2);
+  border-bottom: 1px solid var(--phosphor-700);
+  box-shadow: none;
+}
+header .logo a,
+header .main-nav a,
+.logo a span {
+  font-family: var(--font-mono);
+  color: var(--phosphor-300);
+  letter-spacing: 0.02em;
+}
+header .main-nav a {
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  border-bottom-color: transparent;
+}
+header .main-nav a:hover,
+header .main-nav a.active {
+  color: var(--amber-link);
+  border-bottom-color: var(--amber-link);
+  text-shadow: var(--glow-amber);
+}
+header .logo a::before {
+  content: '> ';
+  color: var(--amber-link);
+  font-weight: 700;
+}
+header .search-bar input {
+  background: var(--bg-1);
+  border: 1px solid var(--phosphor-600);
+  color: var(--phosphor-300);
+  font-family: var(--font-mono);
+  padding: var(--space-2) var(--space-3);
+}
+header .search-bar input::placeholder { color: var(--phosphor-600); }
+header .search-bar button {
+  background: transparent;
+  border: 1px solid var(--phosphor-600);
+  border-left: none;
+  color: var(--phosphor-300);
+}
+header .search-bar button:hover {
+  color: var(--amber-link);
+  border-color: var(--amber-link);
+}
+
+/* Family-page header section -------------------------------------------- */
+.family-header {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+  border-bottom: 1px solid var(--phosphor-700);
+  padding: var(--space-7) 0 var(--space-6);
+  position: relative;
+}
+.family-header::before {
+  content: '┌─ family ───────';
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  color: var(--phosphor-600);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+}
+.family-header h1 {
+  font-family: var(--font-display);
+  color: var(--phosphor-100);
+  font-size: var(--fs-4xl);
+  text-shadow: var(--glow-phosphor);
+}
+.family-common-name {
+  color: var(--phosphor-400);
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  letter-spacing: 0.04em;
+}
+.family-description {
+  color: var(--phosphor-300);
+  font-family: var(--font-mono);
+  max-width: var(--measure);
+  margin-top: var(--space-4);
+}
+.family-header img,
+.family-header-content img {
+  border: 1px solid var(--phosphor-700);
+  background: var(--bg-2);
+  padding: var(--space-1);
+}
+
+/* Family-page sub-navigation -------------------------------------------- */
+.family-navigation {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--phosphor-700);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+}
+.family-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+}
+.family-nav-links a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--phosphor-400);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid transparent;
+}
+.family-nav-links a:hover {
+  color: var(--amber-link);
+  border-color: var(--phosphor-700);
+}
+
+/* Family-page sections, info boxes -------------------------------------- */
+.family-section {
+  padding: var(--space-7) 0;
+  border-bottom: 1px solid var(--phosphor-700);
+}
+.family-section h2 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  color: var(--phosphor-200);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.02em;
+}
+.family-section h2::before {
+  content: '## ';
+  color: var(--phosphor-600);
+}
+.family-section h3 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  color: var(--phosphor-300);
+  margin-top: var(--space-5);
+}
+.family-section h3::before {
+  content: '### ';
+  color: var(--phosphor-600);
+}
+.family-section p,
+.family-section li {
+  color: var(--phosphor-300);
+}
+.family-section ul,
+.family-section ol {
+  padding-left: var(--space-5);
+  max-width: var(--measure);
+}
+.family-section strong { color: var(--phosphor-100); font-weight: 700; }
+
+.info-box,
+.field-guide-box,
+.identification-feature,
+.characteristic-group {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) 0;
+  position: relative;
+}
+.info-box::before, .field-guide-box::before {
+  content: '';
+  position: absolute; top: -1px; left: -1px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--phosphor-300);
+  border-left: 2px solid var(--phosphor-300);
+}
+.info-box::after, .field-guide-box::after {
+  content: '';
+  position: absolute; bottom: -1px; right: -1px;
+  width: 12px; height: 12px;
+  border-bottom: 2px solid var(--phosphor-300);
+  border-right: 2px solid var(--phosphor-300);
+}
+.info-box h3,
+.field-guide-box h3,
+.identification-feature h3,
+.characteristic-group h3 {
+  margin-top: 0;
+  color: var(--phosphor-200);
+}
+
+/* Examples grid (cards) -------------------------------------------------- */
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+.example-card {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  overflow: hidden;
+  transition: border-color var(--motion-base) var(--easing-out),
+              box-shadow var(--motion-base) var(--easing-out);
+}
+.example-card:hover {
+  border-color: var(--amber-link);
+  box-shadow: var(--glow-amber);
+}
+.example-card .example-image img {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid var(--phosphor-700);
+}
+.example-card h3 {
+  padding: var(--space-3) var(--space-4) 0;
+  font-family: var(--font-mono);
+}
+.example-card p {
+  padding: 0 var(--space-4) var(--space-4);
+  color: var(--phosphor-400);
+  font-size: var(--fs-sm);
+}
+
+/* Family browse / index pages ------------------------------------------- */
+.family-card,
+.classification-card,
+.feature-card {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  transition: border-color var(--motion-base) var(--easing-out),
+              transform var(--motion-base) var(--easing-out),
+              box-shadow var(--motion-base) var(--easing-out);
+}
+.family-card:hover,
+.classification-card:hover,
+.feature-card:hover {
+  border-color: var(--amber-link);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-amber);
+}
+.family-card h3,
+.classification-card h3,
+.feature-card h3 {
+  font-family: var(--font-mono);
+  color: var(--phosphor-200);
+}
+
+/* Buttons ---------------------------------------------------------------- */
+button,
+.btn,
+input[type="submit"] {
+  font-family: var(--font-mono);
+}
+
+/* Footer ----------------------------------------------------------------- */
+footer {
+  background: var(--bg-0);
+  border-top: 1px solid var(--phosphor-700);
+  color: var(--phosphor-400);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+footer h3, footer h4 {
+  font-family: var(--font-mono);
+  color: var(--phosphor-300);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+footer a { color: var(--phosphor-400); }
+footer a:hover { color: var(--amber-link); }
+
+/* Hero / homepage typing-cursor preserved on H1 only ------------------- */
+.hero h1, .hero-section h1 {
+  font-family: var(--font-display);
+  color: var(--phosphor-100);
+  font-size: var(--fs-4xl);
+  text-shadow: var(--glow-phosphor);
+}
+
+/* Focus ring (override any legacy outline rules) ------------------------ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--amber-link);
+  outline-offset: 2px;
+}

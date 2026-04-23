@@ -507,9 +507,14 @@
     lines.push('<strong>' + escapeHtml(d.data.name) + '</strong>');
     if (d.data.rank) lines.push('<span class="t-rank">' + escapeHtml(d.data.rank) + '</span>');
     if (typeof d.raw_time === 'number') {
+      const srcKey = d.data.time_source ? escapeHtml(d.data.time_source) : '';
+      const srcUrl = d.data.time_source_url
+        ? ' (' + escapeHtml(d.data.time_source_url.replace(/^https?:\/\//, '')) + ')'
+        : '';
+      const srcLabel = srcKey ? ' · <em>' + srcKey + srcUrl + '</em>' : '';
       lines.push('~' + d.raw_time + ' MYA' +
         (d.data.time_kind ? ' · ' + escapeHtml(d.data.time_kind) : '') +
-        (d.data.time_source ? ' · <em>' + escapeHtml(d.data.time_source) + '</em>' : ''));
+        srcLabel);
     } else if (d.inferred) {
       lines.push('~' + d.eff_time.toFixed(1) + ' MYA · <em>inferred</em>');
     }
