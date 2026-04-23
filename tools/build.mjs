@@ -76,7 +76,12 @@ function pickHeaderImage(html) {
   return m ? m[1] : '';
 }
 
-function stripTags(s) { return String(s).replace(/<[^>]+>/g, ''); }
+function stripTags(s) {
+  // Loop until stable so nested angle-brackets like "<scr<x>ipt>" can't survive.
+  let prev, out = String(s);
+  do { prev = out; out = out.replace(/<[^>]*>/g, ''); } while (out !== prev);
+  return out;
+}
 
 function csvEscape(v) {
   const s = String(v ?? '');
