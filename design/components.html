@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Component Library — Plant Families Explorer</title>
+<link href="../css/styles.css" rel="stylesheet"/>
+<link href="../img/logo.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+  /* Page-local layout only; all visual choices come from tokens. */
+  body { background: var(--bg-1); color: var(--phosphor-300); font-family: var(--font-body); line-height: var(--lh-base); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: var(--space-6) var(--space-5); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--space-3); }
+  .swatch { border: var(--border-thin); padding: var(--space-3); font-family: var(--font-mono); font-size: var(--fs-xs); }
+  .swatch-chip { display: block; height: 48px; margin-bottom: var(--space-2); border: 1px solid var(--phosphor-700); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-4); }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }
+  h1, h2, h3 { font-family: var(--font-display); color: var(--phosphor-200); }
+  h1 { font-size: var(--fs-3xl); margin-bottom: var(--space-2); }
+  h2 { font-size: var(--fs-xl); margin: var(--space-7) 0 var(--space-3); border-top: var(--border-muted); padding-top: var(--space-4); }
+  h3 { font-size: var(--fs-md); margin: var(--space-4) 0 var(--space-2); color: var(--phosphor-300); }
+  code, pre { font-family: var(--font-mono); color: var(--phosphor-400); background: var(--bg-2); padding: 0 var(--space-1); }
+  pre { padding: var(--space-3); border: var(--border-muted); overflow-x: auto; }
+  .meta { color: var(--phosphor-400); font-size: var(--fs-sm); }
+  .toolbar { display: flex; gap: var(--space-2); align-items: center; }
+</style>
+</head>
+<body data-scanlines>
+<div class="wrap">
+  <header>
+    <p class="t-pill" data-variant="amber">Internal · style guide</p>
+    <h1>Component Library</h1>
+    <p class="meta">Token-driven components for the neo-retro terminal aesthetic.
+       Everything on this page is built from CSS custom properties defined at the
+       top of <code>css/styles.css</code>. Use this as the reference when
+       migrating existing pages.</p>
+    <div class="toolbar" style="margin-top: var(--space-4);">
+      <button class="t-btn" id="theme-toggle" type="button">Toggle daylight theme</button>
+      <button class="t-btn" id="scanlines-toggle" type="button">Toggle scanlines</button>
+    </div>
+  </header>
+
+  <h2>Color tokens</h2>
+  <h3>Phosphor scale</h3>
+  <div class="swatches">
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-100);"></span>--phosphor-100</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-200);"></span>--phosphor-200</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-300);"></span>--phosphor-300</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-400);"></span>--phosphor-400</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-500);"></span>--phosphor-500</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-600);"></span>--phosphor-600</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--phosphor-700);"></span>--phosphor-700</div>
+  </div>
+  <h3>Backgrounds &amp; accents</h3>
+  <div class="swatches">
+    <div class="swatch"><span class="swatch-chip" style="background: var(--bg-0);"></span>--bg-0</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--bg-1);"></span>--bg-1</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--bg-2);"></span>--bg-2</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--bg-3);"></span>--bg-3</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--amber-link);"></span>--amber-link</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--info);"></span>--info</div>
+    <div class="swatch"><span class="swatch-chip" style="background: var(--warn);"></span>--warn</div>
+  </div>
+
+  <h2>Typography</h2>
+  <h3>Display (sans)</h3>
+  <p style="font-family: var(--font-display); font-size: var(--fs-3xl); line-height: var(--lh-tight); margin: 0;">Magnoliopsida — flowering plants</p>
+  <h3>Body (mono)</h3>
+  <p style="max-width: var(--measure);">The Asteraceae or Compositae, commonly referred to as the sunflower family,
+     is the largest family of flowering plants. <span class="t-rank">Family</span>
+     count: <span class="t-tabular">32 913</span> species across
+     <span class="t-tabular">1 911</span> genera.</p>
+  <h3>Type scale</h3>
+  <ul style="list-style: none; padding: 0;">
+    <li style="font-size: var(--fs-xs);">--fs-xs · 0.75rem</li>
+    <li style="font-size: var(--fs-sm);">--fs-sm · 0.875rem</li>
+    <li style="font-size: var(--fs-base);">--fs-base · 1rem</li>
+    <li style="font-size: var(--fs-md);">--fs-md · 1.125rem</li>
+    <li style="font-size: var(--fs-lg);">--fs-lg · 1.25rem</li>
+    <li style="font-size: var(--fs-xl);">--fs-xl · 1.563rem</li>
+    <li style="font-size: var(--fs-2xl);">--fs-2xl · 1.953rem</li>
+    <li style="font-size: var(--fs-3xl);">--fs-3xl · 2.441rem</li>
+  </ul>
+
+  <h2>Pills</h2>
+  <div class="row">
+    <span class="t-pill">Default</span>
+    <span class="t-pill" data-variant="amber">Amber</span>
+    <span class="t-pill" data-variant="info">Info</span>
+    <span class="t-pill" data-variant="warn">Warn</span>
+    <span class="t-pill"><span class="t-rank">Order</span> · Asterales</span>
+  </div>
+
+  <h2>Buttons</h2>
+  <div class="row">
+    <button class="t-btn" type="button">Default</button>
+    <button class="t-btn" data-variant="primary" type="button">Primary</button>
+    <a class="t-btn" href="#">Link as button</a>
+  </div>
+
+  <h2>Prompt input</h2>
+  <div class="row">
+    <label class="t-prompt" style="min-width: 320px;">
+      <input aria-label="Search families" placeholder="search families..." type="text"/>
+    </label>
+    <button class="t-btn" data-variant="primary" type="button">Run</button>
+  </div>
+
+  <h2>Cards</h2>
+  <div class="grid-2">
+    <article class="t-card">
+      <span class="t-card-corners"></span>
+      <p class="t-section-heading">Asteraceae</p>
+      <p class="t-rank" style="color: var(--phosphor-400);">Family · Asterales · Magnoliopsida</p>
+      <p style="margin-top: var(--space-3);">The largest family of flowering plants, with composite flower heads
+         comprising disc and ray florets.</p>
+      <div class="row" style="margin-top: var(--space-4);">
+        <span class="t-pill" data-variant="amber">~32 913 spp.</span>
+        <span class="t-pill">1 911 genera</span>
+      </div>
+    </article>
+    <article class="t-card">
+      <span class="t-card-corners"></span>
+      <p class="t-section-heading">Tree node</p>
+      <p>Click a node in the chronogram to expand its sub-clades. Hover for
+         the divergence age and source citation.</p>
+      <a class="t-btn" href="../phylogenetic-tree-v2.html">Open chronogram</a>
+    </article>
+  </div>
+
+  <h2>Section heading</h2>
+  <p class="t-section-heading">References</p>
+  <p class="meta">Use <code>.t-section-heading</code> for terminal-style section dividers.</p>
+
+  <h2>Vignette wrapper (for the tree only)</h2>
+  <div class="t-vignette" style="height: 160px; display: grid; place-items: center;">
+    <span class="t-glow" style="font-family: var(--font-mono); color: var(--phosphor-300);">
+      ~ phylogenetic chronogram ~
+    </span>
+  </div>
+
+  <h2>Accessibility</h2>
+  <ul>
+    <li>Tab through the buttons above to see the amber focus ring.</li>
+    <li>The daylight theme switches all tokens at once via <code>[data-theme="light"]</code>.</li>
+    <li><code>prefers-reduced-motion</code> disables transitions and the boot-up sequence.</li>
+  </ul>
+</div>
+
+<script>
+  // Theme toggle (persists in localStorage).
+  const root = document.documentElement;
+  const stored = localStorage.getItem('pfe-theme');
+  if (stored === 'light') root.setAttribute('data-theme', 'light');
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? null : 'light';
+    if (next) root.setAttribute('data-theme', next);
+    else root.removeAttribute('data-theme');
+    localStorage.setItem('pfe-theme', next || 'dark');
+  });
+  // Scanlines toggle.
+  document.getElementById('scanlines-toggle').addEventListener('click', () => {
+    if (document.body.hasAttribute('data-scanlines')) document.body.removeAttribute('data-scanlines');
+    else document.body.setAttribute('data-scanlines', '');
+  });
+</script>
+</body>
+</html>

@@ -1,3 +1,315 @@
+/* ---------------------------------------------------------------------------
+ * Design tokens (neo-retro terminal aesthetic, refined)
+ * --------------------------------------------------------------------------
+ * These custom properties are the single source of truth for color, type,
+ * spacing, and motion across the site. Existing rules below still use hex
+ * literals for backwards compatibility; new components and pages should
+ * consume these tokens (see design/components.html for the catalog).
+ * ----------------------------------------------------------------------- */
+:root {
+  /* Phosphor green scale ------------------------------------------------- */
+  --phosphor-100: #d8ffe0;   /* near-white phosphor — only for emphasis */
+  --phosphor-200: #7dffa0;
+  --phosphor-300: #1aff66;   /* primary text on dark backgrounds */
+  --phosphor-400: #0fcc4d;   /* secondary text */
+  --phosphor-500: #00802b;   /* accent / button fill */
+  --phosphor-600: #066b27;   /* muted / borders */
+  --phosphor-700: #033416;   /* deep border / divider */
+  --phosphor-800: #021a0b;
+
+  /* Background tiers (deep CRT black) ----------------------------------- */
+  --bg-0: #050505;           /* outermost, behind everything */
+  --bg-1: #0a0a0a;           /* page background */
+  --bg-2: #0e0e0e;           /* surfaces (cards, footer) */
+  --bg-3: #141414;           /* elevated surfaces (modals, popovers) */
+
+  /* Accents ------------------------------------------------------------- */
+  --amber-link: #ffbf00;     /* canonical link colour */
+  --amber-link-hover: #ffd54f;
+  --warn: #ff5f56;
+  --info: #5fa8ff;           /* cool CRT-RGB accent */
+
+  /* Typography ---------------------------------------------------------- */
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace,
+               SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: 'Space Grotesk', 'Montserrat', system-ui, sans-serif;
+  --font-body: var(--font-mono);
+  --font-display: var(--font-sans);
+
+  /* Modular type scale (1.25) ------------------------------------------ */
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-md:   1.125rem;
+  --fs-lg:   1.25rem;
+  --fs-xl:   1.563rem;
+  --fs-2xl:  1.953rem;
+  --fs-3xl:  2.441rem;
+  --fs-4xl:  3.052rem;
+
+  --lh-tight: 1.2;
+  --lh-base:  1.55;
+  --lh-loose: 1.75;
+  --measure:  72ch;
+
+  /* Spacing (8px base) -------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Borders & radii ----------------------------------------------------- */
+  --border-thin:  1px solid var(--phosphor-600);
+  --border-muted: 1px solid var(--phosphor-700);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Motion -------------------------------------------------------------- */
+  --motion-fast:  120ms;
+  --motion-base:  240ms;
+  --motion-slow:  480ms;
+  --easing-out:   cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Effects ------------------------------------------------------------- */
+  --glow-phosphor: 0 0 6px rgba(26, 255, 102, 0.45),
+                   0 0 14px rgba(26, 255, 102, 0.20);
+  --glow-amber:    0 0 6px rgba(255, 191, 0, 0.45),
+                   0 0 14px rgba(255, 191, 0, 0.20);
+  --shadow-card:   0 2px 0 rgba(0, 0, 0, 0.6),
+                   0 0 0 1px var(--phosphor-700);
+}
+
+/* Optional light/"daylight" theme — opt-in via [data-theme="light"]
+ * on <html>. We don't switch automatically; a future theme toggle
+ * widget will set the attribute. Tokens are designed so any component
+ * built against them inherits the new palette automatically. */
+:root[data-theme='light'] {
+  --bg-0: #f3efe6;
+  --bg-1: #f7f3ea;
+  --bg-2: #ffffff;
+  --bg-3: #fdfaf2;
+  --phosphor-100: #07150a;
+  --phosphor-200: #0a3018;
+  --phosphor-300: #0f4a25;   /* body text */
+  --phosphor-400: #1a6b39;
+  --phosphor-500: #2c8a52;
+  --phosphor-600: #b3cdb9;   /* borders */
+  --phosphor-700: #d8e3d9;
+  --amber-link: #a06b00;
+  --amber-link-hover: #c2860c;
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.06),
+                 0 0 0 1px var(--phosphor-600);
+  --glow-phosphor: none;
+  --glow-amber:    none;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Utility & component layer (token-driven, opt-in)
+ * --------------------------------------------------------------------------
+ * Existing pages keep their current styles. New components and the
+ * phylogenetic-tree-v2 page consume these classes. See design/components.html.
+ * ----------------------------------------------------------------------- */
+
+/* Subtle CRT scanline overlay. Apply by adding `data-scanlines` to <body>. */
+body[data-scanlines]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Visible focus ring for keyboard users. */
+.t-focus-ring:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--amber-link);
+  outline-offset: 2px;
+  box-shadow: var(--glow-amber);
+}
+
+/* Terminal "card" — boxy with corner brackets, no rounded corners. */
+.t-card {
+  position: relative;
+  background: var(--bg-2);
+  color: var(--phosphor-300);
+  border: var(--border-thin);
+  padding: var(--space-5);
+  font-family: var(--font-mono);
+}
+.t-card::before,
+.t-card::after,
+.t-card > .t-card-corners::before,
+.t-card > .t-card-corners::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--phosphor-300);
+  border-style: solid;
+  border-width: 0;
+}
+.t-card::before        { top: -1px;    left: -1px;    border-top-width: 2px;    border-left-width: 2px; }
+.t-card::after         { top: -1px;    right: -1px;   border-top-width: 2px;    border-right-width: 2px; }
+.t-card > .t-card-corners::before {
+  bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px;
+}
+.t-card > .t-card-corners::after {
+  bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px;
+}
+
+/* Pill — inline tag for taxonomic ranks etc. */
+.t-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--phosphor-500);
+  color: var(--phosphor-300);
+  background: transparent;
+  border-radius: var(--radius-sm);
+}
+.t-pill[data-variant='amber'] { border-color: var(--amber-link); color: var(--amber-link); }
+.t-pill[data-variant='info']  { border-color: var(--info);       color: var(--info); }
+.t-pill[data-variant='warn']  { border-color: var(--warn);       color: var(--warn); }
+
+/* Prompt-style input/CTA — leading "> " glyph. */
+.t-prompt {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  background: var(--bg-2);
+  border: var(--border-thin);
+  padding: var(--space-2) var(--space-3);
+  color: var(--phosphor-300);
+}
+.t-prompt::before {
+  content: '>';
+  color: var(--amber-link);
+  font-weight: 700;
+}
+.t-prompt input,
+.t-prompt button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  padding: 0;
+}
+
+/* Terminal button — ghost by default, amber on hover. */
+.t-btn {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--phosphor-300);
+  border: 1px solid var(--phosphor-500);
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--easing-out),
+              border-color var(--motion-fast) var(--easing-out),
+              background var(--motion-fast) var(--easing-out);
+  text-decoration: none;
+}
+.t-btn:hover,
+.t-btn:focus-visible {
+  color: var(--bg-1);
+  background: var(--amber-link);
+  border-color: var(--amber-link);
+}
+.t-btn[data-variant='primary'] {
+  color: var(--bg-1);
+  background: var(--phosphor-300);
+  border-color: var(--phosphor-300);
+}
+.t-btn[data-variant='primary']:hover {
+  background: var(--phosphor-200);
+  border-color: var(--phosphor-200);
+}
+
+/* Phosphor glow for active/focused leaf labels in the tree. */
+.t-glow { text-shadow: var(--glow-phosphor); }
+
+/* Vignette wrapper — for the tree visualisation only. */
+.t-vignette {
+  position: relative;
+  background: var(--bg-1);
+  overflow: hidden;
+}
+.t-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* Terminal section heading — ASCII bracket affordance. */
+.t-section-heading {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phosphor-400);
+  margin: 0 0 var(--space-3);
+}
+.t-section-heading::before { content: '┌─ '; color: var(--phosphor-600); }
+.t-section-heading::after  { content: ' ─┐'; color: var(--phosphor-600); }
+
+/* Tabular figures for any taxonomic count etc. */
+.t-tabular { font-variant-numeric: tabular-nums; }
+
+/* Small-caps for ranks. */
+.t-rank { font-variant-caps: all-small-caps; letter-spacing: 0.08em; }
+
+/* ---------------------------------------------------------------------------
+ * End design tokens & utility layer.
+ * The original site styles continue below.
+ * ----------------------------------------------------------------------- */
+
+
 /* --- Reset & Base Styles --- */
 *,
 *::before,
@@ -1089,3 +1401,328 @@ table tr:hover {
   }
 }
 
+
+/* =============================================================================
+ * BIG-BANG MODERNIZATION LAYER (v0.2)
+ * =============================================================================
+ * The legacy rules above use hardcoded hex colors and Open Sans / Montserrat.
+ * This trailing layer overrides them via the design tokens declared at the
+ * top of this file, so every existing page (including the 731 family pages)
+ * picks up the refined neo-retro terminal aesthetic without HTML changes.
+ *
+ * Anything in here can be turned off in one place by deleting this block —
+ * the legacy styles still resolve. That is the reversibility guarantee.
+ * ========================================================================== */
+
+/* Body & typographic baseline -------------------------------------------- */
+body {
+  font-family: var(--font-mono);
+  background-color: var(--bg-1);
+  color: var(--phosphor-300);
+  line-height: var(--lh-base);
+  font-feature-settings: 'tnum' 1, 'cv02' 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--phosphor-200);
+  letter-spacing: -0.005em;
+  line-height: var(--lh-tight);
+}
+h1 { font-size: var(--fs-3xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-xl); }
+h4 { font-size: var(--fs-lg); }
+
+p { max-width: var(--measure); }
+
+a { color: var(--amber-link); }
+a:hover { color: var(--amber-link-hover); }
+
+/* Header & nav ----------------------------------------------------------- */
+header {
+  background-color: var(--bg-2);
+  border-bottom: 1px solid var(--phosphor-700);
+  box-shadow: none;
+}
+header .logo a,
+header .main-nav a,
+.logo a span {
+  font-family: var(--font-mono);
+  color: var(--phosphor-300);
+  letter-spacing: 0.02em;
+}
+header .main-nav a {
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+  border-bottom-color: transparent;
+}
+header .main-nav a:hover,
+header .main-nav a.active {
+  color: var(--amber-link);
+  border-bottom-color: var(--amber-link);
+  text-shadow: var(--glow-amber);
+}
+header .logo a::before {
+  content: '> ';
+  color: var(--amber-link);
+  font-weight: 700;
+}
+header .search-bar input {
+  background: var(--bg-1);
+  border: 1px solid var(--phosphor-600);
+  color: var(--phosphor-300);
+  font-family: var(--font-mono);
+  padding: var(--space-2) var(--space-3);
+}
+header .search-bar input::placeholder { color: var(--phosphor-600); }
+header .search-bar button {
+  background: transparent;
+  border: 1px solid var(--phosphor-600);
+  border-left: none;
+  color: var(--phosphor-300);
+}
+header .search-bar button:hover {
+  color: var(--amber-link);
+  border-color: var(--amber-link);
+}
+
+/* Family-page header section -------------------------------------------- */
+.family-header {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+  border-bottom: 1px solid var(--phosphor-700);
+  padding: var(--space-7) 0 var(--space-6);
+  position: relative;
+}
+.family-header::before {
+  content: '┌─ family ───────';
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  color: var(--phosphor-600);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.12em;
+}
+.family-header h1 {
+  font-family: var(--font-display);
+  color: var(--phosphor-100);
+  font-size: var(--fs-4xl);
+  text-shadow: var(--glow-phosphor);
+}
+.family-common-name {
+  color: var(--phosphor-400);
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  letter-spacing: 0.04em;
+}
+.family-description {
+  color: var(--phosphor-300);
+  font-family: var(--font-mono);
+  max-width: var(--measure);
+  margin-top: var(--space-4);
+}
+.family-header img,
+.family-header-content img {
+  border: 1px solid var(--phosphor-700);
+  background: var(--bg-2);
+  padding: var(--space-1);
+}
+
+/* Family-page sub-navigation -------------------------------------------- */
+.family-navigation {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--phosphor-700);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+}
+.family-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+}
+.family-nav-links a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--phosphor-400);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid transparent;
+}
+.family-nav-links a:hover {
+  color: var(--amber-link);
+  border-color: var(--phosphor-700);
+}
+
+/* Family-page sections, info boxes -------------------------------------- */
+.family-section {
+  padding: var(--space-7) 0;
+  border-bottom: 1px solid var(--phosphor-700);
+}
+.family-section h2 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  color: var(--phosphor-200);
+  margin-bottom: var(--space-4);
+  letter-spacing: 0.02em;
+}
+.family-section h2::before {
+  content: '## ';
+  color: var(--phosphor-600);
+}
+.family-section h3 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  color: var(--phosphor-300);
+  margin-top: var(--space-5);
+}
+.family-section h3::before {
+  content: '### ';
+  color: var(--phosphor-600);
+}
+.family-section p,
+.family-section li {
+  color: var(--phosphor-300);
+}
+.family-section ul,
+.family-section ol {
+  padding-left: var(--space-5);
+  max-width: var(--measure);
+}
+.family-section strong { color: var(--phosphor-100); font-weight: 700; }
+
+.info-box,
+.field-guide-box,
+.identification-feature,
+.characteristic-group {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) 0;
+  position: relative;
+}
+.info-box::before, .field-guide-box::before {
+  content: '';
+  position: absolute; top: -1px; left: -1px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--phosphor-300);
+  border-left: 2px solid var(--phosphor-300);
+}
+.info-box::after, .field-guide-box::after {
+  content: '';
+  position: absolute; bottom: -1px; right: -1px;
+  width: 12px; height: 12px;
+  border-bottom: 2px solid var(--phosphor-300);
+  border-right: 2px solid var(--phosphor-300);
+}
+.info-box h3,
+.field-guide-box h3,
+.identification-feature h3,
+.characteristic-group h3 {
+  margin-top: 0;
+  color: var(--phosphor-200);
+}
+
+/* Examples grid (cards) -------------------------------------------------- */
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+.example-card {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  overflow: hidden;
+  transition: border-color var(--motion-base) var(--easing-out),
+              box-shadow var(--motion-base) var(--easing-out);
+}
+.example-card:hover {
+  border-color: var(--amber-link);
+  box-shadow: var(--glow-amber);
+}
+.example-card .example-image img {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid var(--phosphor-700);
+}
+.example-card h3 {
+  padding: var(--space-3) var(--space-4) 0;
+  font-family: var(--font-mono);
+}
+.example-card p {
+  padding: 0 var(--space-4) var(--space-4);
+  color: var(--phosphor-400);
+  font-size: var(--fs-sm);
+}
+
+/* Family browse / index pages ------------------------------------------- */
+.family-card,
+.classification-card,
+.feature-card {
+  background: var(--bg-2);
+  border: 1px solid var(--phosphor-700);
+  transition: border-color var(--motion-base) var(--easing-out),
+              transform var(--motion-base) var(--easing-out),
+              box-shadow var(--motion-base) var(--easing-out);
+}
+.family-card:hover,
+.classification-card:hover,
+.feature-card:hover {
+  border-color: var(--amber-link);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-amber);
+}
+.family-card h3,
+.classification-card h3,
+.feature-card h3 {
+  font-family: var(--font-mono);
+  color: var(--phosphor-200);
+}
+
+/* Buttons ---------------------------------------------------------------- */
+button,
+.btn,
+input[type="submit"] {
+  font-family: var(--font-mono);
+}
+
+/* Footer ----------------------------------------------------------------- */
+footer {
+  background: var(--bg-0);
+  border-top: 1px solid var(--phosphor-700);
+  color: var(--phosphor-400);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+footer h3, footer h4 {
+  font-family: var(--font-mono);
+  color: var(--phosphor-300);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+footer a { color: var(--phosphor-400); }
+footer a:hover { color: var(--amber-link); }
+
+/* Hero / homepage typing-cursor preserved on H1 only ------------------- */
+.hero h1, .hero-section h1 {
+  font-family: var(--font-display);
+  color: var(--phosphor-100);
+  font-size: var(--fs-4xl);
+  text-shadow: var(--glow-phosphor);
+}
+
+/* Focus ring (override any legacy outline rules) ------------------------ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--amber-link);
+  outline-offset: 2px;
+}
