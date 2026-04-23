@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Phylogenetic Tree (v2 · chronogram) — Plant Families Explorer</title>
+<link href="css/styles.css" rel="stylesheet"/>
+<link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="js/d3.v7.min.js"></script>
+<style>
+  /* Page-local styling. All colours come from the design tokens. */
+  .pt-page-wrap { max-width: 1280px; margin: 0 auto; padding: var(--space-5); }
+  .pt-header h1 { font-family: var(--font-display); font-size: var(--fs-2xl);
+                  color: var(--phosphor-200); margin: 0 0 var(--space-2); }
+  .pt-header p  { color: var(--phosphor-400); max-width: var(--measure); }
+  .pt-toolbar { display: flex; gap: var(--space-3); flex-wrap: wrap;
+                margin: var(--space-4) 0 var(--space-3); align-items: center; }
+  #phylogenetic-tree-v2 {
+    background: var(--bg-1);
+    border: var(--border-thin);
+    overflow: auto;
+    position: relative;
+    min-height: 600px;
+  }
+  #phylogenetic-tree-v2 svg { display: block; cursor: grab; }
+  #phylogenetic-tree-v2 svg:active { cursor: grabbing; }
+  .pt-axis text { fill: var(--phosphor-400); font-family: var(--font-mono); font-size: 10px; }
+  .pt-axis path, .pt-axis line { stroke: var(--phosphor-600); }
+  .pt-geo-label { fill: var(--phosphor-100); font-family: var(--font-mono); font-size: 10px; }
+  .pt-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    background: var(--bg-3);
+    border: 1px solid var(--phosphor-500);
+    color: var(--phosphor-300);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    padding: var(--space-2) var(--space-3);
+    max-width: 320px;
+    box-shadow: var(--glow-phosphor);
+    line-height: 1.4;
+  }
+  .pt-tooltip strong { color: var(--phosphor-200); }
+  .pt-legend { display: flex; gap: var(--space-4); flex-wrap: wrap;
+               color: var(--phosphor-400); font-family: var(--font-mono);
+               font-size: var(--fs-xs); margin-top: var(--space-3); }
+  .pt-legend span::before { content: ''; display: inline-block; width: 14px; height: 1px;
+                            margin-right: 6px; vertical-align: middle; }
+  .pt-legend .l-solid::before  { border-top: 2px solid var(--phosphor-500); }
+  .pt-legend .l-dashed::before { border-top: 2px dashed var(--phosphor-600); }
+  .pt-legend .l-leaf::before   { width: 8px; height: 8px; border-radius: 50%;
+                                 background: var(--phosphor-300); border: 1px solid var(--amber-link); }
+  .pt-legend .l-internal::before { width: 8px; height: 8px; border-radius: 50%;
+                                   background: var(--phosphor-200); }
+  .t-banner {
+    border: var(--border-muted);
+    background: var(--bg-2);
+    color: var(--phosphor-300);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+</style>
+</head>
+<body data-scanlines>
+<div class="pt-page-wrap">
+  <div class="t-banner">
+    <strong style="color: var(--amber-link);">v2 preview.</strong>
+    This is the from-scratch chronogram renderer described in the project plan.
+    The original tree (with all ~700 families) is still live at
+    <a href="phylogenetic-tree.html" style="color: var(--amber-link);">phylogenetic-tree.html</a>
+    and is unchanged. Topology and divergence ages here are sourced from
+    <code>data/phylogeny.json</code>; each dated node carries a citation key
+    (Magallón 2015, Morris 2018, Laenen 2014, Testo &amp; Sundue 2016, etc.).
+    Dashed branches indicate ages inferred between dated neighbours rather than
+    taken from the literature.
+  </div>
+
+  <header class="pt-header">
+    <p class="t-pill" data-variant="amber">Workstream 1 · v0.1</p>
+    <h1>Plant phylogeny — time-calibrated</h1>
+    <p>Horizontal axis is millions of years ago (MYA). Click any internal
+       node to expand its sub-clades; click a family (amber) to open its
+       page. Drag to pan, scroll to zoom.</p>
+  </header>
+
+  <div class="pt-toolbar">
+    <label class="t-prompt" style="min-width: 280px;">
+      <input id="pt-search" type="text" placeholder="search clades or families…" aria-label="Search the phylogenetic tree"/>
+    </label>
+    <button class="t-btn" id="pt-expand-all" type="button">Expand all</button>
+    <button class="t-btn" id="pt-collapse-all" type="button">Collapse to orders</button>
+    <button class="t-btn" id="pt-reset-view" type="button">Reset view</button>
+  </div>
+
+  <div class="t-vignette">
+    <div id="phylogenetic-tree-v2" aria-label="Phylogenetic chronogram"></div>
+  </div>
+
+  <div class="pt-legend">
+    <span class="l-solid">published divergence age</span>
+    <span class="l-dashed">inferred (interpolated) age</span>
+    <span class="l-internal">internal node</span>
+    <span class="l-leaf">leaf — links to family page</span>
+  </div>
+
+  <section style="margin-top: var(--space-7);">
+    <h2 class="t-section-heading">About this preview</h2>
+    <p style="max-width: var(--measure); color: var(--phosphor-400);">
+      The legacy tree at <code>phylogenetic-tree.html</code> hand-encodes
+      topology in a JS object literal and forces every leaf to "present
+      day", which makes the time scale meaningless. This page replaces both:
+    </p>
+    <ul style="max-width: var(--measure); color: var(--phosphor-400);">
+      <li>Data is in <code>data/phylogeny.json</code>, separate from the renderer.</li>
+      <li>Each node's <code>time_mya</code> + <code>time_source</code> citation is auditable.</li>
+      <li>Layout is a true chronogram (x = real MYA), not a cladogram.</li>
+      <li>The <code>tools/validate.mjs</code> script checks every leaf's URL exists
+          and that no child is older than its parent.</li>
+    </ul>
+  </section>
+</div>
+
+<script src="js/phylogenetic-tree-v2.js"></script>
+</body>
+</html>

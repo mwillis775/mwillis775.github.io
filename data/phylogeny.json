@@ -1,0 +1,445 @@
+{
+  "$schema": "./phylogeny.schema.json",
+  "version": "0.1.0",
+  "generated": "2026-04-23",
+  "notes": [
+    "Versioned phylogeny data driving the v2 chronogram renderer.",
+    "Each node may carry: id, name, rank, time_mya (crown/stem age in millions of years ago), time_kind ('crown'|'stem'|'inferred'), time_source (short citation key), url (link to an existing /families/*.html page), note, and children.",
+    "If time_mya is null the renderer treats the age as inferred and draws the branch dashed. Inferred ages are placed midway between the dated parent and the youngest dated descendant.",
+    "Sources used in this file:",
+    "  Morris2018  — Morris et al. 2018 PNAS: 'The timescale of early land plant evolution'.",
+    "  Magallon2015 — Magallón et al. 2015 New Phytologist: 'A metacalibrated time-tree documents the early rise of flowering plant phylogenetic diversity'.",
+    "  Laenen2014  — Laenen et al. 2014 Nat. Comms: 'Extant diversity of bryophytes emerged from successive post-Mesozoic diversification bursts'.",
+    "  Testo2016   — Testo & Sundue 2016 MPE: 'A 4000-species dataset provides new insight into the evolution of ferns'.",
+    "  Lu2014      — Lu et al. 2014 Sci. Reports: 'Gymnosperm phylogeny: Evidence from large-scale sequence data'.",
+    "  PPGI        — PPG I (2016) JSE: 'A community-derived classification for extant lycophytes and ferns'.",
+    "  APGIV       — APG IV (2016) BJLS: angiosperm classification.",
+    "Topology of internal backbone follows Morris2018 (embryophyte backbone), PPGI (lycophytes/ferns), Lu2014 (gymnosperms), APGIV (angiosperms).",
+    "This file is intentionally a curated SKELETON to validate the chronogram renderer. Migrate the full family list from js/phylogenetic-tree.js (the legacy plantData) into this structure as nodes are reviewed against the cited literature."
+  ],
+  "root": {
+    "id": "embryophyta",
+    "name": "Embryophyta (Land Plants)",
+    "rank": "kingdom",
+    "time_mya": 515,
+    "time_kind": "crown",
+    "time_source": "Morris2018",
+    "children": [
+      {
+        "id": "marchantiophyta",
+        "name": "Marchantiophyta (Liverworts)",
+        "rank": "division",
+        "time_mya": 480,
+        "time_kind": "crown",
+        "time_source": "Laenen2014",
+        "note": "Liverworts diverged early in land-plant history. Crown-group age is uncertain; estimates range from 470–500 MYA.",
+        "children": [
+          { "id": "haplomitriopsida", "name": "Haplomitriopsida", "rank": "class", "time_mya": 405, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [
+              { "id": "haplomitriaceae", "name": "Haplomitriaceae", "rank": "family", "url": "families/haplomitriaceae.html" },
+              { "id": "treubiaceae",    "name": "Treubiaceae",    "rank": "family", "url": "families/treubiaceae.html" }
+            ]
+          },
+          { "id": "marchantiopsida", "name": "Marchantiopsida (complex thalloids)", "rank": "class", "time_mya": 400, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [
+              { "id": "marchantiaceae", "name": "Marchantiaceae", "rank": "family", "url": "families/marchantiaceae.html" },
+              { "id": "ricciaceae",     "name": "Ricciaceae",     "rank": "family", "url": "families/ricciaceae.html" }
+            ]
+          },
+          { "id": "jungermanniopsida", "name": "Jungermanniopsida (leafy liverworts)", "rank": "class", "time_mya": 380, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [
+              { "id": "porellaceae",      "name": "Porellaceae",      "rank": "family", "url": "families/porellaceae.html" },
+              { "id": "lejeuneaceae",     "name": "Lejeuneaceae",     "rank": "family", "url": "families/lejeuneaceae.html" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bryophyta",
+        "name": "Bryophyta (Mosses)",
+        "rank": "division",
+        "time_mya": 470,
+        "time_kind": "crown",
+        "time_source": "Morris2018",
+        "children": [
+          { "id": "takakiopsida", "name": "Takakiopsida", "rank": "class", "time_mya": 380, "time_kind": "stem", "time_source": "Laenen2014",
+            "children": [ { "id": "takakiaceae", "name": "Takakiaceae", "rank": "family", "url": "families/takakiaceae.html" } ] },
+          { "id": "sphagnopsida", "name": "Sphagnopsida (peat mosses)", "rank": "class", "time_mya": 330, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [ { "id": "sphagnaceae", "name": "Sphagnaceae", "rank": "family", "url": "families/sphagnaceae.html" } ] },
+          { "id": "polytrichopsida", "name": "Polytrichopsida", "rank": "class", "time_mya": 295, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [ { "id": "polytrichaceae", "name": "Polytrichaceae", "rank": "family", "url": "families/polytrichaceae.html" } ] },
+          { "id": "bryopsida", "name": "Bryopsida (true mosses)", "rank": "class", "time_mya": 270, "time_kind": "crown", "time_source": "Laenen2014",
+            "children": [
+              { "id": "bryaceae",      "name": "Bryaceae",      "rank": "family", "url": "families/bryaceae.html" },
+              { "id": "dicranaceae",   "name": "Dicranaceae",   "rank": "family", "url": "families/dicranaceae.html" },
+              { "id": "hypnaceae",     "name": "Hypnaceae",     "rank": "family", "url": "families/hypnaceae.html" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "anthocerotophyta",
+        "name": "Anthocerotophyta (Hornworts)",
+        "rank": "division",
+        "time_mya": 460,
+        "time_kind": "crown",
+        "time_source": "Morris2018",
+        "children": [
+          { "id": "anthocerotaceae",  "name": "Anthocerotaceae",  "rank": "family", "url": "families/anthocerotaceae.html" },
+          { "id": "dendrocerotaceae", "name": "Dendrocerotaceae", "rank": "family", "url": "families/dendrocerotaceae.html" },
+          { "id": "notothyladaceae",  "name": "Notothyladaceae",  "rank": "family", "url": "families/notothyladaceae.html" }
+        ]
+      },
+      {
+        "id": "tracheophyta",
+        "name": "Tracheophyta (Vascular Plants)",
+        "rank": "clade",
+        "time_mya": 432,
+        "time_kind": "crown",
+        "time_source": "Morris2018",
+        "children": [
+          {
+            "id": "lycopodiophyta",
+            "name": "Lycopodiophyta (Club mosses, quillworts)",
+            "rank": "division",
+            "time_mya": 405,
+            "time_kind": "crown",
+            "time_source": "PPGI",
+            "children": [
+              { "id": "lycopodiaceae",  "name": "Lycopodiaceae",  "rank": "family", "url": "families/lycopodiaceae.html" },
+              { "id": "selaginellaceae", "name": "Selaginellaceae", "rank": "family", "url": "families/selaginellaceae.html" },
+              { "id": "isoetaceae",     "name": "Isoetaceae",     "rank": "family", "url": "families/isoetaceae.html" }
+            ]
+          },
+          {
+            "id": "euphyllophyta",
+            "name": "Euphyllophytes",
+            "rank": "clade",
+            "time_mya": 410,
+            "time_kind": "crown",
+            "time_source": "Morris2018",
+            "children": [
+              {
+                "id": "monilophyta",
+                "name": "Monilophyta (Ferns &amp; horsetails)",
+                "rank": "division",
+                "time_mya": 384,
+                "time_kind": "crown",
+                "time_source": "Testo2016",
+                "children": [
+                  { "id": "equisetaceae",     "name": "Equisetaceae (Horsetails)",  "rank": "family", "url": "families/equisetaceae.html" },
+                  { "id": "psilotaceae",      "name": "Psilotaceae",                "rank": "family", "url": "families/psilotaceae.html" },
+                  { "id": "ophioglossaceae",  "name": "Ophioglossaceae",            "rank": "family", "url": "families/ophioglossaceae.html" },
+                  { "id": "marattiaceae",     "name": "Marattiaceae",               "rank": "family", "url": "families/marattiaceae.html" },
+                  { "id": "polypodiaceae",    "name": "Polypodiaceae",              "rank": "family", "url": "families/polypodiaceae.html" },
+                  { "id": "pteridaceae",      "name": "Pteridaceae",                "rank": "family", "url": "families/pteridaceae.html" },
+                  { "id": "dryopteridaceae",  "name": "Dryopteridaceae",            "rank": "family", "url": "families/dryopteridaceae.html" }
+                ]
+              },
+              {
+                "id": "spermatophyta",
+                "name": "Spermatophyta (Seed plants)",
+                "rank": "clade",
+                "time_mya": 350,
+                "time_kind": "crown",
+                "time_source": "Morris2018",
+                "children": [
+                  {
+                    "id": "gymnosperms",
+                    "name": "Gymnosperms",
+                    "rank": "clade",
+                    "time_mya": 330,
+                    "time_kind": "crown",
+                    "time_source": "Lu2014",
+                    "note": "Crown gymnosperm age is contentious; molecular and fossil estimates range from 290–350 MYA.",
+                    "children": [
+                      { "id": "cycadaceae",     "name": "Cycadaceae",     "rank": "family", "url": "families/cycadaceae.html" },
+                      { "id": "zamiaceae",      "name": "Zamiaceae",      "rank": "family", "url": "families/zamiaceae.html" },
+                      { "id": "ginkgoaceae",    "name": "Ginkgoaceae",    "rank": "family", "url": "families/ginkgoaceae.html" },
+                      { "id": "pinaceae",       "name": "Pinaceae",       "rank": "family", "url": "families/pinaceae.html" },
+                      { "id": "araucariaceae",  "name": "Araucariaceae",  "rank": "family", "url": "families/araucariaceae.html" },
+                      { "id": "cupressaceae",   "name": "Cupressaceae",   "rank": "family", "url": "families/cupressaceae.html" },
+                      { "id": "podocarpaceae",  "name": "Podocarpaceae",  "rank": "family", "url": "families/podocarpaceae.html" },
+                      { "id": "taxaceae",       "name": "Taxaceae",       "rank": "family", "url": "families/taxaceae.html" },
+                      { "id": "gnetaceae",      "name": "Gnetaceae",      "rank": "family", "url": "families/gnetaceae.html" },
+                      { "id": "ephedraceae",    "name": "Ephedraceae",    "rank": "family", "url": "families/ephedraceae.html" },
+                      { "id": "welwitschiaceae","name": "Welwitschiaceae","rank": "family", "url": "families/welwitschiaceae.html" }
+                    ]
+                  },
+                  {
+                    "id": "angiosperms",
+                    "name": "Angiosperms (Flowering plants)",
+                    "rank": "clade",
+                    "time_mya": 174,
+                    "time_kind": "crown",
+                    "time_source": "Magallon2015",
+                    "note": "Crown-group angiosperm age per Magallón et al. 2015 (~174 MYA). Earlier and later estimates exist; this is one defensible reference.",
+                    "children": [
+                      { "id": "amborellaceae",   "name": "Amborellaceae",   "rank": "family", "url": "families/amborellaceae.html",
+                        "time_mya": 174, "time_kind": "stem", "time_source": "Magallon2015",
+                        "note": "Sister to all other extant angiosperms." },
+                      { "id": "nymphaeales", "name": "Nymphaeales", "rank": "order", "time_mya": 170, "time_kind": "crown", "time_source": "Magallon2015",
+                        "children": [
+                          { "id": "nymphaeaceae", "name": "Nymphaeaceae", "rank": "family", "url": "families/nymphaeaceae.html" },
+                          { "id": "cabombaceae",  "name": "Cabombaceae",  "rank": "family", "url": "families/cabombaceae.html" }
+                        ]
+                      },
+                      { "id": "austrobaileyales", "name": "Austrobaileyales", "rank": "order", "time_mya": 160, "time_kind": "crown", "time_source": "Magallon2015",
+                        "children": [
+                          { "id": "austrobaileyaceae", "name": "Austrobaileyaceae", "rank": "family", "url": "families/austrobaileyaceae.html" },
+                          { "id": "schisandraceae",    "name": "Schisandraceae",    "rank": "family", "url": "families/schisandraceae.html" },
+                          { "id": "trimeniaceae",      "name": "Trimeniaceae",      "rank": "family", "url": "families/trimeniaceae.html" }
+                        ]
+                      },
+                      {
+                        "id": "mesangiosperms",
+                        "name": "Mesangiosperms",
+                        "rank": "clade",
+                        "time_mya": 153,
+                        "time_kind": "crown",
+                        "time_source": "Magallon2015",
+                        "children": [
+                          { "id": "magnoliids", "name": "Magnoliids", "rank": "clade", "time_mya": 142, "time_kind": "crown", "time_source": "Magallon2015",
+                            "children": [
+                              { "id": "magnoliaceae",      "name": "Magnoliaceae",      "rank": "family", "url": "families/magnoliaceae.html" },
+                              { "id": "annonaceae",        "name": "Annonaceae",        "rank": "family", "url": "families/annonaceae.html" },
+                              { "id": "lauraceae",         "name": "Lauraceae",         "rank": "family", "url": "families/lauraceae.html" },
+                              { "id": "piperaceae",        "name": "Piperaceae",        "rank": "family", "url": "families/piperaceae.html" },
+                              { "id": "aristolochiaceae",  "name": "Aristolochiaceae",  "rank": "family", "url": "families/aristolochiaceae.html" }
+                            ]
+                          },
+                          { "id": "monocots", "name": "Monocots", "rank": "clade", "time_mya": 140, "time_kind": "crown", "time_source": "Magallon2015",
+                            "children": [
+                              { "id": "acoraceae",       "name": "Acoraceae",       "rank": "family", "url": "families/acoraceae.html" },
+                              { "id": "araceae",         "name": "Araceae",         "rank": "family", "url": "families/araceae.html" },
+                              { "id": "alismataceae",    "name": "Alismataceae",    "rank": "family", "url": "families/alismataceae.html" },
+                              { "id": "liliaceae",       "name": "Liliaceae",       "rank": "family", "url": "families/liliaceae.html" },
+                              { "id": "orchidaceae",     "name": "Orchidaceae",     "rank": "family", "url": "families/orchidaceae.html",
+                                "time_mya": 78, "time_kind": "crown", "time_source": "Magallon2015" },
+                              { "id": "asparagaceae",    "name": "Asparagaceae",    "rank": "family", "url": "families/asparagaceae.html" },
+                              { "id": "amaryllidaceae",  "name": "Amaryllidaceae",  "rank": "family", "url": "families/amaryllidaceae.html" },
+                              { "id": "iridaceae",       "name": "Iridaceae",       "rank": "family", "url": "families/iridaceae.html" },
+                              { "id": "arecaceae",       "name": "Arecaceae (Palms)", "rank": "family", "url": "families/arecaceae.html" },
+                              { "id": "commelinaceae",   "name": "Commelinaceae",   "rank": "family", "url": "families/commelinaceae.html" },
+                              { "id": "bromeliaceae",    "name": "Bromeliaceae",    "rank": "family", "url": "families/bromeliaceae.html" },
+                              { "id": "poaceae",         "name": "Poaceae (Grasses)", "rank": "family", "url": "families/poaceae.html",
+                                "time_mya": 80, "time_kind": "crown", "time_source": "Magallon2015" },
+                              { "id": "cyperaceae",      "name": "Cyperaceae",      "rank": "family", "url": "families/cyperaceae.html" },
+                              { "id": "juncaceae",       "name": "Juncaceae",       "rank": "family", "url": "families/juncaceae.html" }
+                            ]
+                          },
+                          { "id": "ceratophyllales", "name": "Ceratophyllales", "rank": "order", "time_mya": 120, "time_kind": "stem", "time_source": "Magallon2015",
+                            "children": [
+                              { "id": "ceratophyllaceae", "name": "Ceratophyllaceae", "rank": "family", "url": "families/ceratophyllaceae.html" }
+                            ]
+                          },
+                          { "id": "eudicots", "name": "Eudicots", "rank": "clade", "time_mya": 132, "time_kind": "crown", "time_source": "Magallon2015",
+                            "children": [
+                              { "id": "ranunculales", "name": "Ranunculales", "rank": "order", "time_mya": 120, "time_kind": "crown", "time_source": "Magallon2015",
+                                "children": [
+                                  { "id": "ranunculaceae",  "name": "Ranunculaceae",  "rank": "family", "url": "families/ranunculaceae.html" },
+                                  { "id": "papaveraceae",   "name": "Papaveraceae",   "rank": "family", "url": "families/papaveraceae.html" },
+                                  { "id": "berberidaceae",  "name": "Berberidaceae",  "rank": "family", "url": "families/berberidaceae.html" }
+                                ]
+                              },
+                              { "id": "proteales", "name": "Proteales", "rank": "order", "time_mya": 116, "time_kind": "crown", "time_source": "Magallon2015",
+                                "children": [
+                                  { "id": "platanaceae",  "name": "Platanaceae",  "rank": "family", "url": "families/platanaceae.html" },
+                                  { "id": "proteaceae",   "name": "Proteaceae",   "rank": "family", "url": "families/proteaceae.html" },
+                                  { "id": "nelumbonaceae", "name": "Nelumbonaceae", "rank": "family", "url": "families/nelumbonaceae.html" }
+                                ]
+                              },
+                              { "id": "core_eudicots", "name": "Core eudicots", "rank": "clade", "time_mya": 124, "time_kind": "crown", "time_source": "Magallon2015",
+                                "children": [
+                                  { "id": "caryophyllales", "name": "Caryophyllales", "rank": "order", "time_mya": 102, "time_kind": "crown", "time_source": "Magallon2015",
+                                    "children": [
+                                      { "id": "cactaceae",       "name": "Cactaceae",       "rank": "family", "url": "families/cactaceae.html" },
+                                      { "id": "amaranthaceae",   "name": "Amaranthaceae",   "rank": "family", "url": "families/amaranthaceae.html" },
+                                      { "id": "polygonaceae",    "name": "Polygonaceae",    "rank": "family", "url": "families/polygonaceae.html" },
+                                      { "id": "caryophyllaceae", "name": "Caryophyllaceae", "rank": "family", "url": "families/caryophyllaceae.html" }
+                                    ]
+                                  },
+                                  { "id": "santalales", "name": "Santalales", "rank": "order", "time_mya": 95, "time_kind": "crown", "time_source": "Magallon2015",
+                                    "children": [
+                                      { "id": "santalaceae",     "name": "Santalaceae",     "rank": "family", "url": "families/santalaceae.html" },
+                                      { "id": "loranthaceae",    "name": "Loranthaceae",    "rank": "family", "url": "families/loranthaceae.html" }
+                                    ]
+                                  },
+                                  { "id": "saxifragales", "name": "Saxifragales", "rank": "order", "time_mya": 113, "time_kind": "crown", "time_source": "Magallon2015",
+                                    "children": [
+                                      { "id": "saxifragaceae",   "name": "Saxifragaceae",   "rank": "family", "url": "families/saxifragaceae.html" },
+                                      { "id": "crassulaceae",    "name": "Crassulaceae",    "rank": "family", "url": "families/crassulaceae.html" },
+                                      { "id": "hamamelidaceae",  "name": "Hamamelidaceae",  "rank": "family", "url": "families/hamamelidaceae.html" }
+                                    ]
+                                  },
+                                  {
+                                    "id": "rosids", "name": "Rosids", "rank": "clade", "time_mya": 110, "time_kind": "crown", "time_source": "Magallon2015",
+                                    "children": [
+                                      { "id": "vitales", "name": "Vitales", "rank": "order", "time_mya": 90, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [ { "id": "vitaceae", "name": "Vitaceae", "rank": "family", "url": "families/vitaceae.html" } ] },
+                                      { "id": "fabales", "name": "Fabales", "rank": "order", "time_mya": 79, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "fabaceae",    "name": "Fabaceae (Legumes)", "rank": "family", "url": "families/fabaceae.html" },
+                                          { "id": "polygalaceae", "name": "Polygalaceae", "rank": "family", "url": "families/polygalaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "rosales", "name": "Rosales", "rank": "order", "time_mya": 95, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "rosaceae",     "name": "Rosaceae",     "rank": "family", "url": "families/rosaceae.html" },
+                                          { "id": "rhamnaceae",   "name": "Rhamnaceae",   "rank": "family", "url": "families/rhamnaceae.html" },
+                                          { "id": "moraceae",     "name": "Moraceae",     "rank": "family", "url": "families/moraceae.html" },
+                                          { "id": "urticaceae",   "name": "Urticaceae",   "rank": "family", "url": "families/urticaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "fagales", "name": "Fagales", "rank": "order", "time_mya": 95, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "fagaceae",     "name": "Fagaceae",     "rank": "family", "url": "families/fagaceae.html" },
+                                          { "id": "betulaceae",   "name": "Betulaceae",   "rank": "family", "url": "families/betulaceae.html" },
+                                          { "id": "juglandaceae", "name": "Juglandaceae", "rank": "family", "url": "families/juglandaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "cucurbitales", "name": "Cucurbitales", "rank": "order", "time_mya": 85, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "cucurbitaceae", "name": "Cucurbitaceae", "rank": "family", "url": "families/cucurbitaceae.html" },
+                                          { "id": "begoniaceae",   "name": "Begoniaceae",   "rank": "family", "url": "families/begoniaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "malpighiales", "name": "Malpighiales", "rank": "order", "time_mya": 105, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "salicaceae",    "name": "Salicaceae",    "rank": "family", "url": "families/salicaceae.html" },
+                                          { "id": "violaceae",     "name": "Violaceae",     "rank": "family", "url": "families/violaceae.html" },
+                                          { "id": "passifloraceae", "name": "Passifloraceae", "rank": "family", "url": "families/passifloraceae.html" },
+                                          { "id": "euphorbiaceae", "name": "Euphorbiaceae", "rank": "family", "url": "families/euphorbiaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "myrtales", "name": "Myrtales", "rank": "order", "time_mya": 95, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "myrtaceae",       "name": "Myrtaceae",       "rank": "family", "url": "families/myrtaceae.html" },
+                                          { "id": "onagraceae",      "name": "Onagraceae",      "rank": "family", "url": "families/onagraceae.html" },
+                                          { "id": "lythraceae",      "name": "Lythraceae",      "rank": "family", "url": "families/lythraceae.html" },
+                                          { "id": "melastomataceae", "name": "Melastomataceae", "rank": "family", "url": "families/melastomataceae.html" }
+                                        ]
+                                      },
+                                      { "id": "brassicales", "name": "Brassicales", "rank": "order", "time_mya": 92, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "brassicaceae",  "name": "Brassicaceae", "rank": "family", "url": "families/brassicaceae.html" },
+                                          { "id": "capparaceae",   "name": "Capparaceae",  "rank": "family", "url": "families/capparaceae.html" },
+                                          { "id": "caricaceae",    "name": "Caricaceae",   "rank": "family", "url": "families/caricaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "malvales", "name": "Malvales", "rank": "order", "time_mya": 84, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "malvaceae",      "name": "Malvaceae",      "rank": "family", "url": "families/malvaceae.html" },
+                                          { "id": "thymelaeaceae",  "name": "Thymelaeaceae",  "rank": "family", "url": "families/thymelaeaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "sapindales", "name": "Sapindales", "rank": "order", "time_mya": 90, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "sapindaceae",  "name": "Sapindaceae",  "rank": "family", "url": "families/sapindaceae.html" },
+                                          { "id": "rutaceae",     "name": "Rutaceae",     "rank": "family", "url": "families/rutaceae.html" },
+                                          { "id": "anacardiaceae", "name": "Anacardiaceae", "rank": "family", "url": "families/anacardiaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "geraniales", "name": "Geraniales", "rank": "order", "time_mya": 82, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "geraniaceae",   "name": "Geraniaceae",   "rank": "family", "url": "families/geraniaceae.html" }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "id": "asterids", "name": "Asterids", "rank": "clade", "time_mya": 109, "time_kind": "crown", "time_source": "Magallon2015",
+                                    "children": [
+                                      { "id": "cornales", "name": "Cornales", "rank": "order", "time_mya": 100, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "cornaceae",     "name": "Cornaceae",     "rank": "family", "url": "families/cornaceae.html" },
+                                          { "id": "hydrangeaceae", "name": "Hydrangeaceae", "rank": "family", "url": "families/hydrangeaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "ericales", "name": "Ericales", "rank": "order", "time_mya": 105, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "ericaceae",     "name": "Ericaceae",     "rank": "family", "url": "families/ericaceae.html" },
+                                          { "id": "primulaceae",   "name": "Primulaceae",   "rank": "family", "url": "families/primulaceae.html" },
+                                          { "id": "theaceae",      "name": "Theaceae",      "rank": "family", "url": "families/theaceae.html" }
+                                        ]
+                                      },
+                                      { "id": "lamiids", "name": "Lamiids", "rank": "clade", "time_mya": 98, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "gentianales", "name": "Gentianales", "rank": "order", "time_mya": 80, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "rubiaceae",   "name": "Rubiaceae",   "rank": "family", "url": "families/rubiaceae.html" },
+                                              { "id": "apocynaceae", "name": "Apocynaceae", "rank": "family", "url": "families/apocynaceae.html" },
+                                              { "id": "gentianaceae", "name": "Gentianaceae", "rank": "family", "url": "families/gentianaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "lamiales", "name": "Lamiales", "rank": "order", "time_mya": 87, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "lamiaceae",     "name": "Lamiaceae",     "rank": "family", "url": "families/lamiaceae.html" },
+                                              { "id": "verbenaceae",   "name": "Verbenaceae",   "rank": "family", "url": "families/verbenaceae.html" },
+                                              { "id": "scrophulariaceae", "name": "Scrophulariaceae", "rank": "family", "url": "families/scrophulariaceae.html" },
+                                              { "id": "plantaginaceae", "name": "Plantaginaceae", "rank": "family", "url": "families/plantaginaceae.html" },
+                                              { "id": "orobanchaceae", "name": "Orobanchaceae", "rank": "family", "url": "families/orobanchaceae.html" },
+                                              { "id": "bignoniaceae",  "name": "Bignoniaceae",  "rank": "family", "url": "families/bignoniaceae.html" },
+                                              { "id": "acanthaceae",   "name": "Acanthaceae",   "rank": "family", "url": "families/acanthaceae.html" },
+                                              { "id": "oleaceae",      "name": "Oleaceae",      "rank": "family", "url": "families/oleaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "solanales", "name": "Solanales", "rank": "order", "time_mya": 75, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "solanaceae",     "name": "Solanaceae",     "rank": "family", "url": "families/solanaceae.html" },
+                                              { "id": "convolvulaceae", "name": "Convolvulaceae", "rank": "family", "url": "families/convolvulaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "boraginales", "name": "Boraginales", "rank": "order", "time_mya": 70, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "boraginaceae", "name": "Boraginaceae", "rank": "family", "url": "families/boraginaceae.html" }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      { "id": "campanulids", "name": "Campanulids", "rank": "clade", "time_mya": 95, "time_kind": "crown", "time_source": "Magallon2015",
+                                        "children": [
+                                          { "id": "asterales", "name": "Asterales", "rank": "order", "time_mya": 85, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "asteraceae",    "name": "Asteraceae",    "rank": "family", "url": "families/asteraceae.html" },
+                                              { "id": "campanulaceae", "name": "Campanulaceae", "rank": "family", "url": "families/campanulaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "apiales", "name": "Apiales", "rank": "order", "time_mya": 80, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "apiaceae",   "name": "Apiaceae",   "rank": "family", "url": "families/apiaceae.html" },
+                                              { "id": "araliaceae", "name": "Araliaceae", "rank": "family", "url": "families/araliaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "dipsacales", "name": "Dipsacales", "rank": "order", "time_mya": 80, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "caprifoliaceae", "name": "Caprifoliaceae", "rank": "family", "url": "families/caprifoliaceae.html" },
+                                              { "id": "adoxaceae",      "name": "Adoxaceae",      "rank": "family", "url": "families/adoxaceae.html" }
+                                            ]
+                                          },
+                                          { "id": "aquifoliales", "name": "Aquifoliales", "rank": "order", "time_mya": 80, "time_kind": "crown", "time_source": "Magallon2015",
+                                            "children": [
+                                              { "id": "aquifoliaceae", "name": "Aquifoliaceae", "rank": "family", "url": "families/aquifoliaceae.html" }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

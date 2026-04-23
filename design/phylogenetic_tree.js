@@ -1,3 +1,16 @@
+// DEPRECATED — scratchpad, NOT loaded by any page.
+// -----------------------------------------------------------------------------
+// This file was an early prototype of the phylogenetic-tree visualisation.
+// It is no longer referenced by any HTML page and is kept only for reference.
+// Do not modify or load it.
+//
+// The current implementations are:
+//   - js/phylogenetic-tree.js     — legacy renderer (still used by phylogenetic-tree.html)
+//   - js/phylogenetic-tree-v2.js  — new chronogram renderer (used by phylogenetic-tree-v2.html)
+//
+// This file may be removed in a future cleanup once the v2 renderer cuts over.
+// -----------------------------------------------------------------------------
+
 // Interactive Phylogenetic Tree Visualization
 
 class PhylogeneticTree {
