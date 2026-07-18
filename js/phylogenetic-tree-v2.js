@@ -2,18 +2,25 @@
  * ----------------------------------------------------------------------------
  * Chronogram renderer for data/phylogeny.json.
  *
- * Key features:
- *   - True chronogram: x = timeScale(node.time_mya), y = post-order leaf walk.
- *   - d3.zoom for pan + scroll-wheel zoom on the full SVG.
- *   - Rank-based colour palette so kingdoms/divisions/classes/orders/families
- *     are visually distinct instead of all being the same green.
- *   - Solid lines for published divergence ages; dashed (lower-contrast) for
- *     inferred positions so calibrated vs. interpolated is immediately obvious.
- *   - Label-collision resolver: if two sibling labels at the same depth would
- *     overlap vertically, lower-priority labels are hidden to keep the tree
- *     readable at every zoom level.
- *   - Sticky geological time axis synced to the current zoom transform.
- *   - Default collapse below ORDER rank; click any internal node to expand.
+ * This is a from-scratch replacement for js/phylogenetic-tree.js. The legacy
+ * file is still loaded by phylogenetic-tree.html and continues to work; this
+ * v2 module powers phylogenetic-tree-v2.html.
+ *
+ * Key differences from the legacy implementation:
+ *   - Topology, ranks, and divergence ages live in data/phylogeny.json,
+ *     not in JS source. Each dated node carries a `time_source` citation.
+ *   - True chronogram layout: x = timeScale(node.time_mya). We do NOT use
+ *     d3.tree() — its horizontal layout is meaningless when overridden.
+ *   - Y positions are computed by a single post-order traversal that
+ *     stacks leaves with constant spacing, guaranteeing no crossings.
+ *   - Inferred (no published age) internal nodes are placed midway between
+ *     their dated parent and the youngest dated descendant; the connecting
+ *     branch is drawn dashed so users can see what's calibrated vs. inferred.
+ *   - Default view collapses everything below ORDER rank for readability.
+ *     Click an order to expand its families.
+ *   - Real d3-zoom (pan + scroll-wheel zoom) on a single SVG, instead of
+ *     a vertical-only scroll container.
+ *   - Sticky geological time axis at the top, tied to the same scale.
  *
  * Depends on D3 v7 (loaded via <script> tag in the HTML page).
  * ------------------------------------------------------------------------- */
@@ -25,54 +32,42 @@
 
   const DATA_URL = 'data/phylogeny.json';
 
+  // Default-collapse policy: anything strictly below this rank is hidden
+  // until the user clicks. Order keeps the tree readable while still
+  // showing every major clade.
   const COLLAPSE_BELOW_RANK = 'order';
   const RANK_DEPTH = {
     kingdom: 0, division: 1, clade: 2, class: 3, subclass: 4,
     order: 5, suborder: 6, family: 7, subfamily: 8, genus: 9,
   };
 
-  const LEAF_SPACING   = 28;
-  const NODE_RADIUS    = 3.5;
+  // Visual constants — kept here so they're easy to tune in one place.
+  const LEAF_SPACING = 20;   // vertical pixels between adjacent leaves
+  const NODE_RADIUS = 3.5;
   const INTERNAL_RADIUS = 5;
-  const ROOT_RADIUS    = 7;
-  const LABEL_PAD      = 8;
-  const MAX_TIME       = 540;
-  const MIN_TIME       = 0;
+  const ROOT_RADIUS = 7;
+  const LABEL_PAD = 6;
+  const MAX_TIME = 540;      // start of visible scale (Cambrian)
+  const MIN_TIME = 0;        // present day
 
-  // Rank → colour palette (HSL-based, works in dark + light themes).
+  // Rank → colour palette.
   const RANK_COLORS = {
-    kingdom:   '#f9a825',   // warm gold
-    division:  '#ef6c00',   // deep amber
-    class:     '#29b6f6',   // sky blue
-    subclass:  '#26c6da',   // teal
-    order:     '#66bb6a',   // mid green
-    suborder:  '#81c784',   // soft green
-    family:    '#1aff66',   // phosphor green (same as var(--phosphor-300))
+    kingdom: '#f9a825', division: '#ef6c00', class: '#29b6f6',
+    subclass: '#26c6da', order: '#66bb6a', suborder: '#81c784',
+    family: '#1aff66',
   };
-  const DEFAULT_COLOR = '#9e9e9e';   // unranked / fallback
-
-  // Darker variants for solid link strokes (calibrated ages).
   const LINK_SOLID_COLORS = {
-    kingdom:   '#c77d02',
-    division:  '#c45400',
-    class:     '#1e88e5',
-    subclass:  '#00acc1',
-    order:     '#43a047',
-    suborder:  '#66bb6a',
-    family:    '#0fcc4d',
+    kingdom: '#c77d02', division: '#c45400', class: '#1e88e5',
+    subclass: '#00acc1', order: '#43a047', suborder: '#66bb6a',
+    family: '#0fcc4d',
   };
-
-  // Lighter variants for dashed link strokes (inferred ages).
   const LINK_DASHED_COLORS = {
-    kingdom:   '#f9c762',
-    division:  '#e8955a',
-    class:     '#6ec6f8',
-    subclass:  '#63e0f0',
-    order:     '#a5d6a7',
-    suborder:  '#b9e4ba',
-    family:    '#66ff99',
+    kingdom: '#f9c762', division: '#e8955a', class: '#6ec6f8',
+    subclass: '#63e0f0', order: '#a5d6a7', suborder: '#b9e4ba',
+    family: '#66ff99',
   };
 
+  // Geological periods (Phanerozoic) for the time axis.
   const GEO_PERIODS = [
     { name: 'Cambrian',      start: 538.8, end: 485.4, color: '#7fa87f' },
     { name: 'Ordovician',    start: 485.4, end: 443.8, color: '#009270' },
@@ -114,38 +109,48 @@
   function init(container, payload) {
     const root = d3.hierarchy(payload.root, d => d.children);
 
+    // Annotate every node with raw and effective ages.
     annotateAges(root);
-
-    // Default collapse policy: hide everything below ORDER rank.
+    // Apply default collapse policy.
     root.descendants().forEach(d => {
-      if (rankDepth(d.data.rank) > RANK_DEPTH[COLLAPSE_BELOW_RANK] && d.children) {
+      if (rankDepth(d.data.rank) > RANK_DEPTH[COLLAPSE_BELOW_RANK]
+          && d.children) {
         d._children = d.children;
         d.children = null;
       }
     });
 
-    const state = buildSvg(container, root);
+    const state = buildSvg(container, root, payload);
     state.update();
     setupSearch(state);
     setupExpansionControls(state);
   }
 
   // ---- Age annotation ------------------------------------------------------
+  // Each node gets:
+  //   raw_time:  the published age (number) or null
+  //   eff_time:  the time used for layout (always defined)
+  //   inferred:  true if eff_time was interpolated, not published
+  // Inferred internal ages = midpoint between dated ancestor and youngest
+  // dated descendant. Tips with no age are placed at MIN_TIME (today),
+  // which is correct for extant families.
 
   function annotateAges(root) {
+    // First pass: copy raw values.
     root.each(d => {
       d.raw_time = (typeof d.data.time_mya === 'number') ? d.data.time_mya : null;
       d.eff_time = d.raw_time;
       d.inferred = false;
     });
-
+    // Tips default to today if undated.
     root.leaves().forEach(d => {
       if (d.eff_time === null) {
         d.eff_time = MIN_TIME;
-        d.inferred = false;
+        d.inferred = false; // "extant" is a published fact, not an inference
       }
     });
-
+    // Internal undated nodes: midpoint of dated parent and youngest dated descendant.
+    // Multiple passes until stable.
     let changed = true;
     let safety = 50;
     while (changed && safety-- > 0) {
@@ -158,20 +163,22 @@
           .map(c => c.eff_time)
           .filter(v => v !== null);
         if (parentAge !== null && childAges.length) {
-          d.eff_time = (parentAge + Math.min(...childAges)) / 2;
+          const youngestChild = Math.min(...childAges);
+          d.eff_time = (parentAge + youngestChild) / 2;
           d.inferred = true;
           changed = true;
         }
       });
     }
-
+    // Final fallback for anything still null: use parent age - epsilon.
     root.descendants().forEach(d => {
       if (d.eff_time === null) {
-        d.eff_time = Math.max(MIN_TIME, (d.parent ? d.parent.eff_time : MAX_TIME) - 5);
+        const p = d.parent ? d.parent.eff_time : MAX_TIME;
+        d.eff_time = Math.max(MIN_TIME, p - 5);
         d.inferred = true;
       }
     });
-
+    // Enforce monotonicity: a child cannot be older than its parent.
     root.eachBefore(d => {
       if (d.parent && d.eff_time > d.parent.eff_time) {
         d.eff_time = d.parent.eff_time - 0.5;
@@ -182,7 +189,7 @@
 
   // ---- SVG scaffolding -----------------------------------------------------
 
-  function buildSvg(container, root) {
+  function buildSvg(container, root, payload) {
     const margin = { top: 80, right: 260, bottom: 30, left: 24 };
     const width  = Math.max(container.clientWidth || 1100, 800);
     const height = Math.max(window.innerHeight * 0.78, 600);
@@ -193,16 +200,25 @@
       .attr('role', 'img')
       .attr('aria-label', 'Plant phylogenetic chronogram');
 
+    // The whole renderable area lives inside one <g> we transform with d3.zoom.
+    // The geo-time band is part of that group so it pans/zooms with the tree.
+    // A second, sticky geo-axis is overlaid on top (drawn separately) for the
+    // user to always have a visible scale; that one consumes the current
+    // zoom transform's x-component to stay in sync.
     const zoomLayer = svg.append('g').attr('class', 'pt-zoom');
     const geoLayer  = zoomLayer.append('g').attr('class', 'pt-geo');
     const linkLayer = zoomLayer.append('g').attr('class', 'pt-links');
     const nodeLayer = zoomLayer.append('g').attr('class', 'pt-nodes');
+
+    // Sticky overlay axis (above the zoom layer).
     const stickyAxis = svg.append('g').attr('class', 'pt-sticky-axis');
 
+    // Base time scale (x). Note: domain past->present, range left->right.
     const timeScale = d3.scaleLinear()
       .domain([MAX_TIME, MIN_TIME])
       .range([margin.left, width - margin.right]);
 
+    // d3-zoom for proper pan + wheel zoom.
     const zoom = d3.zoom()
       .scaleExtent([0.3, 10])
       .on('zoom', (event) => {
@@ -217,29 +233,33 @@
     };
 
     state.update = () => render(state);
+    state.drawStickyAxis = drawStickyAxis;
     state.resetView = () => svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
 
     function drawStickyAxis(t) {
       stickyAxis.selectAll('*').remove();
+      // Background strip
       stickyAxis.append('rect')
         .attr('x', 0).attr('y', 0)
         .attr('width', width).attr('height', margin.top - 8)
         .attr('fill', 'rgba(5,5,5,0.92)');
 
+      // Build a transformed scale that mirrors the zoom transform on x.
       const tScale = t.rescaleX(timeScale);
-
+      // Draw geo period bands within the sticky strip.
       GEO_PERIODS.forEach(p => {
         const x1 = tScale(p.start);
         const x2 = tScale(p.end);
         if (x2 < 0 || x1 > width) return;
-        const left  = Math.max(0, Math.min(x1, x2));
+        const left = Math.max(0, Math.min(x1, x2));
         const right = Math.min(width, Math.max(x1, x2));
         stickyAxis.append('rect')
           .attr('class', 'pt-geo-band')
           .attr('x', left).attr('y', 32)
           .attr('width', Math.max(0, right - left))
           .attr('height', 22)
-          .attr('fill', p.color);
+          .attr('fill', p.color)
+          .attr('opacity', 0.35);
         if (right - left > 36) {
           stickyAxis.append('text')
             .attr('class', 'pt-geo-label')
@@ -249,7 +269,6 @@
             .text(p.name);
         }
       });
-
       const axis = d3.axisBottom(tScale)
         .ticks(Math.max(6, Math.floor(width / 110)))
         .tickFormat(v => v === 0 ? 'today' : v + ' MYA');
@@ -293,10 +312,11 @@
       kids.forEach(walk);
     })(root);
 
+    // Assign leaf y positions.
     visibleLeaves.forEach((leaf, i) => {
       leaf.y = margin.top + 16 + i * LEAF_SPACING;
     });
-
+    // Internal nodes: y = midpoint of children.
     (function walk(d) {
       if (d.children && d.children.length) {
         d.children.forEach(walk);
@@ -305,15 +325,17 @@
       }
     })(root);
 
+    // x = timeScale(eff_time)
     root.each(d => { d.x = timeScale(d.eff_time); });
 
+    // Update SVG height to fit all leaves.
     const neededHeight = (visibleLeaves.length || 1) * LEAF_SPACING + margin.top + margin.bottom + 60;
     state.svg.attr('height', Math.max(neededHeight, state.height));
 
-    // ---- Geo bands ---------------------------------------------------------
+    // Draw geological period bands behind the tree, full height.
     drawGeoBands(state, neededHeight);
 
-    // ---- Links -------------------------------------------------------------
+    // ---- Links ----
     const linkData = root.descendants()
       .filter(d => d.parent)
       .map(d => ({
@@ -336,14 +358,15 @@
       .attr('d', d => elbow(d.source, d.target))
       .attr('fill', 'none')
       .attr('stroke', d => {
-        const rk = d.inferred ? 'inferred' : 'calibrated';
-        return linkColor(d.rank, rk);
+        if (!d.rank) return d.inferred ? '#555' : '#888';
+        const rk = d.rank.toLowerCase();
+        return d.inferred ? (LINK_DASHED_COLORS[rk] || '#777') : (LINK_SOLID_COLORS[rk] || '#aaa');
       })
       .attr('stroke-width', d => d.inferred ? 1.2 : 1.8)
       .attr('stroke-dasharray', d => d.inferred ? '4,3' : null)
       .attr('opacity', d => d.inferred ? 0.45 : 0.85);
 
-    // ---- Nodes -------------------------------------------------------------
+    // ---- Nodes ----
     const nodes = nodeLayer.selectAll('g.pt-node')
       .data(root.descendants(), d => nodeKey(d));
 
@@ -374,29 +397,38 @@
     merged.select('circle')
       .attr('r', d => {
         if (d === root) return ROOT_RADIUS;
-        if (d.children || d._children) return internalRadius(d);
+        if (d.children || d._children) {
+          const r = rankDepth(d.data.rank);
+          if (r <= 1) return 6.5;
+          if (r <= 3) return 5.5;
+          if (r <= 5) return 4.5;
+          return INTERNAL_RADIUS;
+        }
         return NODE_RADIUS;
       })
       .attr('fill', d => {
-        if (d._children) return nodeColor(d, 'collapsed');
-        if (d.children)  return nodeColor(d, 'expanded');
-        return nodeColor(d, 'leaf');
+        const rank = (d.data.rank || '').toLowerCase();
+        const c = RANK_COLORS[rank] || '#9e9e9e';
+        if (d._children) return c;
+        if (d.children)  return darken(c, 0.6);
+        return c;
       })
-      .attr('stroke', d => d.data.url ? '#ffbf00' : nodeColor(d, 'stroke'))
-      .attr('stroke-width', d => {
-        if (d.data.url) return 1.8;
-        if (d === root) return 2;
-        return 1.2;
-      })
+      .attr('stroke', d => d.data.url ? '#ffbf00' : null)
+      .attr('stroke-width', d => d.data.url ? 1.8 : 0)
       .attr('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default');
 
     merged.select('text')
-      .attr('class', 'pt-node-label')
-      .attr('x', LABEL_PAD)
-      .attr('y', 12)
-      .attr('text-anchor', 'start')
+      .attr('x', d => (d.children || d._children) ? -LABEL_PAD : LABEL_PAD)
+      .attr('y', d => (d.children || d._children) ? -5 : 12)
+      .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
-      .attr('font-size', d => labelFontSize(d))
+      .attr('font-size', d => {
+        const r = rankDepth(d.data.rank);
+        if (r <= 1) return 13;
+        if (r <= 3) return 12;
+        if (r <= 5) return 11;
+        return 10;
+      })
       .attr('paint-order', 'stroke')
       .attr('stroke', 'var(--bg-1, #0a0a0a)')
       .attr('stroke-width', 3)
@@ -404,13 +436,11 @@
       .attr('stroke-linejoin', 'round')
       .attr('fill', d => {
         if (d.data.url) return '#ffbf00';
-        return nodeColor(d, 'label');
+        const rank = (d.data.rank || '').toLowerCase();
+        return d.data.rank ? (RANK_COLORS[rank] || '#9e9e9e') : '#9e9e9e';
       })
-      .attr('opacity', 1)
       .text(d => labelFor(d));
   }
-
-  // ---- Geo bands -----------------------------------------------------------
 
   function drawGeoBands(state, height) {
     const { geoLayer, timeScale, margin } = state;
@@ -428,83 +458,12 @@
     });
   }
 
-  // ---- Colours -------------------------------------------------------------
-
-  function nodeColor(d, kind) {
-    const rank = (d.data.rank || '').toLowerCase();
-
-    if (kind === 'leaf') {
-      return RANK_COLORS[rank] || DEFAULT_COLOR;
-    }
-    if (kind === 'expanded') {
-      // Darker variant — mix with black conceptually by lowering luminance.
-      return darken(RANK_COLORS[rank] || DEFAULT_COLOR, 0.6);
-    }
-    if (kind === 'collapsed') {
-      // Bright — indicates expandability.
-      return RANK_COLORS[rank] || DEFAULT_COLOR;
-    }
-    if (kind === 'stroke') {
-      return darken(RANK_COLORS[rank] || DEFAULT_COLOR, 0.5);
-    }
-    if (kind === 'label') {
-      return d.data.rank ? RANK_COLORS[rank] || DEFAULT_COLOR : DEFAULT_COLOR;
-    }
-    return DEFAULT_COLOR;
-  }
-
-  function linkColor(rank, kind) {
-    if (!rank) return kind === 'inferred' ? '#555' : '#888';
-    const rk = rank.toLowerCase();
-    if (kind === 'inferred') {
-      return LINK_DASHED_COLORS[rk] || '#777';
-    }
-    return LINK_SOLID_COLORS[rk] || '#aaa';
-  }
-
-  function darken(hex, factor) {
-    let r, g, b;
-    if (hex.startsWith('#')) {
-      const h = hex.slice(1);
-      if (h.length === 6) {
-        r = parseInt(h.slice(0, 2), 16);
-        g = parseInt(h.slice(2, 4), 16);
-        b = parseInt(h.slice(4, 6), 16);
-      } else if (h.length === 3) {
-        r = parseInt(h[0] + h[0], 16);
-        g = parseInt(h[1] + h[1], 16);
-        b = parseInt(h[2] + h[2], 16);
-      }
-    }
-    if (r === undefined) return hex;
-    return '#' + [
-      Math.round(r * factor).toString(16).padStart(2, '0'),
-      Math.round(g * factor).toString(16).padStart(2, '0'),
-      Math.round(b * factor).toString(16).padStart(2, '0'),
-    ].join('');
-  }
-
-  function internalRadius(d) {
-    const r = rankDepth(d.data.rank);
-    if (r <= 1) return 6.5;  // kingdom / division
-    if (r <= 3) return 5.5;  // class
-    if (r <= 5) return 4.5;  // order
-    return INTERNAL_RADIUS;
-  }
-
-  function labelFontSize(d) {
-    const r = rankDepth(d.data.rank);
-    if (r <= 1) return 13;  // kingdom, division
-    if (r <= 3) return 12;  // class, subclass
-    if (r <= 5) return 11;  // order, suborder
-    return 10;              // family
-  }
-
   // ---- Interaction ---------------------------------------------------------
 
   function onNodeClick(state, d) {
     const isInternal = d.children || d._children;
     if (isInternal) {
+      // Toggle collapse.
       if (d.children) {
         d._children = d.children;
         d.children = null;
@@ -548,6 +507,7 @@
         state.nodeLayer.selectAll('text').attr('font-weight', null).classed('t-glow', false);
         return;
       }
+      // Expand any ancestor of a match so the match becomes visible.
       let firstHit = null;
       state.root.each(d => {
         const name = (d.data.name || '').toLowerCase();
@@ -569,6 +529,7 @@
           .classed('t-glow', hit);
       });
       if (firstHit) {
+        // Pan to the first hit.
         const t = d3.zoomTransform(state.svg.node());
         const targetX = state.width / 2 - firstHit.x * t.k;
         const targetY = state.height / 2 - firstHit.y * t.k;
@@ -631,20 +592,15 @@
   }
 
   function elbow(s, t) {
+    // Right-angle phylogram link: vertical from source to target's y, then horizontal.
     return `M${s.x},${s.y}V${t.y}H${t.x}`;
   }
 
-  function labelText(d) {
-    const name = d.data.name || '';
-    const parts = name.split(': ');
-    return parts.length > 1 ? parts.slice(1).join(': ') : name;
-  }
-
   function labelFor(d) {
-    const shortName = labelText(d);
-    const max = (d.children || d._children) ? 32 : 40;
-    if (shortName.length <= max) return shortName;
-    return shortName.slice(0, max - 1) + '\u2026';
+    const name = d.data.name || '';
+    const max = (d.children || d._children) ? 28 : 36;
+    if (name.length <= max) return name;
+    return name.slice(0, max - 1) + '…';
   }
 
   function describeNode(d) {
@@ -659,5 +615,25 @@
     return String(s).replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
     }[c]));
+  }
+
+  function darken(hex, factor) {
+    let r, g, b;
+    const h = hex.slice(1);
+    if (h.length === 6) {
+      r = parseInt(h.slice(0, 2), 16);
+      g = parseInt(h.slice(2, 4), 16);
+      b = parseInt(h.slice(4, 6), 16);
+    } else if (h.length === 3) {
+      r = parseInt(h[0] + h[0], 16);
+      g = parseInt(h[1] + h[1], 16);
+      b = parseInt(h[2] + h[2], 16);
+    }
+    if (r === undefined) return hex;
+    return '#' + [
+      Math.round(r * factor).toString(16).padStart(2, '0'),
+      Math.round(g * factor).toString(16).padStart(2, '0'),
+      Math.round(b * factor).toString(16).padStart(2, '0'),
+    ].join('');
   }
 })();
