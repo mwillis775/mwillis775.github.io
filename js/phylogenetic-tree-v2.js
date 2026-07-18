@@ -396,7 +396,7 @@
     merged.select('text')
       .attr('class', 'pt-node-label')
       .attr('x', d => (d.children || d._children) ? -LABEL_PAD : LABEL_PAD)
-      .attr('y', d => 4 + (d._dy || 0))
+      .attr('y', d => (d._dy || 0) + (d.children || d._children ? -5 : 12))
       .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => labelFontSize(d))
