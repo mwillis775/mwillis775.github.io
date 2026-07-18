@@ -424,7 +424,8 @@
       })
       .attr('y', d => {
         const r = rankDepth(d.data.rank);
-        return r <= 3 ? -5 : 12;
+        if (r === 0) return -5;
+        return 12;
       })
       .attr('text-anchor', d => {
         const r = rankDepth(d.data.rank);
