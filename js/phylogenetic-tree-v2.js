@@ -42,7 +42,7 @@
   };
 
   // Visual constants — kept here so they're easy to tune in one place.
-  const LEAF_SPACING = 20;   // vertical pixels between adjacent leaves
+  const LEAF_SPACING = 24;   // vertical pixels between adjacent leaves
   const NODE_RADIUS = 3.5;
   const INTERNAL_RADIUS = 5;
   const ROOT_RADIUS = 7;
@@ -420,15 +420,15 @@
     merged.select('text')
       .attr('x', d => {
         const r = rankDepth(d.data.rank);
-        return r <= 2 ? -LABEL_PAD : LABEL_PAD;
+        return (r === 0 || r === 2) ? -LABEL_PAD : LABEL_PAD;
       })
       .attr('y', d => {
         const r = rankDepth(d.data.rank);
-        return r <= 2 ? -5 : 12;
+        return (r === 0 || r === 2) ? -5 : 12;
       })
       .attr('text-anchor', d => {
         const r = rankDepth(d.data.rank);
-        return r <= 2 ? 'end' : 'start';
+        return (r === 0 || r === 2) ? 'end' : 'start';
       })
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => {
