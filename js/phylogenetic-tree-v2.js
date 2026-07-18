@@ -418,9 +418,18 @@
       .attr('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default');
 
     merged.select('text')
-      .attr('x', d => (d.children || d._children) ? -LABEL_PAD : LABEL_PAD)
-      .attr('y', d => (d.children || d._children) ? -5 : 12)
-      .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
+      .attr('x', d => {
+        const r = rankDepth(d.data.rank);
+        return r <= 2 ? -LABEL_PAD : LABEL_PAD;
+      })
+      .attr('y', d => {
+        const r = rankDepth(d.data.rank);
+        return r <= 2 ? -5 : 12;
+      })
+      .attr('text-anchor', d => {
+        const r = rankDepth(d.data.rank);
+        return r <= 2 ? 'end' : 'start';
+      })
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => {
         const r = rankDepth(d.data.rank);
