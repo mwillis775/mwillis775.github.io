@@ -16,11 +16,13 @@ This website provides information and resources about plant families, including 
 - `js/` — JavaScript files
 
 ## Getting Started
-1. Clone this repository.
+1. type mwillis775.github.io into your browser.
+## Or
+1. clone this repository.
 2. Open `index.html` in your browser to explore the website locally.
 
 ## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for suggestions or improvements.
+Contributions are welcome! Please open an issue or submit a pull request for suggestions or improvements, or just fork it.
 
 ## License
 MIT
