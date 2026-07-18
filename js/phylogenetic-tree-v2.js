@@ -31,7 +31,7 @@
     order: 5, suborder: 6, family: 7, subfamily: 8, genus: 9,
   };
 
-  const LEAF_SPACING   = 24;
+  const LEAF_SPACING   = 28;
   const NODE_RADIUS    = 3.5;
   const INTERNAL_RADIUS = 5;
   const ROOT_RADIUS    = 7;
@@ -394,9 +394,9 @@
       .attr('cursor', d => (d.children || d._children || d.data.url) ? 'pointer' : 'default');
 
     merged.select('text')
-      .attr('class', d => d._hideLabel ? 'pt-node-label hidden-label' : 'pt-node-label')
+      .attr('class', 'pt-node-label')
       .attr('x', d => (d.children || d._children) ? -LABEL_PAD : LABEL_PAD)
-      .attr('y', 4)
+      .attr('y', d => 4 + (d._dy || 0))
       .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => labelFontSize(d))
@@ -404,7 +404,7 @@
         if (d.data.url) return '#ffbf00';
         return nodeColor(d, 'label');
       })
-      .attr('opacity', d => d._hideLabel ? 0 : 1)
+      .attr('opacity', 1)
       .text(d => labelFor(d));
   }
 
@@ -427,68 +427,79 @@
   }
 
   // ---- Label collision resolution ------------------------------------------
-  // After computing y positions, scan all visible nodes globally to detect
-  // label overlaps. Internal nodes' labels extend LEFT, leaves' labels extend
-  // RIGHT. Two nodes vertically close with similar x positions will have their
-  // labels collide. We hide the lower-priority one.
+  // After computing y positions, detect vertically-close nodes whose labels
+  // extend into overlapping horizontal space. Instead of hiding labels, we
+  // stagger them by assigning a small _dy offset so they fan out vertically.
+  // Only internal (left-anchored) labels are staggered — leaf labels go right
+  // and rarely collide because the tree fans outward.
 
   function resolveLabelCollisions(root) {
-    root.descendants().forEach(d => { d._hideLabel = false; });
+    root.descendants().forEach(d => { d._dy = 0; });
 
-    const visible = root.descendants().filter(d => d.parent);
-    visible.sort((a, b) => a.y - b.y);
+    const internals = root.descendants().filter(d =>
+      d.parent && (d.children || d._children) && d.y != null
+    );
+    if (internals.length < 2) return;
+    internals.sort((a, b) => a.y - b.y);
 
-    for (let i = 1; i < visible.length; i++) {
-      const a = visible[i - 1];
-      const b = visible[i];
-      if (a._hideLabel && b._hideLabel) continue;
+    // Build overlap groups: consecutive nodes whose labels collide with their
+    // immediate neighbour (transitive chain). Each group gets labels spread
+    // evenly within its vertical band.
+    const groups = [];
+    let group = [internals[0]];
 
-      const yGap = b.y - a.y;
-      // Estimate label height in px from font-size.
-      const aFontSz = labelFontSize(a);
-      const bFontSz = labelFontSize(b);
-      const minGap = Math.max(aFontSz, bFontSz) + 3;
+    for (let i = 1; i < internals.length; i++) {
+      const prev = internals[i - 1];
+      const curr = internals[i];
+      const gap  = curr.y - prev.y;
+      const maxFont = Math.max(labelFontSize(prev), labelFontSize(curr));
 
-      if (yGap >= minGap) continue;
-
-      // Labels only collide if they extend into the same horizontal space.
-      // Internal nodes: label goes LEFT from x (anchored at end).
-      // Leaf nodes: label goes RIGHT from x (anchored at start).
-      // Estimate label widths (generous: ~10 px per character for mono font).
-      const aWidth = (labelText(a).length || 4) * 7;
-      const bWidth = (labelText(b).length || 4) * 7;
-      const aLeft  = (a.children || a._children) ? a.x - aWidth - LABEL_PAD : a.x + LABEL_PAD;
-      const aRight = (a.children || a._children) ? a.x - LABEL_PAD : a.x + LABEL_PAD + aWidth;
-      const bLeft  = (b.children || b._children) ? b.x - bWidth - LABEL_PAD : b.x + LABEL_PAD;
-      const bRight = (b.children || b._children) ? b.x - LABEL_PAD : b.x + LABEL_PAD + bWidth;
-
-      const hOverlap = aLeft < bRight && bLeft < aRight;
-      if (!hOverlap) continue;
-
-      const scoreA = labelPriority(a);
-      const scoreB = labelPriority(b);
-      if (scoreA >= scoreB) {
-        b._hideLabel = true;
+      if (gap <= maxFont * 2.5 && labelsOverlapH(prev, curr)) {
+        // Neighbour collision — extend the current group.
+        group.push(curr);
       } else {
-        a._hideLabel = true;
+        // No collision — close the group and start a new one.
+        if (group.length >= 2) groups.push(group);
+        group = [curr];
       }
     }
+    if (group.length >= 2) groups.push(group);
+
+    // Spread labels within each group.
+    groups.forEach(g => {
+      const top    = g[0].y;
+      const bottom = g[g.length - 1].y;
+      const bandH  = bottom - top;
+      if (bandH === 0) return;
+      const totalFonts = g.reduce((s, d) => s + labelFontSize(d), 0);
+      // Use the full band, but ensure at least font-size separation.
+      // Place labels at uniform intervals within the band.
+      g.forEach((d, idx) => {
+        const t = g.length === 1 ? 0 : idx / (g.length - 1);
+        d._dy = Math.round(top + t * bandH - d.y);
+      });
+    });
+  }
+
+  function labelsOverlapH(a, b) {
+    const aWidth = (labelText(a).length || 4) * 7;
+    const bWidth = (labelText(b).length || 4) * 7;
+
+    const aIsInt = a.children || a._children;
+    const bIsInt = b.children || b._children;
+
+    const aLeft  = aIsInt ? a.x - aWidth - LABEL_PAD : a.x + LABEL_PAD;
+    const aRight = aIsInt ? a.x - LABEL_PAD : a.x + LABEL_PAD + aWidth;
+    const bLeft  = bIsInt ? b.x - bWidth - LABEL_PAD : b.x + LABEL_PAD;
+    const bRight = bIsInt ? b.x - LABEL_PAD : b.x + LABEL_PAD + bWidth;
+
+    return aLeft < bRight && bLeft < aRight;
   }
 
   function labelText(d) {
     const name = d.data.name || '';
     const parts = name.split(': ');
     return parts.length > 1 ? parts.slice(1).join(': ') : name;
-  }
-
-  function labelPriority(d) {
-    let score = 0;
-    if (d.data.url) score += 100;
-    if (d.children && !d._children) score += 50;
-    if (d._children) score += 30;
-    score -= rankDepth(d.data.rank) * 3;
-    if (typeof d.raw_time === 'number') score += 10;
-    return score;
   }
 
   // ---- Colours -------------------------------------------------------------
