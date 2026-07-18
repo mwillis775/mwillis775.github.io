@@ -313,9 +313,6 @@
     // ---- Geo bands ---------------------------------------------------------
     drawGeoBands(state, neededHeight);
 
-    // ---- Resolve label collisions ------------------------------------------
-    resolveLabelCollisions(root);
-
     // ---- Links -------------------------------------------------------------
     const linkData = root.descendants()
       .filter(d => d.parent)
@@ -395,9 +392,9 @@
 
     merged.select('text')
       .attr('class', 'pt-node-label')
-      .attr('x', d => (d.children || d._children) ? -LABEL_PAD : LABEL_PAD)
-      .attr('y', d => (d._dy || 0) + (d.children || d._children ? -5 : 12))
-      .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
+      .attr('x', LABEL_PAD)
+      .attr('y', 12)
+      .attr('text-anchor', 'start')
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => labelFontSize(d))
       .attr('paint-order', 'stroke')
@@ -429,69 +426,6 @@
         .attr('fill', p.color)
         .attr('opacity', 0.06);
     });
-  }
-
-  // ---- Label collision resolution ------------------------------------------
-  // Detect internal nodes whose left-extending labels overlap horizontally.
-  // Adjacent nodes (by y) that share any horizontal label space are grouped
-  // and spread apart with _dy offsets so every label is readable.
-
-  function resolveLabelCollisions(root) {
-    root.descendants().forEach(d => { d._dy = 0; });
-
-    const internals = root.descendants().filter(d =>
-      d.parent && (d.children || d._children) && d.y != null
-    );
-    if (internals.length < 2) return;
-    internals.sort((a, b) => a.y - b.y);
-
-    // Build contiguous groups linked by horizontal label overlap.
-    const groups = [];
-    let group = [internals[0]];
-
-    for (let i = 1; i < internals.length; i++) {
-      const prev = internals[i - 1];
-      const curr = internals[i];
-
-      if (labelsOverlapH(prev, curr)) {
-        group.push(curr);
-      } else {
-        if (group.length >= 2) groups.push(group);
-        group = [curr];
-      }
-    }
-    if (group.length >= 2) groups.push(group);
-
-    // Spread labels: ensure at least font-size + 6 px between each.
-    groups.forEach(g => {
-      const pad = 6;
-      const needed = g.reduce((s, d) => s + labelFontSize(d) + pad, 0) - pad;
-      const available = g[g.length - 1].y - g[0].y;
-      const bandH = Math.max(needed, available);
-
-      let pos = g[0].y + (bandH - needed) / 2;
-      g.forEach(d => {
-        const fs = labelFontSize(d);
-        d._dy = Math.round(pos + fs / 2 - d.y);
-        pos += fs + pad;
-      });
-    });
-  }
-
-  function labelsOverlapH(a, b) {
-    const aW = (labelText(a).length || 4) * 7;
-    const bW = (labelText(b).length || 4) * 7;
-    const aL = a.x - aW - LABEL_PAD;
-    const aR = a.x - LABEL_PAD;
-    const bL = b.x - bW - LABEL_PAD;
-    const bR = b.x - LABEL_PAD;
-    return aL < bR && bL < aR;
-  }
-
-  function labelText(d) {
-    const name = d.data.name || '';
-    const parts = name.split(': ');
-    return parts.length > 1 ? parts.slice(1).join(': ') : name;
   }
 
   // ---- Colours -------------------------------------------------------------
@@ -698,6 +632,12 @@
 
   function elbow(s, t) {
     return `M${s.x},${s.y}V${t.y}H${t.x}`;
+  }
+
+  function labelText(d) {
+    const name = d.data.name || '';
+    const parts = name.split(': ');
+    return parts.length > 1 ? parts.slice(1).join(': ') : name;
   }
 
   function labelFor(d) {
