@@ -432,10 +432,9 @@
   }
 
   // ---- Label collision resolution ------------------------------------------
-  // Detect internal nodes whose labels overlap horizontally and are vertically
-  // close enough to collide.  Assign each a _dy offset that pushes labels
-  // apart so every label is readable.  Spacing is proportional to font size
-  // to be robust across ranks (kingdoms get more room than families).
+  // Detect internal nodes whose left-extending labels overlap horizontally.
+  // Adjacent nodes (by y) that share any horizontal label space are grouped
+  // and spread apart with _dy offsets so every label is readable.
 
   function resolveLabelCollisions(root) {
     root.descendants().forEach(d => { d._dy = 0; });
@@ -446,16 +445,15 @@
     if (internals.length < 2) return;
     internals.sort((a, b) => a.y - b.y);
 
-    // Build contiguous groups whose labels all collide with their neighbours.
+    // Build contiguous groups linked by horizontal label overlap.
     const groups = [];
     let group = [internals[0]];
 
     for (let i = 1; i < internals.length; i++) {
       const prev = internals[i - 1];
       const curr = internals[i];
-      const fs = Math.max(labelFontSize(prev), labelFontSize(curr));
 
-      if (curr.y - prev.y <= fs * 2.8 && labelsOverlapH(prev, curr)) {
+      if (labelsOverlapH(prev, curr)) {
         group.push(curr);
       } else {
         if (group.length >= 2) groups.push(group);
@@ -464,9 +462,9 @@
     }
     if (group.length >= 2) groups.push(group);
 
-    // Spread labels: ensure at least font-size + 4 px between each label.
+    // Spread labels: ensure at least font-size + 6 px between each.
     groups.forEach(g => {
-      const pad = 4;
+      const pad = 6;
       const needed = g.reduce((s, d) => s + labelFontSize(d) + pad, 0) - pad;
       const available = g[g.length - 1].y - g[0].y;
       const bandH = Math.max(needed, available);
