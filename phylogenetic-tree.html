@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -7,76 +6,155 @@
 <title>Phylogenetic Tree - Plant Families Explorer</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=montserrat:wght@400;500;700&amp;family=open+sans:wght@400;600&amp;family=playfair+display:ital@0;1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet"/>
 <link href="css/styles.css" rel="stylesheet"/>
 <script src="js/d3.v7.min.js"></script>
 <style>
-        .node circle {
-            fill: #0a0a0a;
-            stroke: #00ff41;
-            stroke-width: 2px;
-            cursor: pointer;
-        }
-        .node text {
-            font: 11px 'Open Sans', sans-serif;
-            cursor: pointer;
-        }
-        .node text.highlighted {
-             fill: #ffbf00;
-             font-weight: bold;
-        }
-        .node--internal circle {
-            fill: #00802b;
-        }
-        .node--internal circle.collapsed {
-            fill: #00cc33;
-        }
-        .node--leaf circle {
-             fill: #00ff41;
-             stroke: #00802b;
-        }
-        .node--leaf text {
-            text-anchor: start;
-        }
-        .node--internal text {
-            text-anchor: end;
-        }
-        .link {
-            fill: none;
-            stroke: #00802b;
-            stroke-width: 1.5px;
-        }
-        .tree-visualization {
-            overflow: hidden;
-            position: relative;
-        }
-        .timeline-axis .domain {
-            stroke: #00ff41;
-        }
-        .timeline-axis .tick line {
-            stroke: #1a3a1a;
-        }
-        .timeline-axis .tick text {
-            fill: #00cc33;
-            font-size: 10px;
-        }
-        .geo-period {
-            opacity: 0.25;
-        }
-        .geo-period-label {
-            font-size: 9px;
-            fill: #00cc33;
-            text-anchor: middle;
-            pointer-events: none;
-        }
-    </style>
+  /* Light/dark theme backdrop */
+  :root[data-theme='light'] #phylogenetic-tree-v2 { background: #f7f3ea; border-color: #ccc; }
+  :root[data-theme='light'] .pt-tooltip strong { color: #0a3018; }
+  :root[data-theme='light'] .pt-tooltip { color: #0f4a25; background: #fdfaf2; border-color: #2c8a52; }
+
+  .page-header p { max-width: var(--measure, 72ch); color: var(--phosphor-400); }
+
+  /* Toolbar */
+  .phylogenetic-tree-controls {
+    padding: var(--space-4) 0 var(--space-2);
+  }
+  .phylogenetic-tree-controls .container {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-controls {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-controls label {
+    color: var(--phosphor-400);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+  .search-controls input {
+    background: var(--bg-2);
+    border: var(--border-thin);
+    color: var(--phosphor-300);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    padding: var(--space-2) var(--space-3);
+    min-width: 260px;
+    border-radius: var(--radius-sm);
+  }
+  .search-controls input::placeholder { color: var(--phosphor-600); }
+  .search-controls input:focus {
+    outline: none;
+    border-color: var(--phosphor-300);
+    box-shadow: var(--glow-phosphor);
+  }
+  .search-controls .btn {
+    background: var(--bg-2);
+    border: var(--border-thin);
+    color: var(--phosphor-400);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: border-color var(--motion-fast), color var(--motion-fast);
+  }
+  .search-controls .btn:hover {
+    border-color: var(--phosphor-300);
+    color: var(--phosphor-300);
+  }
+  .search-controls .btn.btn-expand { border-color: var(--phosphor-500, #00802b); }
+  .search-controls .btn.btn-collapse { border-color: var(--phosphor-600, #066b27); }
+
+  /* Tree container */
+  .phylogenetic-tree-container {
+    padding: 0;
+  }
+  #phylogenetic-tree-v2 {
+    background: var(--bg-1);
+    border: var(--border-thin);
+    min-height: 600px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+  }
+  #phylogenetic-tree-v2:active { cursor: grabbing; }
+  #phylogenetic-tree-v2 svg { display: block; }
+
+  /* Legend */
+  .pt-legend {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    color: var(--phosphor-400);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    margin-top: var(--space-3);
+    padding: 0 var(--space-4);
+  }
+  .pt-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .pt-legend .l-key { display: flex; gap: 8px; align-items: center; }
+  .pt-legend .l-swatch {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pt-legend .l-swatch.rank-kingdom  { background: #f9a825; }
+  .pt-legend .l-swatch.rank-class    { background: #29b6f6; }
+  .pt-legend .l-swatch.rank-order    { background: #66bb6a; }
+  .pt-legend .l-swatch.rank-family   { background: var(--phosphor-300, #1aff66); border: 1.5px solid var(--amber-link, #ffbf00); }
+  .pt-legend .l-line {
+    display: inline-block;
+    width: 22px;
+    height: 0;
+    flex-shrink: 0;
+  }
+  .pt-legend .l-line.solid  { border-top: 2px solid var(--phosphor-400, #0fcc4d); }
+  .pt-legend .l-line.dashed { border-top: 2px dashed var(--phosphor-600, #066b27); opacity: 0.55; }
+
+  /* Axis */
+  .pt-axis text { fill: var(--phosphor-400); font-family: var(--font-mono); font-size: 10px; }
+  .pt-axis path, .pt-axis line { stroke: var(--phosphor-600); }
+  .pt-geo-label { fill: var(--phosphor-100); font-family: var(--font-mono); font-size: 10px; }
+  .pt-geo-band { opacity: 0.28; }
+
+  /* Tooltip */
+  .pt-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    background: var(--bg-3);
+    border: 1px solid var(--phosphor-500);
+    color: var(--phosphor-300);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    padding: var(--space-2) var(--space-3);
+    max-width: 340px;
+    box-shadow: var(--glow-phosphor);
+    line-height: 1.4;
+    border-radius: var(--radius-sm);
+  }
+  .pt-tooltip strong { color: var(--phosphor-200); }
+  .pt-tooltip .t-rank { color: var(--phosphor-400); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Search highlight glow */
+  .t-glow {
+    filter: drop-shadow(0 0 5px var(--amber-link, #ffbf00));
+  }
+</style>
 <link href="img/logo.svg" rel="icon" type="image/svg+xml"/>
 </head>
 <body>
 <div class="incomplete-list-banner">
 <div class="container">
-<p><strong>Note:</strong> While this visualization represents a large selection of plant families, it does not include every known family. This is a true effort to make phylogenetic information more accessible to anyone, and exists as a critique of the open tree of life. All information is accurate to the best of my knowledge. My goal with this project is to open it up to a system of community edits.</p>
+<p><strong>Note:</strong> True effort to make phylogenetic information accessible. More comprehensive than Open Tree of Life. This project is open to community edits.</p>
 </div>
 </div>
 <header>
@@ -89,9 +167,7 @@
 </div>
 <nav>
 <button aria-label="Toggle menu" class="mobile-menu-toggle">
-<span></span>
-<span></span>
-<span></span>
+<span></span><span></span><span></span>
 </button>
 <ul class="main-nav">
 <li><a href="/index.html">Home</a></li>
@@ -114,26 +190,37 @@
 <section class="page-header">
 <div class="container">
 <h1>Phylogenetic Tree Explorer</h1>
-<p>Explore the evolutionary relationships between plant families in this interactive visualization. The tree is organized according to the latest APG IV classification system, showing how plant families are related through their evolutionary history. Click nodes to expand or collapse branches. Use search to find specific families.</p>
+<p>Time-calibrated chronogram of plant evolution. Horizontal axis shows millions of years ago (MYA). Drag to pan, scroll to zoom. Solid lines indicate published divergence ages; dashed lines indicate interpolated positions between known dates. Click internal nodes to expand or collapse branches.</p>
 </div>
 </section>
+
 <section class="phylogenetic-tree-controls">
 <div class="container">
 <div class="search-controls">
-<label for="family-search">Find a family:</label>
-<input aria-label="Find a plant family in the tree" id="family-search" placeholder="Type family name (min 3 chars)..." type="text"/>
-<button class="btn btn-small btn-secondary" id="reset-search" style="margin-left: 10px;">Reset Search</button>
-<button class="btn btn-small btn-secondary" id="reset-view" style="margin-left: 10px;">Reset View</button>
+<label for="pt-search">Find a clade or family:</label>
+<input id="pt-search" type="text" placeholder="type a name (min 2 chars)..." aria-label="Search the phylogenetic tree"/>
+<button class="btn btn-expand" id="pt-expand-all" type="button">Expand All</button>
+<button class="btn btn-collapse" id="pt-collapse-all" type="button">Collapse to Orders</button>
+<button class="btn" id="pt-reset-view" type="button">Reset View</button>
 </div>
 </div>
 </section>
+
 <section class="phylogenetic-tree-container">
 <div class="container">
-<div class="tree-visualization" id="phylogenetic-tree">
-<!-- SVG will be created by D3 -->
-</div>
+<div id="phylogenetic-tree-v2" aria-label="Interactive phylogenetic chronogram of plant families"></div>
 </div>
 </section>
+
+<div class="pt-legend">
+<span class="l-key"><span class="l-swatch rank-kingdom"></span> Kingdom / Division</span>
+<span class="l-key"><span class="l-swatch rank-class"></span> Class / Subclass</span>
+<span class="l-key"><span class="l-swatch rank-order"></span> Order / Suborder</span>
+<span class="l-key"><span class="l-swatch rank-family"></span> Family (click to open page)</span>
+<span class="l-key"><span class="l-line solid"></span> published age</span>
+<span class="l-key"><span class="l-line dashed"></span> inferred age</span>
+</div>
+
 <section class="tree-information">
 <div class="container">
 <h2>Understanding Plant Phylogeny</h2>
@@ -157,17 +244,18 @@
 <h3>Using This Tree</h3>
 <p>This interactive phylogenetic tree allows you to:</p>
 <ul>
-<li>Zoom and pan to explore different parts of the tree</li>
-<li>Click on nodes <span class="internal-node"></span> to expand or collapse branches</li>
-<li>Search for specific plant families using the search bar</li>
-<li>Click on linked family names <span class="leaf-node"></span> to view detailed information pages</li>
-<li>Hover over nodes to see full names (if truncated)</li>
+<li>Drag to pan and scroll to zoom</li>
+<li>Click internal nodes to expand or collapse branches</li>
+<li>Search for specific plant families using the search bar above</li>
+<li>Click amber-ringed family names to view detailed information pages</li>
+<li>Hover over any node to see full details and source citations</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
 </main>
+
 <footer>
 <div class="container">
 <div class="footer-columns">
@@ -200,6 +288,7 @@
 </div>
 </div>
 </footer>
+
 <script src="js/main.js"></script>
 <script src="js/phylogenetic-tree-v2.js"></script>
 </body>
