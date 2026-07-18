@@ -400,6 +400,11 @@
       .attr('text-anchor', d => (d.children || d._children) ? 'end' : 'start')
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => labelFontSize(d))
+      .attr('paint-order', 'stroke')
+      .attr('stroke', 'var(--bg-1, #0a0a0a)')
+      .attr('stroke-width', 3)
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-linejoin', 'round')
       .attr('fill', d => {
         if (d.data.url) return '#ffbf00';
         return nodeColor(d, 'label');
@@ -427,11 +432,10 @@
   }
 
   // ---- Label collision resolution ------------------------------------------
-  // After computing y positions, detect vertically-close nodes whose labels
-  // extend into overlapping horizontal space. Instead of hiding labels, we
-  // stagger them by assigning a small _dy offset so they fan out vertically.
-  // Only internal (left-anchored) labels are staggered — leaf labels go right
-  // and rarely collide because the tree fans outward.
+  // Detect internal nodes whose labels overlap horizontally and are vertically
+  // close enough to collide.  Assign each a _dy offset that pushes labels
+  // apart so every label is readable.  Spacing is proportional to font size
+  // to be robust across ranks (kingdoms get more room than families).
 
   function resolveLabelCollisions(root) {
     root.descendants().forEach(d => { d._dy = 0; });
@@ -442,58 +446,48 @@
     if (internals.length < 2) return;
     internals.sort((a, b) => a.y - b.y);
 
-    // Build overlap groups: consecutive nodes whose labels collide with their
-    // immediate neighbour (transitive chain). Each group gets labels spread
-    // evenly within its vertical band.
+    // Build contiguous groups whose labels all collide with their neighbours.
     const groups = [];
     let group = [internals[0]];
 
     for (let i = 1; i < internals.length; i++) {
       const prev = internals[i - 1];
       const curr = internals[i];
-      const gap  = curr.y - prev.y;
-      const maxFont = Math.max(labelFontSize(prev), labelFontSize(curr));
+      const fs = Math.max(labelFontSize(prev), labelFontSize(curr));
 
-      if (gap <= maxFont * 2.5 && labelsOverlapH(prev, curr)) {
-        // Neighbour collision — extend the current group.
+      if (curr.y - prev.y <= fs * 2.8 && labelsOverlapH(prev, curr)) {
         group.push(curr);
       } else {
-        // No collision — close the group and start a new one.
         if (group.length >= 2) groups.push(group);
         group = [curr];
       }
     }
     if (group.length >= 2) groups.push(group);
 
-    // Spread labels within each group.
+    // Spread labels: ensure at least font-size + 4 px between each label.
     groups.forEach(g => {
-      const top    = g[0].y;
-      const bottom = g[g.length - 1].y;
-      const bandH  = bottom - top;
-      if (bandH === 0) return;
-      const totalFonts = g.reduce((s, d) => s + labelFontSize(d), 0);
-      // Use the full band, but ensure at least font-size separation.
-      // Place labels at uniform intervals within the band.
-      g.forEach((d, idx) => {
-        const t = g.length === 1 ? 0 : idx / (g.length - 1);
-        d._dy = Math.round(top + t * bandH - d.y);
+      const pad = 4;
+      const needed = g.reduce((s, d) => s + labelFontSize(d) + pad, 0) - pad;
+      const available = g[g.length - 1].y - g[0].y;
+      const bandH = Math.max(needed, available);
+
+      let pos = g[0].y + (bandH - needed) / 2;
+      g.forEach(d => {
+        const fs = labelFontSize(d);
+        d._dy = Math.round(pos + fs / 2 - d.y);
+        pos += fs + pad;
       });
     });
   }
 
   function labelsOverlapH(a, b) {
-    const aWidth = (labelText(a).length || 4) * 7;
-    const bWidth = (labelText(b).length || 4) * 7;
-
-    const aIsInt = a.children || a._children;
-    const bIsInt = b.children || b._children;
-
-    const aLeft  = aIsInt ? a.x - aWidth - LABEL_PAD : a.x + LABEL_PAD;
-    const aRight = aIsInt ? a.x - LABEL_PAD : a.x + LABEL_PAD + aWidth;
-    const bLeft  = bIsInt ? b.x - bWidth - LABEL_PAD : b.x + LABEL_PAD;
-    const bRight = bIsInt ? b.x - LABEL_PAD : b.x + LABEL_PAD + bWidth;
-
-    return aLeft < bRight && bLeft < aRight;
+    const aW = (labelText(a).length || 4) * 7;
+    const bW = (labelText(b).length || 4) * 7;
+    const aL = a.x - aW - LABEL_PAD;
+    const aR = a.x - LABEL_PAD;
+    const bL = b.x - bW - LABEL_PAD;
+    const bR = b.x - LABEL_PAD;
+    return aL < bR && bL < aR;
   }
 
   function labelText(d) {
