@@ -420,15 +420,15 @@
     merged.select('text')
       .attr('x', d => {
         const r = rankDepth(d.data.rank);
-        return (r === 0 || r === 2) ? -LABEL_PAD : LABEL_PAD;
+        return r <= 3 ? -LABEL_PAD : LABEL_PAD;
       })
       .attr('y', d => {
         const r = rankDepth(d.data.rank);
-        return (r === 0 || r === 2) ? -5 : 12;
+        return r <= 3 ? -5 : 12;
       })
       .attr('text-anchor', d => {
         const r = rankDepth(d.data.rank);
-        return (r === 0 || r === 2) ? 'end' : 'start';
+        return r <= 3 ? 'end' : 'start';
       })
       .attr('font-family', 'var(--font-mono, ui-monospace), monospace')
       .attr('font-size', d => {
